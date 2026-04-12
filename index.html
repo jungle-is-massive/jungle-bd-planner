@@ -286,6 +286,44 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .gate-error { font-size: 12px; color: #FF6B4A; margin-top: 12px; min-height: 18px; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
+/* ASSETS VIEW */
+#assets-view { max-width: 1000px; margin: 0 auto; padding: 48px 32px 120px; }
+.assets-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; gap: 20px; }
+.assets-view-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 6px; }
+.assets-view-title { font-size: 28px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 8px; }
+.assets-view-sub { font-size: 13px; color: var(--grey-mid); line-height: 1.6; max-width: 540px; }
+.add-asset-btn { background: var(--black); color: var(--green); border: none; border-radius: 100px; padding: 10px 20px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: opacity 0.15s; }
+.add-asset-btn:hover { opacity: 0.8; }
+
+#assets-table-wrap { background: var(--white); border-radius: 14px; border: 1.5px solid var(--grey-light); overflow: hidden; }
+.assets-table-header { display: grid; grid-template-columns: 200px 1fr 120px 180px 60px; gap: 0; padding: 10px 20px; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); }
+.assets-table-header div { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); }
+.asset-row { display: grid; grid-template-columns: 200px 1fr 120px 180px 60px; gap: 0; padding: 16px 20px; border-bottom: 1px solid var(--grey-light); align-items: center; transition: background 0.1s; }
+.asset-row:last-child { border-bottom: none; }
+.asset-row:hover { background: #fafaf8; }
+.asset-row-name { font-size: 13px; font-weight: 600; color: var(--black); display: flex; align-items: center; gap: 10px; }
+.asset-row-icon { font-size: 18px; flex-shrink: 0; }
+.asset-row-desc { font-size: 12px; color: var(--grey-mid); line-height: 1.5; padding-right: 24px; }
+.asset-status-select { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; border: none; border-radius: 100px; padding: 4px 10px; cursor: pointer; outline: none; appearance: none; -webkit-appearance: none; text-align: center; }
+.asset-status-select.needed { background: var(--grey-light); color: var(--grey-mid); }
+.asset-status-select.in-progress { background: #FFF3CD; color: #856404; }
+.asset-status-select.done { background: #D4F4E2; color: #1A6B3C; }
+.asset-doc-link { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--grey-mid); text-decoration: none; font-style: italic; transition: color 0.15s; }
+.asset-doc-link.has-link { color: var(--black); font-style: normal; font-weight: 500; text-decoration: none; }
+.asset-doc-link.has-link:hover { color: var(--green-dim); }
+.asset-doc-link svg { flex-shrink: 0; }
+.asset-row-actions { display: flex; gap: 6px; justify-content: flex-end; opacity: 0; transition: opacity 0.15s; }
+.asset-row:hover .asset-row-actions { opacity: 1; }
+.asset-action-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--grey-light); background: transparent; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--grey-mid); transition: all 0.12s; }
+.asset-action-btn:hover { background: var(--grey-light); color: var(--black); }
+.asset-action-btn.del:hover { background: #FFE0E0; color: #CC0000; border-color: #FFB0B0; }
+.assets-empty { text-align: center; padding: 48px; color: var(--grey-mid); font-size: 13px; }
+
+#add-asset-overlay, #edit-asset-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#add-asset-overlay.open, #edit-asset-overlay.open { opacity: 1; pointer-events: all; }
+#add-asset-modal, #edit-asset-modal { background: var(--cream); border-radius: 16px; width: min(480px, 94vw); transform: translateY(20px); transition: transform 0.25s; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+#add-asset-overlay.open #add-asset-modal, #edit-asset-overlay.open #edit-asset-modal { transform: translateY(0); }
+
 #ws-modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
 #ws-modal-overlay.open { opacity: 1; pointer-events: all; }
 #ws-modal-overlay #add-modal { transform: translateY(20px); transition: transform 0.25s; }
@@ -313,6 +351,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
+    <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
     <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
@@ -354,17 +393,35 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       <p class="prog-intro">Apr 2026 → Mar 2027. Key periods, themes, activity moments, intermediary touchpoints, owned media and content rhythm in one view.</p>
       <div class="plan-grid" id="plan-grid"></div>
     </div>
-    <div class="prog-section">
-      <div class="prog-section-label">Execution Enablers</div>
-      <h2 class="prog-section-title">Supporting Assets</h2>
-      <p class="prog-intro">The collateral required to execute the plan.</p>
-      <div class="asset-list" id="asset-list"></div>
-    </div>
     <div class="prog-qa-section">
       <div class="qa-label" style="font-size:13px;margin-bottom:14px">Have a question about the programme?</div>
       <textarea class="qa-textarea" id="prog-qa-input" placeholder="Ask anything about strategy, pillars, cadence, assets…" rows="3"></textarea>
       <br><button class="qa-submit" id="prog-qa-btn" onclick="submitProgQuestion()">Submit</button>
       <div id="prog-qa-success" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green-dim);margin-top:8px;display:none">✓ Sent — reply coming to Slack</div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSETS VIEW -->
+<div class="view" id="assets-view-el">
+  <div id="assets-view">
+    <div class="assets-header">
+      <div>
+        <div class="assets-view-label">Execution Enablers</div>
+        <h2 class="assets-view-title">Supporting Assets</h2>
+        <p class="assets-view-sub">The collateral required to execute the plan. Add links to live documents as they're created.</p>
+      </div>
+      <button class="add-asset-btn" onclick="openAddAssetModal()">+ Add Asset</button>
+    </div>
+    <div id="assets-table-wrap">
+      <div class="assets-table-header">
+        <div>Asset</div>
+        <div>Description</div>
+        <div>Status</div>
+        <div>Document</div>
+        <div></div>
+      </div>
+      <div id="assets-table-body"></div>
     </div>
   </div>
 </div>
@@ -420,7 +477,58 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   </div>
 </div>
 
-<!-- ADD WORKSTREAM MODAL -->
+<!-- ADD ASSET MODAL -->
+<div id="add-asset-overlay" onclick="closeAddAssetModal(event)">
+  <div id="add-asset-modal">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Add Asset</div>
+      <button class="modal-close" onclick="closeAddAssetModalDirect()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <div class="field"><label>Asset Name</label><input type="text" id="asset-name" placeholder="e.g. Brand Partnership Deck"></div>
+      <div class="field"><label>Description</label><textarea id="asset-desc" rows="2" placeholder="What is this asset for?"></textarea></div>
+      <div class="field"><label>Status</label>
+        <select id="asset-status">
+          <option value="needed">Needed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="field"><label>Google Doc / Link (optional)</label><input type="url" id="asset-link" placeholder="https://docs.google.com/…"></div>
+    </div>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeAddAssetModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveAsset()">Add Asset</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ASSET MODAL -->
+<div id="edit-asset-overlay" onclick="closeEditAssetModal(event)">
+  <div id="edit-asset-modal">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Edit Asset</div>
+      <button class="modal-close" onclick="closeEditAssetModalDirect()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <input type="hidden" id="edit-asset-id">
+      <div class="field"><label>Asset Name</label><input type="text" id="edit-asset-name"></div>
+      <div class="field"><label>Description</label><textarea id="edit-asset-desc" rows="2"></textarea></div>
+      <div class="field"><label>Status</label>
+        <select id="edit-asset-status">
+          <option value="needed">Needed</option>
+          <option value="in-progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+      <div class="field"><label>Google Doc / Link (optional)</label><input type="url" id="edit-asset-link" placeholder="https://docs.google.com/…"></div>
+    </div>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeEditAssetModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="updateAsset()">Save Changes</button>
+    </div>
+  </div>
+</div>
 <div id="ws-modal-overlay" onclick="closeWsModal(event)">
   <div id="add-modal" style="max-width:400px">
     <div class="add-modal-header">
@@ -569,12 +677,14 @@ async function updateStatus(id, status) {
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  document.getElementById(v==='calendar'?'calendar-view':'programme-view-el').classList.add('active');
+  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el'};
+  document.getElementById(viewMap[v]).classList.add('active');
   btn.classList.add('active');
-  const show = v==='calendar';
-  document.getElementById('add-btn').style.display = show?'':'none';
-  document.getElementById('ws-btn').style.display = show?'':'none';
-  document.getElementById('legend').style.display = show?'':'none';
+  const isCalendar = v==='calendar';
+  document.getElementById('add-btn').style.display = isCalendar?'':'none';
+  document.getElementById('ws-btn').style.display = isCalendar?'':'none';
+  document.getElementById('legend').style.display = isCalendar?'':'none';
+  if(v==='assets') renderAssetsView();
 }
 
 function cw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||80;}
@@ -729,6 +839,121 @@ async function submitProgQuestion(){
   await saveQuestion('Programme Overview',q);
   document.getElementById('prog-qa-input').value='';
   document.getElementById('prog-qa-success').style.display='block'; btn.textContent='Sent ✓';
+}
+
+// ── ASSETS ──────────────────────────────────────────
+const SEED_ASSETS = [
+  {id:'a1',icon:'📊',name:'Intermediary Deck',description:'Tailored creds for intermediary conversations — social maturity framing, category expertise, case studies.',status:'in-progress',doc_url:''},
+  {id:'a2',icon:'📝',name:'Pillar Half-Pagers',description:'One-page write-ups of each confirmed theme — what it means, proof points, ICP alignment.',status:'needed',doc_url:''},
+  {id:'a3',icon:'🎯',name:'Case Studies (x3)',description:'Commercial impact case studies — one per priority ICP. Problem → approach → result.',status:'needed',doc_url:''},
+  {id:'a4',icon:'🖥️',name:'Event One-Pager',description:'Invite and overview asset for the Oct owned event. Speaker bios, format, audience rationale.',status:'needed',doc_url:''},
+  {id:'a5',icon:'📦',name:'Slim Creds Update',description:'Refresh the existing slim creds to reflect new pillar language and most recent work.',status:'in-progress',doc_url:''},
+  {id:'a6',icon:'📈',name:'Social Maturity Index',description:'Proprietary diagnostic tool — the IP asset that can drive PR, lead gen, and event hooks.',status:'needed',doc_url:''},
+  {id:'a7',icon:'✉️',name:'Nurture Email Sequence',description:'Post-event and always-on nurture comms. Pillar-themed, fortnightly → monthly cadence.',status:'needed',doc_url:''},
+  {id:'a8',icon:'🎤',name:'Speaking Abstract',description:'Reusable abstract for conference speaking applications — pillar-led, commercially framed.',status:'needed',doc_url:''},
+];
+
+let allAssets = [];
+
+async function loadAssets() {
+  try {
+    const r = await sbFetch('assets?select=*&order=created_at.asc');
+    if(r.ok){ const d=await r.json(); if(d.length>0){ localStorage.removeItem('jc_assets'); return d; } }
+  } catch(e){}
+  const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
+  const seedIds = new Set(SEED_ASSETS.map(a=>a.id));
+  return [...SEED_ASSETS, ...local.filter(a=>!seedIds.has(a.id))];
+}
+
+async function renderAssetsView() {
+  allAssets = await loadAssets();
+  const body = document.getElementById('assets-table-body');
+  if(!allAssets.length){ body.innerHTML=`<div class="assets-empty">No assets yet — add one above.</div>`; return; }
+  body.innerHTML = allAssets.map(a => {
+    const statusClass = a.status||'needed';
+    const statusLabel = {'needed':'Needed','in-progress':'In Progress','done':'Done'}[statusClass]||statusClass;
+    const docHtml = a.doc_url
+      ? `<a class="asset-doc-link has-link" href="${esc(a.doc_url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open doc</a>`
+      : `<span class="asset-doc-link">No link yet</span>`;
+    return `<div class="asset-row" data-id="${a.id}">
+      <div class="asset-row-name"><span class="asset-row-icon">${a.icon||'📄'}</span>${esc(a.name)}</div>
+      <div class="asset-row-desc">${esc(a.description||'')}</div>
+      <div><select class="asset-status-select ${statusClass}" onchange="updateAssetStatus('${a.id}',this)">
+        <option value="needed" ${statusClass==='needed'?'selected':''}>Needed</option>
+        <option value="in-progress" ${statusClass==='in-progress'?'selected':''}>In Progress</option>
+        <option value="done" ${statusClass==='done'?'selected':''}>Done</option>
+      </select></div>
+      <div>${docHtml}</div>
+      <div class="asset-row-actions">
+        <button class="asset-action-btn" onclick="openEditAsset('${a.id}')" title="Edit">✏️</button>
+        <button class="asset-action-btn del" onclick="deleteAsset('${a.id}')" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Restyle status selects
+  body.querySelectorAll('.asset-status-select').forEach(sel => {
+    sel.addEventListener('change', function(){ this.className=`asset-status-select ${this.value}`; });
+  });
+}
+
+async function updateAssetStatus(id, sel) {
+  sel.className = `asset-status-select ${sel.value}`;
+  await patchAsset(id, {status: sel.value});
+}
+
+async function patchAsset(id, data) {
+  try { await sbFetch(`assets?id=eq.${id}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(data)}); } catch(e){}
+  // Update localStorage fallback
+  const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
+  const i = local.findIndex(a=>a.id===id);
+  if(i>-1){ Object.assign(local[i], data); localStorage.setItem('jc_assets', JSON.stringify(local)); }
+}
+
+function openAddAssetModal() { document.getElementById('add-asset-overlay').classList.add('open'); ['asset-name','asset-desc','asset-link'].forEach(id=>document.getElementById(id).value=''); document.getElementById('asset-status').value='needed'; }
+function closeAddAssetModal(e) { if(e.target===document.getElementById('add-asset-overlay'))closeAddAssetModalDirect(); }
+function closeAddAssetModalDirect() { document.getElementById('add-asset-overlay').classList.remove('open'); }
+
+async function saveAsset() {
+  const name = document.getElementById('asset-name').value.trim();
+  if(!name){ alert('Name required.'); return; }
+  const asset = { id:'la-'+Date.now(), icon:'📄', name, description: document.getElementById('asset-desc').value.trim(), status: document.getElementById('asset-status').value, doc_url: document.getElementById('asset-link').value.trim() };
+  try {
+    const r = await sbFetch('assets', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(asset)});
+    if(r.ok){ const d=await r.json(); if(d[0]) asset.id=d[0].id; }
+  } catch(e) {
+    const local = JSON.parse(localStorage.getItem('jc_assets')||'[]'); local.push(asset); localStorage.setItem('jc_assets', JSON.stringify(local));
+  }
+  closeAddAssetModalDirect();
+  renderAssetsView();
+}
+
+function openEditAsset(id) {
+  const a = allAssets.find(x=>x.id===id); if(!a) return;
+  document.getElementById('edit-asset-id').value = id;
+  document.getElementById('edit-asset-name').value = a.name||'';
+  document.getElementById('edit-asset-desc').value = a.description||'';
+  document.getElementById('edit-asset-status').value = a.status||'needed';
+  document.getElementById('edit-asset-link').value = a.doc_url||'';
+  document.getElementById('edit-asset-overlay').classList.add('open');
+}
+function closeEditAssetModal(e) { if(e.target===document.getElementById('edit-asset-overlay'))closeEditAssetModalDirect(); }
+function closeEditAssetModalDirect() { document.getElementById('edit-asset-overlay').classList.remove('open'); }
+
+async function updateAsset() {
+  const id = document.getElementById('edit-asset-id').value;
+  const data = { name: document.getElementById('edit-asset-name').value.trim(), description: document.getElementById('edit-asset-desc').value.trim(), status: document.getElementById('edit-asset-status').value, doc_url: document.getElementById('edit-asset-link').value.trim() };
+  await patchAsset(id, data);
+  closeEditAssetModalDirect();
+  renderAssetsView();
+}
+
+async function deleteAsset(id) {
+  if(!confirm('Delete this asset?')) return;
+  try { await sbFetch(`assets?id=eq.${id}`, {method:'DELETE'}); } catch(e){}
+  const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
+  localStorage.setItem('jc_assets', JSON.stringify(local.filter(a=>a.id!==id)));
+  renderAssetsView();
 }
 
 function renderPillars(){
