@@ -349,6 +349,29 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #ws-modal-overlay.open #add-modal { transform: translateY(0); }
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
+
+/* PROSPECTS VIEW */
+#prospects-view { max-width: 1200px; margin: 0 auto; padding: 48px 32px 120px; }
+.prospects-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+.prospects-refresh-btn { background: var(--grey-light); border: none; border-radius: 100px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--grey-mid); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
+.prospects-refresh-btn:hover { background: var(--grey); color: var(--black); }
+.prospects-refresh-btn.loading { opacity: 0.5; pointer-events: none; }
+.prospects-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.prospects-search { flex: 1; max-width: 360px; border: 1.5px solid var(--grey-light); border-radius: 100px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; color: var(--black); background: var(--white); transition: border-color 0.15s; }
+.prospects-search:focus { border-color: var(--black); }
+.prospects-count { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--grey-mid); letter-spacing: 0.04em; }
+.prospects-loading { display: flex; align-items: center; gap: 10px; padding: 64px 0; justify-content: center; font-size: 13px; color: var(--grey-mid); }
+.prospects-spinner { width: 16px; height: 16px; border: 2px solid var(--grey-light); border-top-color: var(--black); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.prospects-error { padding: 48px; text-align: center; font-size: 13px; color: var(--grey-mid); background: var(--white); border: 1.5px solid var(--grey-light); border-radius: 12px; }
+.prospects-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; font-size: 12px; box-shadow: 0 0 0 1.5px var(--grey-light); }
+.prospects-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); padding: 10px 14px; text-align: left; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); white-space: nowrap; }
+.prospects-table td { padding: 11px 14px; border-bottom: 1px solid var(--grey-light); vertical-align: top; color: var(--black); line-height: 1.4; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prospects-table tr:last-child td { border-bottom: none; }
+.prospects-table tbody tr:hover td { background: rgba(0,0,0,0.018); }
+.prospects-table td a { color: var(--black); text-decoration: none; border-bottom: 1px solid var(--grey); transition: border-color 0.15s; }
+.prospects-table td a:hover { border-color: var(--black); }
+.prospects-no-results { text-align: center; padding: 32px; color: var(--grey-mid); font-size: 13px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -371,6 +394,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
+    <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
     <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
@@ -449,7 +473,34 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   </div>
 </div>
 
-<!-- EVENT MODAL -->
+<!-- PROSPECTS VIEW -->
+<div class="view" id="prospects-view-el">
+  <div id="prospects-view">
+    <div class="prospects-header">
+      <div>
+        <div class="assets-view-label">LinkedIn / Dripify</div>
+        <h2 class="assets-view-title">Prospects</h2>
+        <p class="assets-view-sub">Live from your Dripify Google Sheet. Refreshes each time you open this tab.</p>
+      </div>
+      <button class="prospects-refresh-btn" onclick="loadProspects(true)" id="prospects-refresh">↻ Refresh</button>
+    </div>
+    <div class="prospects-controls">
+      <input type="text" class="prospects-search" id="prospects-search" placeholder="Search by name, company or title…" oninput="filterProspects()">
+      <div class="prospects-count" id="prospects-count"></div>
+    </div>
+    <div id="prospects-table-wrap">
+      <div class="prospects-loading" id="prospects-loading">
+        <div class="prospects-spinner"></div>
+        Loading from Google Sheet…
+      </div>
+      <div class="prospects-error" id="prospects-error" style="display:none"></div>
+      <table class="prospects-table" id="prospects-table" style="display:none">
+        <thead id="prospects-thead"></thead>
+        <tbody id="prospects-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <div id="modal-overlay" onclick="closeModal(event)">
   <div id="modal">
     <div class="modal-header">
@@ -733,7 +784,7 @@ async function updateStatus(id, status) {
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el'};
+  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el'};
   document.getElementById(viewMap[v]).classList.add('active');
   btn.classList.add('active');
   const isCalendar = v==='calendar';
@@ -741,6 +792,101 @@ function switchView(v, btn) {
   document.getElementById('ws-btn').style.display = isCalendar?'':'none';
   document.getElementById('legend').style.display = isCalendar?'':'none';
   if(v==='assets') renderAssetsView();
+  if(v==='prospects') loadProspects();
+}
+
+// ── PROSPECTS ─────────────────────────────────────────────────────
+// Replace this URL with your Make webhook URL after creating the scenario
+const PROSPECTS_WEBHOOK = 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE';
+let prospectsData = [];
+let prospectsLoaded = false;
+
+async function loadProspects(force=false) {
+  if(prospectsLoaded && !force) return;
+  const loading = document.getElementById('prospects-loading');
+  const error = document.getElementById('prospects-error');
+  const table = document.getElementById('prospects-table');
+  const refreshBtn = document.getElementById('prospects-refresh');
+
+  loading.style.display = 'flex';
+  error.style.display = 'none';
+  table.style.display = 'none';
+  refreshBtn.classList.add('loading');
+
+  if(PROSPECTS_WEBHOOK === 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE') {
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.innerHTML = `<strong>Make webhook not yet configured.</strong><br><br>Once you've set up the Make scenario and have a webhook URL, paste it into the <code>PROSPECTS_WEBHOOK</code> constant in the page source.`;
+    refreshBtn.classList.remove('loading');
+    return;
+  }
+
+  try {
+    const r = await fetch(PROSPECTS_WEBHOOK, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({action: 'fetch_prospects'})
+    });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const data = await r.json();
+
+    // Expect either { rows: [...] } or a direct array
+    prospectsData = Array.isArray(data) ? data : (data.rows || data.data || []);
+    prospectsLoaded = true;
+    renderProspectsTable(prospectsData);
+  } catch(e) {
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.innerHTML = `<strong>Couldn't load prospects.</strong><br><br>${e.message}<br><br>Check the Make scenario is active and the webhook URL is correct.`;
+  }
+  refreshBtn.classList.remove('loading');
+}
+
+function renderProspectsTable(rows) {
+  const loading = document.getElementById('prospects-loading');
+  const table = document.getElementById('prospects-table');
+  const thead = document.getElementById('prospects-thead');
+  const tbody = document.getElementById('prospects-tbody');
+  const count = document.getElementById('prospects-count');
+
+  loading.style.display = 'none';
+
+  if(!rows || rows.length === 0) {
+    table.style.display = 'none';
+    document.getElementById('prospects-error').style.display = 'block';
+    document.getElementById('prospects-error').innerHTML = 'No prospects found in the sheet.';
+    return;
+  }
+
+  // Auto-detect columns from first row keys
+  const cols = Object.keys(rows[0]);
+
+  thead.innerHTML = `<tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>`;
+
+  tbody.innerHTML = rows.map(row => `
+    <tr>${cols.map(col => {
+      const val = row[col] || '';
+      // Auto-link anything that looks like a URL
+      if(typeof val === 'string' && val.startsWith('http')) {
+        const domain = val.includes('linkedin') ? 'LinkedIn ↗' : '↗';
+        return `<td><a href="${esc(val)}" target="_blank" rel="noopener">${domain}</a></td>`;
+      }
+      return `<td title="${esc(String(val))}">${esc(String(val))}</td>`;
+    }).join('')}</tr>`
+  ).join('');
+
+  table.style.display = 'table';
+  count.textContent = `${rows.length} prospect${rows.length !== 1 ? 's' : ''}`;
+}
+
+function filterProspects() {
+  const q = document.getElementById('prospects-search').value.toLowerCase().trim();
+  if(!q) { renderProspectsTable(prospectsData); return; }
+  const filtered = prospectsData.filter(row =>
+    Object.values(row).some(v => String(v).toLowerCase().includes(q))
+  );
+  renderProspectsTable(filtered);
+  document.getElementById('prospects-count').textContent = `${filtered.length} of ${prospectsData.length} prospects`;
 }
 
 function cw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||80;}
