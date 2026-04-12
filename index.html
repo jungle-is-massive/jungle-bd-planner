@@ -765,19 +765,22 @@ function renderAssets(){
 }
 
 function openAddModal(){
-  // Populate workstream dropdown from current SECTIONS
   const sel = document.getElementById('add-rowkey');
   sel.innerHTML = '';
+  const catMap = {intermediaries:'intermediary',owned:'owned',speaking:'speaking',attendance:'attendance',content:'content'};
   SECTIONS.forEach(section => {
-    section.rows.filter(r=>!r.placeholder).forEach(r => {
+    const nonPlaceholder = section.rows.filter(r=>!r.placeholder);
+    if(!nonPlaceholder.length) return;
+    const grp = document.createElement('optgroup');
+    grp.label = section.label;
+    nonPlaceholder.forEach(r => {
       const opt = document.createElement('option');
       opt.value = r.key;
-      // Derive category from section
-      const catMap = {intermediaries:'intermediary',owned:'owned',speaking:'speaking',attendance:'attendance',content:'content'};
       opt.dataset.category = catMap[section.id] || 'attendance';
-      opt.textContent = `${section.label} — ${r.label}`;
-      sel.appendChild(opt);
+      opt.textContent = r.label;
+      grp.appendChild(opt);
     });
+    sel.appendChild(grp);
   });
   document.getElementById('add-modal-overlay').classList.add('open');
 }
