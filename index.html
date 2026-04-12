@@ -917,13 +917,26 @@ function closeAddAssetModalDirect() { document.getElementById('add-asset-overlay
 async function saveAsset() {
   const name = document.getElementById('asset-name').value.trim();
   if(!name){ alert('Name required.'); return; }
-  const asset = { id:'la-'+Date.now(), icon:'📄', name, description: document.getElementById('asset-desc').value.trim(), status: document.getElementById('asset-status').value, doc_url: document.getElementById('asset-link').value.trim() };
+  const payload = {
+    icon: '📄',
+    name,
+    description: document.getElementById('asset-desc').value.trim(),
+    status: document.getElementById('asset-status').value,
+    doc_url: document.getElementById('asset-link').value.trim()
+  };
   try {
-    const r = await sbFetch('assets', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(asset)});
-    if(r.ok){ const d=await r.json(); if(d[0]) asset.id=d[0].id; }
-  } catch(e) {
-    const local = JSON.parse(localStorage.getItem('jc_assets')||'[]'); local.push(asset); localStorage.setItem('jc_assets', JSON.stringify(local));
-  }
+    const r = await sbFetch('assets', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(payload)});
+    if(r.ok){
+      closeAddAssetModalDirect();
+      renderAssetsView();
+      return;
+    }
+  } catch(e){}
+  // Supabase failed — save to localStorage with a local id
+  const asset = {...payload, id:'la-'+Date.now()};
+  const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
+  local.push(asset);
+  localStorage.setItem('jc_assets', JSON.stringify(local));
   closeAddAssetModalDirect();
   renderAssetsView();
 }
