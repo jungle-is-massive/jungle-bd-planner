@@ -534,23 +534,21 @@ async function sbFetch(path, opts={}) {
   return fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opts,headers:h});
 }
 async function loadEvents() {
-  const local = JSON.parse(localStorage.getItem('jc_events')||'[]');
   try {
     const r = await sbFetch('events?select=*&order=start_date.asc');
     if(r.ok){
-      const d=await r.json();
-      if(d.length>0){
-        // Merge Supabase results with any local-only events not yet synced
-        const sbIds = new Set(d.map(e=>e.id));
-        const localOnly = local.filter(e=>!sbIds.has(e.id));
-        return [...d, ...localOnly];
+      const d = await r.json();
+      if(d.length > 0){
+        // Clear any localStorage events that are now in Supabase
+        localStorage.removeItem('jc_events');
+        return d;
       }
     }
   } catch(e){}
-  // Supabase unavailable or empty — use seed + local
+  // Supabase unavailable — fall back to seed + any locally saved events
+  const local = JSON.parse(localStorage.getItem('jc_events')||'[]');
   const seedIds = new Set(SEED.map(e=>e.id));
-  const localOnly = local.filter(e=>!seedIds.has(e.id));
-  return [...SEED, ...localOnly];
+  return [...SEED, ...local.filter(e=>!seedIds.has(e.id))];
 }
 async function loadQuestions(ctx) {
   try { const r = await sbFetch(`questions?context=eq.${encodeURIComponent(ctx)}&order=submitted_at.asc`); if(r.ok)return await r.json(); } catch(e){}
@@ -793,8 +791,14 @@ async function saveEvent(){
   const notes=document.getElementById('add-notes').value.trim();
   if(!name||!start){alert('Name and start date required.');return;}
   const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey};
-  try{await sbFetch('events',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(evt)});}catch(e){}
-  const local=JSON.parse(localStorage.getItem('jc_events')||'[]'); local.push(evt); localStorage.setItem('jc_events',JSON.stringify(local));
+  let saved = false;
+  try{
+    const r = await sbFetch('events',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey})});
+    if(r.ok){ const d=await r.json(); if(d[0]) evt.id=d[0].id; saved=true; }
+  }catch(e){}
+  if(!saved){
+    const local=JSON.parse(localStorage.getItem('jc_events')||'[]'); local.push(evt); localStorage.setItem('jc_events',JSON.stringify(local));
+  }
   allEvents.push(evt);
   // Expand the section this event belongs to so it's immediately visible
   SECTIONS.forEach(s=>{ if(s.rows.find(r=>r.key===rowKey)){ const state=getCollapseState(); state[s.id]=false; localStorage.setItem('jc_collapse',JSON.stringify(state)); } });
