@@ -6,623 +6,719 @@
 <title>Jungle — 26/27 Comms Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--cream:#F5F2EB;--black:#111110;--green:#8BFF57;--green-bg:rgba(139,255,87,0.1);--green-border:rgba(139,255,87,0.25);--grey:#7A7972;--grey-light:#E8E5DC;--grey-mid:#CFCCC3;--border:rgba(17,17,16,0.09);--border-strong:rgba(17,17,16,0.2);--purple:#9B6DFF;--blue:#4A90D9;--coral:#FF6B4A;--amber:#F5A623;--sidebar-w:160px;--col-w:82px;--row-h:52px;--nav-h:52px;--c-intermediary:var(--purple);--c-owned:var(--green);--c-speaking:var(--coral);--c-attendance:var(--blue);--c-comms:var(--amber);}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--cream);color:var(--black);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
-nav{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--black);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:var(--nav-h);}
-.nav-left{display:flex;align-items:center;gap:24px;}
-.nav-logo{font-size:17px;font-weight:500;letter-spacing:-0.5px;color:#fff;}
-.nav-logo span{color:var(--green);}
-.nav-tabs{display:flex;gap:2px;}
-.nav-tab{font-family:inherit;font-size:12px;font-weight:400;color:rgba(255,255,255,0.45);background:none;border:none;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all 0.15s;}
-.nav-tab:hover{color:rgba(255,255,255,0.8);}
-.nav-tab.active{background:rgba(255,255,255,0.1);color:#fff;}
-.nav-right{display:flex;align-items:center;gap:12px;}
-.live-badge{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,0.45);}
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.btn-primary{font-family:inherit;font-size:12px;font-weight:500;color:var(--black);background:var(--green);border:none;border-radius:20px;padding:7px 16px;cursor:pointer;transition:opacity 0.15s;}
-.btn-primary:hover{opacity:0.85;}
-.view{display:none;padding-top:var(--nav-h);}
-.view.active{display:block;}
-.wrap{padding:0 2rem;}
-.page-header{padding:2rem 0 1.25rem;border-bottom:1px solid var(--border);margin-bottom:0;display:flex;align-items:flex-end;justify-content:space-between;}
-.page-header h1{font-size:26px;font-weight:300;letter-spacing:-0.8px;line-height:1.1;}
-.page-header h1 strong{font-weight:500;}
-.page-sub{font-size:12px;color:var(--grey);margin-top:3px;}
-.summary-strip{display:flex;background:var(--black);border-radius:0 0 10px 10px;overflow:hidden;margin-bottom:1.25rem;}
-.summary-item{flex:1;padding:14px 18px;border-right:1px solid rgba(255,255,255,0.06);}
-.summary-item:last-child{border-right:none;}
-.summary-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.7px;color:rgba(255,255,255,0.35);margin-bottom:4px;}
-.summary-val{font-size:20px;font-weight:300;letter-spacing:-0.6px;color:#fff;}
-.summary-val.accent{color:var(--green);}
-.legend-bar{display:flex;gap:14px;align-items:center;margin-bottom:1rem;flex-wrap:wrap;}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--grey);}
-.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-#planner-wrap{overflow-x:auto;overflow-y:visible;padding-bottom:60px;}
-#planner-wrap::-webkit-scrollbar{height:4px;}
-#planner-wrap::-webkit-scrollbar-track{background:var(--cream);}
-#planner-wrap::-webkit-scrollbar-thumb{background:var(--grey-mid);border-radius:2px;}
-#planner{min-width:calc(var(--sidebar-w) + var(--col-w)*12);background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-#month-header{display:grid;grid-template-columns:var(--sidebar-w) repeat(12,var(--col-w));border-bottom:1px solid var(--border-strong);background:#fafaf8;position:sticky;top:var(--nav-h);z-index:90;}
-.month-spacer{border-right:1px solid var(--border-strong);}
-.month-label{padding:10px 0 8px;text-align:center;font-size:10px;font-weight:500;letter-spacing:0.6px;text-transform:uppercase;color:var(--grey);border-left:1px solid var(--border);}
-.month-label.is-current{color:var(--black);}
-.month-label.is-current::after{content:'';display:block;margin:3px auto 0;width:4px;height:4px;border-radius:50%;background:var(--green);}
-.section-header{display:grid;grid-template-columns:var(--sidebar-w) 1fr;background:#fafaf8;border-top:1px solid var(--border);cursor:pointer;user-select:none;transition:background 0.1s;}
-.section-header:hover{background:#f3f0e8;}
-.section-label-cell{display:flex;align-items:center;gap:8px;padding:9px 14px;border-right:1px solid var(--border-strong);}
-.section-chevron{width:14px;height:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--grey-mid);transition:transform 0.2s;}
-.section-chevron svg{width:8px;height:8px;}
-.section-group.collapsed .section-chevron{transform:rotate(-90deg);}
-.section-title{font-size:10px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--grey);}
-.section-header-cells{display:grid;grid-template-columns:repeat(12,var(--col-w));}
-.section-header-cell{border-left:1px solid var(--border);background:repeating-linear-gradient(-45deg,transparent,transparent 3px,rgba(0,0,0,0.018) 3px,rgba(0,0,0,0.018) 4px);}
-.section-group.collapsed .section-rows{display:none;}
-.row{display:grid;grid-template-columns:var(--sidebar-w) repeat(12,var(--col-w));height:var(--row-h);border-top:1px solid var(--border);position:relative;align-items:center;transition:background 0.08s;}
-.row:hover{background:#fafaf8;}
-.row-label{padding:0 14px;font-size:12px;font-weight:400;color:var(--black);letter-spacing:-0.1px;border-right:1px solid var(--border-strong);height:100%;display:flex;align-items:center;}
-.row-cell{height:100%;border-left:1px solid var(--border);position:relative;}
-.today-line{position:absolute;top:0;bottom:0;width:1.5px;background:var(--green);opacity:0.7;z-index:5;pointer-events:none;}
-.event-dot{position:absolute;width:9px;height:9px;border-radius:50%;cursor:pointer;z-index:10;top:50%;transform:translateY(-50%);transition:transform 0.12s,box-shadow 0.12s;}
-.event-dot:hover{transform:translateY(-50%) scale(1.6);box-shadow:0 0 0 3px rgba(0,0,0,0.07);}
-.event-bar{position:absolute;height:22px;border-radius:20px;cursor:pointer;z-index:10;top:50%;transform:translateY(-50%);display:flex;align-items:center;padding:0 9px;overflow:hidden;transition:opacity 0.12s;}
-.event-bar:hover{opacity:0.8;}
-.event-bar span{font-size:9px;font-weight:500;letter-spacing:0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.prep-bar{position:absolute;height:4px;border-radius:4px;opacity:0.18;z-index:8;top:50%;transform:translateY(-50%);pointer-events:none;}
-.cat-intermediary{background:var(--c-intermediary);} .cat-intermediary span{color:#fff;}
-.cat-owned{background:var(--c-owned);} .cat-owned span{color:var(--black);}
-.cat-speaking{background:var(--c-speaking);} .cat-speaking span{color:#fff;}
-.cat-attendance{background:var(--c-attendance);} .cat-attendance span{color:#fff;}
-.cat-comms{background:var(--c-comms);} .cat-comms span{color:#fff;}
-#tooltip{position:fixed;background:var(--black);color:#fff;border-radius:8px;padding:10px 13px;font-size:12px;max-width:220px;z-index:500;pointer-events:none;opacity:0;transition:opacity 0.08s;}
-#tooltip.show{opacity:1;}
-.tt-name{font-weight:500;margin-bottom:2px;} .tt-date,.tt-loc{font-size:10px;color:rgba(255,255,255,0.5);}
-.modal-bd{position:fixed;inset:0;background:rgba(17,17,16,0.55);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-.modal-bd.open{opacity:1;pointer-events:all;}
-.modal-box{background:var(--cream);border-radius:14px;width:min(560px,93vw);max-height:85vh;overflow-y:auto;position:relative;transform:translateY(18px);transition:transform 0.22s;box-shadow:0 20px 60px rgba(0,0,0,0.22);}
-.modal-bd.open .modal-box{transform:translateY(0);}
-.modal-head{display:flex;align-items:flex-start;justify-content:space-between;padding:24px 24px 16px;border-bottom:1px solid var(--border);}
-.modal-close{background:var(--grey-light);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--grey);transition:background 0.12s;flex-shrink:0;}
-.modal-close:hover{background:var(--grey-mid);color:var(--black);}
-.cat-pill{display:inline-block;font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:8px;}
-.cat-pill.intermediary{background:var(--purple);color:#fff;} .cat-pill.owned{background:var(--green);color:var(--black);} .cat-pill.speaking{background:var(--coral);color:#fff;} .cat-pill.attendance{background:var(--blue);color:#fff;} .cat-pill.comms{background:var(--amber);color:#fff;}
-.modal-title{font-size:20px;font-weight:400;letter-spacing:-0.5px;line-height:1.15;}
-.modal-date{font-size:11px;color:var(--grey);margin-top:4px;}
-.modal-body{padding:18px 24px 24px;}
-.modal-meta{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:16px;}
-.modal-meta-item{display:flex;flex-direction:column;gap:2px;}
-.modal-meta-label{font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--grey);}
-.modal-meta-val{font-size:13px;}
-.modal-desc{font-size:13px;color:#3a3a38;line-height:1.6;margin-bottom:20px;}
-.prep-timeline{background:var(--black);border-radius:10px;padding:16px 18px;margin-bottom:20px;}
-.prep-timeline-title{font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--green);margin-bottom:12px;}
-.prep-step{display:flex;gap:10px;margin-bottom:8px;}
-.prep-step:last-child{margin-bottom:0;}
-.prep-step-dot-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:3px;}
-.prep-step-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
-.prep-step-line{width:1px;flex:1;background:rgba(255,255,255,0.1);margin:3px 0;}
-.prep-step:last-child .prep-step-line{display:none;}
-.prep-step-text{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.45;}
-.prep-step-text strong{color:#fff;font-weight:500;display:block;}
-.qa-section{border-top:1px solid var(--border);padding-top:18px;margin-top:4px;}
-.qa-section-title{font-size:10px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--grey);margin-bottom:12px;}
-.qa-log{margin-bottom:14px;display:flex;flex-direction:column;gap:8px;}
-.qa-log-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
-.qa-log-q{font-size:12px;font-weight:500;margin-bottom:6px;line-height:1.4;}
-.qa-log-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.qa-log-date{font-size:10px;color:var(--grey);}
-.qa-status-btn{font-family:inherit;font-size:10px;font-weight:500;border:1px solid var(--border);border-radius:12px;padding:3px 10px;cursor:pointer;background:#fff;color:var(--grey);transition:all 0.12s;}
-.qa-status-btn:hover{border-color:var(--black);color:var(--black);}
-.qa-status-btn.actioned{background:#dcfce7;border-color:#86efac;color:#166534;}
-.qa-status-btn.in-progress{background:#fef3c7;border-color:#fcd34d;color:#92400e;}
-.qa-status-btn.yet-to-start{background:#f1f5f9;border-color:var(--grey-mid);color:var(--grey);}
-.qa-textarea{width:100%;border:1.5px solid var(--grey-light);border-radius:8px;background:#fff;padding:9px 12px;font-family:inherit;font-size:13px;resize:none;min-height:68px;outline:none;color:var(--black);transition:border-color 0.12s;}
-.qa-textarea:focus{border-color:var(--black);}
-.qa-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
-.qa-submit{font-family:inherit;font-size:12px;font-weight:500;background:var(--black);color:var(--green);border:none;border-radius:20px;padding:9px 18px;cursor:pointer;transition:opacity 0.12s;}
-.qa-submit:hover{opacity:0.8;}
-.qa-submit:disabled{opacity:0.4;cursor:not-allowed;}
-.qa-hint{font-size:11px;color:var(--grey);}
-#qa-success{font-size:11px;color:#166534;display:none;margin-top:6px;}
-.add-modal-box{width:min(420px,93vw);}
-.add-modal-body{padding:18px 24px 0;}
-.add-modal-foot{padding:16px 24px 24px;display:flex;gap:8px;justify-content:flex-end;}
-.field{margin-bottom:14px;}
-.field label{font-size:10px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--grey);display:block;margin-bottom:5px;}
-.field input,.field select,.field textarea{width:100%;border:1.5px solid var(--grey-light);border-radius:8px;background:#fff;padding:8px 11px;font-family:inherit;font-size:13px;outline:none;color:var(--black);transition:border-color 0.12s;appearance:none;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--black);}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-ghost{font-family:inherit;font-size:12px;font-weight:500;color:var(--grey);background:var(--grey-light);border:none;border-radius:20px;padding:9px 18px;cursor:pointer;transition:background 0.12s;}
-.btn-ghost:hover{background:var(--grey-mid);color:var(--black);}
-#view-programme{padding-bottom:80px;}
-.prog-wrap{padding:0 2rem;max-width:980px;}
-.prog-section{margin-top:2.5rem;}
-.prog-section-title{font-size:11px;font-weight:600;letter-spacing:0.8px;text-transform:uppercase;color:var(--grey);margin-bottom:1rem;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.pillars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
-.pillar-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:18px;transition:box-shadow 0.15s,border-color 0.15s;}
-.pillar-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.07);border-color:var(--border-strong);}
-.pillar-status{font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;padding:3px 9px;border-radius:20px;display:inline-block;margin-bottom:10px;}
-.pillar-status.confirmed{background:var(--green-bg);color:#2d7d12;border:1px solid var(--green-border);}
-.pillar-status.candidate{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
-.pillar-name{font-size:15px;font-weight:400;letter-spacing:-0.4px;line-height:1.25;margin-bottom:8px;}
-.pillar-summary{font-size:12px;color:var(--grey);line-height:1.5;}
-.pillar-icp{margin-top:10px;font-size:10px;color:var(--grey);display:flex;align-items:center;gap:5px;}
-.pillar-icp-dot{width:6px;height:6px;border-radius:50%;background:var(--purple);flex-shrink:0;}
-.theme-defs{display:flex;flex-direction:column;gap:10px;}
-.theme-def-row{background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.theme-def-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;user-select:none;transition:background 0.1s;}
-.theme-def-head:hover{background:#fafaf8;}
-.theme-def-name{font-size:13px;font-weight:500;letter-spacing:-0.2px;}
-.theme-def-toggle{font-size:18px;color:var(--grey-mid);transition:transform 0.2s;line-height:1;}
-.theme-def-body{padding:0 18px 16px;display:none;}
-.theme-def-body.open{display:block;}
-.theme-def-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:2px;}
-.tdef-item{display:flex;flex-direction:column;gap:3px;}
-.tdef-label{font-size:9px;font-weight:600;letter-spacing:0.7px;text-transform:uppercase;color:var(--grey);}
-.tdef-val{font-size:12px;line-height:1.5;color:#3a3a38;}
-.tdef-val.placeholder{color:var(--grey-mid);font-style:italic;}
-.cadence-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
-.cadence-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;}
-.cadence-card-label{font-size:9px;font-weight:600;letter-spacing:0.6px;text-transform:uppercase;color:var(--grey);margin-bottom:6px;}
-.cadence-card-val{font-size:13px;font-weight:400;letter-spacing:-0.2px;line-height:1.3;}
-.cadence-card-sub{font-size:11px;color:var(--grey);margin-top:3px;line-height:1.4;}
-.asset-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
-.asset-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
-.asset-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.asset-status-dot.done{background:#4ade80;} .asset-status-dot.progress{background:var(--amber);} .asset-status-dot.todo{background:var(--grey-mid);}
-.asset-name{font-size:12px;font-weight:400;line-height:1.35;}
-.asset-tag{font-size:9px;color:var(--grey);margin-top:1px;}
-#pwd-gate{position:fixed;inset:0;background:var(--cream);z-index:1000;display:flex;align-items:center;justify-content:center;}
-.pwd-box{background:#fff;border:1px solid var(--border);border-radius:14px;padding:36px 32px;width:min(360px,90vw);text-align:center;}
-.pwd-box h2{font-size:20px;font-weight:400;letter-spacing:-0.5px;margin-bottom:6px;}
-.pwd-box p{font-size:13px;color:var(--grey);margin-bottom:22px;}
-.pwd-input{width:100%;border:1.5px solid var(--grey-light);border-radius:8px;padding:10px 14px;font-family:inherit;font-size:14px;outline:none;text-align:center;letter-spacing:2px;color:var(--black);transition:border-color 0.12s;}
-.pwd-input:focus{border-color:var(--black);}
-.pwd-error{font-size:12px;color:var(--coral);margin-top:8px;display:none;}
-.pwd-submit{width:100%;margin-top:12px;font-family:inherit;font-size:13px;font-weight:500;background:var(--black);color:var(--green);border:none;border-radius:20px;padding:11px;cursor:pointer;transition:opacity 0.12s;}
-.pwd-submit:hover{opacity:0.8;}
+:root {
+  --cream: #F5F0E8;
+  --black: #0E0E0E;
+  --green: #CAFF4E;
+  --green-dim: #9DC23A;
+  --grey: #C8C3B8;
+  --grey-mid: #8A8880;
+  --grey-light: #E8E3DA;
+  --white: #FFFFFF;
+  --row-h: 56px;
+  --header-h: 64px;
+  --col-w: 80px;
+  --sidebar-w: 190px;
+  --c-intermediary: #7B6FE0;
+  --c-owned: #CAFF4E;
+  --c-speaking: #FF6B4A;
+  --c-attendance: #4ABFFF;
+  --c-content: #F0B429;
+  --c-nurture: #3ECF8E;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--cream); color: var(--black); font-family: 'Syne', sans-serif; height: 100%; }
+
+/* TOPBAR */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h); background: var(--black);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; gap: 20px;
+}
+.wordmark { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; color: var(--cream); white-space: nowrap; }
+.wordmark span { color: var(--green); }
+.nav-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.07); border-radius: 100px; padding: 4px; }
+.nav-tab { padding: 7px 18px; border-radius: 100px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; border: none; background: transparent; color: var(--grey); letter-spacing: 0.02em; transition: background 0.15s, color 0.15s; }
+.nav-tab.active { background: var(--green); color: var(--black); }
+.nav-tab:hover:not(.active) { color: var(--cream); }
+.add-btn { background: rgba(255,255,255,0.1); color: var(--cream); border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 7px 16px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+.add-btn:hover { background: rgba(255,255,255,0.18); }
+
+/* VIEWS */
+.view { display: none; margin-top: var(--header-h); }
+.view.active { display: block; }
+
+/* CALENDAR */
+#planner-wrap { overflow-x: auto; overflow-y: visible; min-height: calc(100vh - var(--header-h)); padding-bottom: 100px; }
+#planner { display: grid; min-width: calc(var(--sidebar-w) + var(--col-w) * 12 + 40px); position: relative; }
+#month-header { position: sticky; top: var(--header-h); z-index: 90; display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); background: var(--cream); border-bottom: 2px solid var(--black); }
+.month-label { padding: 14px 0 10px; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); border-left: 1px solid var(--grey-light); }
+.month-label.current { color: var(--black); }
+.month-label.current::after { content: ''; display: block; margin: 4px auto 0; width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
+
+.section-group { border-bottom: 1px solid var(--grey-light); }
+.section-header { display: grid; grid-template-columns: var(--sidebar-w) 1fr; align-items: center; padding: 14px 20px 14px 0; cursor: pointer; user-select: none; }
+.section-header:hover .section-title { opacity: 0.6; }
+.section-title { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-mid); padding: 0 16px; transition: opacity 0.15s; display: flex; align-items: center; gap: 8px; }
+.section-chevron { width: 16px; height: 16px; border: 1.5px solid var(--grey-mid); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 10px; transition: transform 0.2s; flex-shrink: 0; }
+.section-chevron svg { width: 6px; height: 6px; fill: var(--grey-mid); }
+.section-group.collapsed .section-chevron { transform: rotate(-90deg); }
+.section-group.collapsed .section-rows { display: none; }
+
+.row { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); position: relative; padding-right: 20px; }
+.row:hover { background: rgba(0,0,0,0.015); }
+.row-label { padding: 0 16px; font-size: 11px; font-weight: 600; color: var(--black); line-height: 1.3; letter-spacing: -0.01em; }
+.row-cell { height: 100%; border-left: 1px solid var(--grey-light); position: relative; }
+
+.placeholder-row { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); opacity: 0.4; padding-right: 20px; }
+.placeholder-label { padding: 0 16px; font-size: 11px; font-weight: 600; color: var(--grey-mid); font-style: italic; }
+.placeholder-cell { height: 100%; border-left: 1px solid var(--grey-light); display: flex; align-items: center; justify-content: center; }
+.placeholder-dash { width: 18px; height: 2px; background: var(--grey-light); border-radius: 1px; }
+
+.today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--green); z-index: 5; pointer-events: none; }
+
+.event-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; cursor: pointer; z-index: 10; top: 50%; transform: translateY(-50%); transition: transform 0.15s, box-shadow 0.15s; }
+.event-dot:hover { transform: translateY(-50%) scale(1.6); box-shadow: 0 0 0 3px rgba(0,0,0,0.08); }
+.event-dot.category-intermediary { background: var(--c-intermediary); }
+.event-dot.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-dot.category-speaking { background: var(--c-speaking); }
+.event-dot.category-attendance { background: var(--c-attendance); }
+
+.event-bar { position: absolute; height: 20px; border-radius: 100px; cursor: pointer; z-index: 10; top: 50%; transform: translateY(-50%); transition: opacity 0.15s; display: flex; align-items: center; padding: 0 8px; overflow: hidden; }
+.event-bar:hover { opacity: 0.82; }
+.event-bar span { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.04em; }
+.event-bar.category-intermediary { background: var(--c-intermediary); }
+.event-bar.category-intermediary span { color: white; }
+.event-bar.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-bar.category-owned span { color: var(--black); }
+.event-bar.category-speaking { background: var(--c-speaking); }
+.event-bar.category-speaking span { color: white; }
+.event-bar.category-attendance { background: var(--c-attendance); }
+.event-bar.category-attendance span { color: white; }
+
+.prep-bar { position: absolute; height: 6px; border-radius: 100px; opacity: 0.2; z-index: 8; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+/* TOOLTIP */
+#tooltip { position: fixed; background: var(--black); color: var(--cream); border-radius: 8px; padding: 10px 14px; font-size: 12px; max-width: 220px; z-index: 500; pointer-events: none; opacity: 0; transition: opacity 0.1s; }
+#tooltip.visible { opacity: 1; }
+#tooltip .tt-name { font-weight: 700; margin-bottom: 3px; }
+#tooltip .tt-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey); }
+#tooltip .tt-loc { font-size: 10px; color: var(--grey); margin-top: 2px; }
+
+/* LEGEND */
+#legend { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--black); border-radius: 100px; display: flex; align-items: center; gap: 18px; padding: 9px 22px; z-index: 90; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--grey); }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* EVENT MODAL */
+#modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#modal-overlay.open { opacity: 1; pointer-events: all; }
+#modal { background: var(--cream); border-radius: 16px; width: min(560px, 94vw); max-height: 85vh; overflow-y: auto; position: relative; transform: translateY(20px); transition: transform 0.25s; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+#modal-overlay.open #modal { transform: translateY(0); }
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; padding: 26px 26px 16px; border-bottom: 1px solid var(--grey-light); }
+.modal-cat-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; margin-bottom: 10px; display: inline-block; }
+.modal-cat-pill.intermediary { background: var(--c-intermediary); color: white; }
+.modal-cat-pill.owned { background: var(--c-owned); color: var(--black); }
+.modal-cat-pill.speaking { background: var(--c-speaking); color: white; }
+.modal-cat-pill.attendance { background: var(--c-attendance); color: white; }
+.modal-title { font-size: 21px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.modal-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--grey-mid); margin-top: 6px; letter-spacing: 0.04em; }
+.modal-close { background: var(--grey-light); border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--grey-mid); transition: background 0.15s; }
+.modal-close:hover { background: var(--grey); color: var(--black); }
+.modal-body { padding: 18px 26px 26px; }
+.modal-desc { font-size: 13px; line-height: 1.65; color: #3a3a3a; margin-bottom: 22px; }
+.modal-meta-row { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+.modal-meta-item { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey-mid); letter-spacing: 0.06em; text-transform: uppercase; }
+.modal-meta-item strong { color: var(--black); display: block; margin-top: 2px; font-family: 'Syne', sans-serif; font-size: 12px; letter-spacing: 0; text-transform: none; font-style: normal; }
+.prep-timeline { background: var(--black); border-radius: 10px; padding: 18px 20px; margin-bottom: 22px; }
+.prep-timeline h4 { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); margin-bottom: 14px; }
+.prep-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+.prep-item:last-child { margin-bottom: 0; }
+.prep-dot-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.prep-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.prep-line { width: 1px; height: 20px; background: rgba(255,255,255,0.12); margin-top: 3px; }
+.prep-text { font-size: 12px; color: var(--grey); }
+.prep-text strong { color: var(--cream); font-weight: 600; display: block; margin-bottom: 1px; font-size: 11px; }
+
+/* QA */
+.qa-section { border-top: 1px solid var(--grey-light); padding-top: 18px; }
+.qa-label { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.qa-label::before { content: '?'; width: 20px; height: 20px; border-radius: 50%; background: var(--black); color: var(--green); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
+.qa-textarea { width: 100%; border: 1.5px solid var(--grey-light); border-radius: 8px; background: var(--white); padding: 10px 12px; font-family: 'Syne', sans-serif; font-size: 13px; resize: none; min-height: 70px; outline: none; color: var(--black); transition: border-color 0.15s; }
+.qa-textarea:focus { border-color: var(--black); }
+.qa-submit { margin-top: 10px; background: var(--black); color: var(--green); border: none; border-radius: 100px; padding: 9px 20px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+.qa-submit:hover { opacity: 0.8; }
+.qa-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* QA LOG */
+.qa-log { margin-top: 20px; }
+.qa-log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.qa-log-title { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey-mid); }
+.qa-lock-btn { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); background: none; border: 1px solid var(--grey-light); border-radius: 100px; padding: 3px 10px; cursor: pointer; letter-spacing: 0.06em; transition: border-color 0.15s; }
+.qa-lock-btn:hover { border-color: var(--grey-mid); }
+.qa-log-locked { background: var(--grey-light); border-radius: 10px; padding: 16px; text-align: center; }
+.qa-log-locked p { font-size: 12px; color: var(--grey-mid); margin-bottom: 12px; }
+.qa-pin-input { width: 110px; border: 1.5px solid var(--grey-light); border-radius: 8px; background: var(--white); padding: 8px 12px; font-family: 'DM Mono', monospace; font-size: 16px; text-align: center; letter-spacing: 0.2em; outline: none; transition: border-color 0.15s; }
+.qa-pin-input:focus { border-color: var(--black); }
+.qa-pin-btn { margin-left: 8px; background: var(--black); color: var(--green); border: none; border-radius: 100px; padding: 8px 16px; font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; cursor: pointer; }
+.qa-pin-error { font-size: 11px; color: var(--c-speaking); margin-top: 8px; display: none; }
+.qa-items { display: flex; flex-direction: column; gap: 9px; }
+.qa-item { background: var(--white); border-radius: 8px; padding: 12px 14px; border: 1px solid var(--grey-light); }
+.qa-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.qa-item-q { font-size: 12px; font-weight: 600; color: var(--black); line-height: 1.4; flex: 1; }
+.qa-item-date { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); white-space: nowrap; letter-spacing: 0.04em; }
+.status-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; cursor: pointer; border: none; transition: opacity 0.15s; }
+.status-pill:hover { opacity: 0.75; }
+.status-pill.yet-to-start { background: var(--grey-light); color: var(--grey-mid); }
+.status-pill.in-progress { background: #FFF3CD; color: #856404; }
+.status-pill.actioned { background: #D4F4E2; color: #1A6B3C; }
+.qa-empty { font-size: 12px; color: var(--grey-mid); font-style: italic; text-align: center; padding: 12px 0; }
+
+/* PROGRAMME VIEW */
+#programme-view { max-width: 1100px; margin: 0 auto; padding: 48px 32px 120px; }
+.prog-section { margin-bottom: 64px; }
+.prog-section-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 6px; }
+.prog-section-title { font-size: 28px; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 24px; line-height: 1.1; }
+.prog-intro { font-size: 14px; line-height: 1.7; color: #444; max-width: 680px; margin-bottom: 32px; }
+
+/* Pillars */
+.pillars-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.pillar-card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--grey-light); padding: 24px; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+.pillar-card:hover { border-color: var(--grey); transform: translateY(-2px); }
+.pillar-card.confirmed { border-color: var(--green); }
+.pillar-status { font-family: 'DM Mono', monospace; font-size: 8px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px; display: inline-block; margin-bottom: 14px; }
+.pillar-status.confirmed { background: var(--green); color: var(--black); }
+.pillar-status.candidate { background: var(--grey-light); color: var(--grey-mid); }
+.pillar-number { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--grey-mid); margin-bottom: 8px; letter-spacing: 0.06em; }
+.pillar-name { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 10px; line-height: 1.2; }
+.pillar-desc { font-size: 12px; line-height: 1.6; color: #555; margin-bottom: 16px; }
+.pillar-icp { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey-mid); letter-spacing: 0.06em; }
+.pillar-icp strong { color: var(--black); font-family: 'Syne', sans-serif; font-size: 11px; letter-spacing: 0; display: block; margin-top: 2px; }
+.pillar-expand { font-size: 11px; font-weight: 700; color: var(--grey-mid); margin-top: 14px; }
+.pillar-detail { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--grey-light); }
+.pillar-detail.open { display: block; }
+.pillar-detail p { font-size: 12px; line-height: 1.65; color: #444; margin-bottom: 10px; }
+.pillar-detail ul { font-size: 12px; line-height: 1.8; color: #444; padding-left: 16px; }
+
+/* Plan grid */
+.plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 700px) { .plan-grid { grid-template-columns: 1fr; } }
+.plan-month { background: var(--white); border-radius: 12px; border: 1.5px solid var(--grey-light); padding: 18px; transition: border-color 0.2s; }
+.plan-month:hover { border-color: var(--grey); }
+.plan-month-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 8px; }
+.plan-month-title { font-size: 15px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 10px; }
+.plan-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.plan-tag { font-family: 'DM Mono', monospace; font-size: 8px; padding: 3px 8px; border-radius: 100px; letter-spacing: 0.06em; text-transform: uppercase; }
+.plan-tag.event { background: rgba(75,191,255,0.15); color: #1a7aa8; }
+.plan-tag.content { background: rgba(240,180,41,0.15); color: #8a6100; }
+.plan-tag.intermediary { background: rgba(123,111,224,0.15); color: #4a3fb0; }
+.plan-tag.owned { background: rgba(202,255,78,0.2); color: #4a6600; }
+.plan-tag.speaking { background: rgba(255,107,74,0.15); color: #a03a1f; }
+.plan-notes { font-size: 11px; line-height: 1.6; color: #555; }
+
+/* Assets */
+.asset-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.asset-item { background: var(--white); border-radius: 10px; border: 1.5px solid var(--grey-light); padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
+.asset-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--grey-light); display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.asset-name { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+.asset-desc { font-size: 11px; color: var(--grey-mid); line-height: 1.5; }
+.asset-status-pill { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 100px; margin-top: 6px; display: inline-block; }
+.asset-status-pill.needed { background: var(--grey-light); color: var(--grey-mid); }
+.asset-status-pill.in-progress { background: #FFF3CD; color: #856404; }
+.asset-status-pill.done { background: #D4F4E2; color: #1A6B3C; }
+
+.prog-qa-section { margin-top: 48px; padding-top: 32px; border-top: 2px solid var(--grey-light); }
+
+/* ADD EVENT MODAL */
+#add-modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#add-modal-overlay.open { opacity: 1; pointer-events: all; }
+#add-modal { background: var(--cream); border-radius: 16px; width: min(440px, 92vw); transform: translateY(20px); transition: transform 0.25s; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+#add-modal-overlay.open #add-modal { transform: translateY(0); }
+.add-modal-header { padding: 22px 22px 14px; border-bottom: 1px solid var(--grey-light); display: flex; justify-content: space-between; align-items: center; }
+.add-modal-title { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; }
+.add-modal-body { padding: 18px 22px 22px; }
+.field { margin-bottom: 14px; }
+.field label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); display: block; margin-bottom: 5px; }
+.field input, .field select, .field textarea { width: 100%; border: 1.5px solid var(--grey-light); border-radius: 8px; background: var(--white); padding: 8px 11px; font-family: 'Syne', sans-serif; font-size: 13px; outline: none; color: var(--black); transition: border-color 0.15s; appearance: none; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--black); }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.add-modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 0 22px 22px; }
+.btn-cancel { background: var(--grey-light); border: none; border-radius: 100px; padding: 9px 16px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--grey-mid); }
+.btn-cancel:hover { background: var(--grey); color: var(--black); }
+.btn-save { background: var(--black); color: var(--green); border: none; border-radius: 100px; padding: 9px 20px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
+.btn-save:hover { opacity: 0.8; }
+
+#planner-wrap::-webkit-scrollbar { height: 4px; }
+#planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
+#planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 </style>
 </head>
 <body>
 
-<div id="pwd-gate">
-  <div class="pwd-box">
-    <h2>26/27 Comms Plan</h2>
-    <p>Internal access only</p>
-    <input class="pwd-input" id="pwd-input" type="password" placeholder="Password" autocomplete="off">
-    <div class="pwd-error" id="pwd-error">Incorrect password</div>
-    <button class="pwd-submit" onclick="checkPwd()">Enter</button>
+<header id="topbar">
+  <div class="wordmark">JUNGLE<span>.</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
+    <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
   </div>
-</div>
+  <div>
+    <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
+  </div>
+</header>
 
-<nav>
-  <div class="nav-left">
-    <div class="nav-logo">JUNGLE<span>.</span></div>
-    <div class="nav-tabs">
-      <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
-      <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
-    </div>
-  </div>
-  <div class="nav-right">
-    <div class="live-badge"><div class="live-dot"></div>Live</div>
-    <button class="btn-primary" onclick="openAddModal()">+ Add Event</button>
-  </div>
-</nav>
+<div id="tooltip"><div class="tt-name"></div><div class="tt-date"></div><div class="tt-loc"></div></div>
 
-<div id="view-calendar" class="view active">
-  <div class="wrap">
-    <div class="page-header">
-      <div>
-        <h1><strong>26/27 Comms Plan</strong></h1>
-        <div class="page-sub">Apr 2026 &rarr; Mar 2027 &middot; New business &amp; marketing activity</div>
-      </div>
-    </div>
-    <div class="summary-strip">
-      <div class="summary-item"><div class="summary-label">Total events</div><div class="summary-val accent" id="s-total">—</div></div>
-      <div class="summary-item"><div class="summary-label">Intermediary</div><div class="summary-val" id="s-int">—</div></div>
-      <div class="summary-item"><div class="summary-label">Speaking</div><div class="summary-val" id="s-spk">—</div></div>
-      <div class="summary-item"><div class="summary-label">Attending</div><div class="summary-val" id="s-att">—</div></div>
-    </div>
-    <div class="legend-bar">
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c-intermediary)"></div>Intermediary</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c-owned)"></div>Owned Event</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c-speaking)"></div>Speaking</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c-attendance)"></div>Attending</div>
-      <div class="legend-item"><div class="legend-dot" style="background:var(--c-comms)"></div>Comms &amp; Nurture</div>
-    </div>
-  </div>
-  <div class="wrap" id="planner-wrap">
+<!-- CALENDAR VIEW -->
+<div class="view active" id="calendar-view">
+  <div id="planner-wrap">
     <div id="planner">
       <div id="month-header"></div>
       <div id="rows-container"></div>
     </div>
   </div>
+  <div id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-intermediary)"></div>Intermediary</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-owned);border:1px solid #666"></div>Owned</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-speaking)"></div>Speaking</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-attendance)"></div>Attending</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--c-content)"></div>Content</div>
+  </div>
 </div>
 
-<div id="view-programme" class="view">
-  <div class="prog-wrap wrap">
-    <div class="page-header">
-      <div><h1><strong>Programme</strong></h1><div class="page-sub">Narrative pillars, definitions, cadence &amp; asset list</div></div>
-    </div>
+<!-- PROGRAMME VIEW -->
+<div class="view" id="programme-view-el">
+  <div id="programme-view">
     <div class="prog-section">
-      <div class="prog-section-title">Narrative Pillars</div>
+      <div class="prog-section-label">Strategic Foundation</div>
+      <h2 class="prog-section-title">Narrative Pillars</h2>
+      <p class="prog-intro">The themes Jungle will consistently own across intermediary conversations, owned events, thought leadership, and pitch language. Refined into 2–4 pillars strong enough to become IP.</p>
       <div class="pillars-grid" id="pillars-grid"></div>
     </div>
     <div class="prog-section">
-      <div class="prog-section-title">Theme Definitions</div>
-      <div class="theme-defs" id="theme-defs"></div>
+      <div class="prog-section-label">Full-Year View</div>
+      <h2 class="prog-section-title">Plan on a Page</h2>
+      <p class="prog-intro">Apr 2026 → Mar 2027. Key periods, themes, activity moments, intermediary touchpoints, owned media and content rhythm in one view.</p>
+      <div class="plan-grid" id="plan-grid"></div>
     </div>
     <div class="prog-section">
-      <div class="prog-section-title">Comms Cadence</div>
-      <div class="cadence-grid">
-        <div class="cadence-card"><div class="cadence-card-label">Intermediary nurture</div><div class="cadence-card-val">Monthly</div><div class="cadence-card-sub">Email + LinkedIn touch to key contacts at each intermediary</div></div>
-        <div class="cadence-card"><div class="cadence-card-label">Post-event (0–3 wks)</div><div class="cadence-card-val">High burst</div><div class="cadence-card-sub">Follow-up within 48hrs, then twice weekly</div></div>
-        <div class="cadence-card"><div class="cadence-card-label">Post-event (1–2 mths)</div><div class="cadence-card-val">Fortnightly</div><div class="cadence-card-sub">Warm nurture with content or POV piece attached</div></div>
-        <div class="cadence-card"><div class="cadence-card-label">Long-term nurture</div><div class="cadence-card-val">Monthly</div><div class="cadence-card-sub">Ongoing light-touch — insight, case study or event invite</div></div>
-        <div class="cadence-card"><div class="cadence-card-label">Prospect outreach</div><div class="cadence-card-val">Quarterly</div><div class="cadence-card-sub">New name outreach tied to a pillar moment or event hook</div></div>
-        <div class="cadence-card"><div class="cadence-card-label">Thought leadership</div><div class="cadence-card-val">6–8 weeks</div><div class="cadence-card-sub">One substantial POV or content piece per pillar cycle</div></div>
-      </div>
-    </div>
-    <div class="prog-section">
-      <div class="prog-section-title">Asset &amp; Enabler List</div>
+      <div class="prog-section-label">Execution Enablers</div>
+      <h2 class="prog-section-title">Supporting Assets</h2>
+      <p class="prog-intro">The collateral required to execute the plan.</p>
       <div class="asset-list" id="asset-list"></div>
     </div>
-    <div class="prog-section" style="max-width:560px;">
-      <div class="prog-section-title">Questions about the Programme</div>
-      <div class="qa-log" id="prog-qa-log"></div>
-      <textarea class="qa-textarea" id="prog-qa-input" placeholder="Ask anything about the programme..." rows="3"></textarea>
-      <div class="qa-row">
-        <button class="qa-submit" id="prog-qa-btn" onclick="submitProgQ()">Submit</button>
-        <span class="qa-hint">Routed to Slack with a suggested answer</span>
-      </div>
-      <div id="prog-qa-success" style="font-size:11px;color:#166534;display:none;margin-top:6px;">Sent — you'll receive a reply in Slack</div>
+    <div class="prog-qa-section">
+      <div class="qa-label" style="font-size:13px;margin-bottom:14px">Have a question about the programme?</div>
+      <textarea class="qa-textarea" id="prog-qa-input" placeholder="Ask anything about strategy, pillars, cadence, assets…" rows="3"></textarea>
+      <br><button class="qa-submit" id="prog-qa-btn" onclick="submitProgQuestion()">Submit</button>
+      <div id="prog-qa-success" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green-dim);margin-top:8px;display:none">✓ Sent — reply coming to Slack</div>
     </div>
   </div>
 </div>
 
-<div id="tooltip"><div class="tt-name"></div><div class="tt-date"></div><div class="tt-loc"></div></div>
-
-<div class="modal-bd" id="detail-bd" onclick="closeDtl(event)">
-  <div class="modal-box">
-    <div class="modal-head">
+<!-- EVENT MODAL -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal">
+    <div class="modal-header">
       <div>
-        <div class="cat-pill" id="d-pill"></div>
-        <div class="modal-title" id="d-title"></div>
-        <div class="modal-date" id="d-date"></div>
+        <div class="modal-cat-pill" id="modal-pill"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-date" id="modal-date"></div>
       </div>
-      <button class="modal-close" onclick="closeDtlDirect()">&#10005;</button>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-meta" id="d-meta"></div>
-      <div id="d-prep"></div>
-      <p class="modal-desc" id="d-desc"></p>
+      <div class="modal-meta-row" id="modal-meta"></div>
+      <div id="modal-prep"></div>
+      <p class="modal-desc" id="modal-desc"></p>
       <div class="qa-section">
-        <div class="qa-section-title">Questions</div>
-        <div class="qa-log" id="evt-qa-log"></div>
-        <textarea class="qa-textarea" id="qa-input" placeholder="Ask anything about this event..." rows="3"></textarea>
-        <div class="qa-row">
-          <button class="qa-submit" id="qa-btn" onclick="submitQ()">Submit</button>
-          <span class="qa-hint" id="qa-hint">Routed to Slack with a suggested answer</span>
-        </div>
-        <div id="qa-success"></div>
+        <div class="qa-label">Have a question about this?</div>
+        <textarea class="qa-textarea" id="qa-input" placeholder="Ask anything about this event…" rows="3"></textarea>
+        <button class="qa-submit" id="qa-btn" onclick="submitQuestion()">Submit</button>
+        <div class="qa-log" id="qa-log"></div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal-bd" id="add-bd" onclick="closeAdd(event)">
-  <div class="modal-box add-modal-box">
-    <div class="modal-head">
-      <div><div class="modal-title">Add Event</div></div>
-      <button class="modal-close" onclick="closeAddDirect()">&#10005;</button>
+<!-- ADD EVENT MODAL -->
+<div id="add-modal-overlay" onclick="closeAddModal(event)">
+  <div id="add-modal">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Add Event</div>
+      <button class="modal-close" onclick="closeAddModalDirect()">✕</button>
     </div>
     <div class="add-modal-body">
-      <div class="field"><label>Event Name</label><input type="text" id="a-name" placeholder="e.g. Marketing Week Live"></div>
+      <div class="field"><label>Event Name</label><input type="text" id="add-name" placeholder="e.g. Marketing Week Live"></div>
       <div class="field-row">
-        <div class="field"><label>Start Date</label><input type="date" id="a-start"></div>
-        <div class="field"><label>End Date (opt.)</label><input type="date" id="a-end"></div>
+        <div class="field"><label>Start Date</label><input type="date" id="add-start"></div>
+        <div class="field"><label>End Date (optional)</label><input type="date" id="add-end"></div>
       </div>
-      <div class="field"><label>Location</label><input type="text" id="a-loc" placeholder="e.g. London"></div>
+      <div class="field"><label>Location</label><input type="text" id="add-location" placeholder="e.g. London"></div>
       <div class="field"><label>Category</label>
-        <select id="a-cat">
+        <select id="add-category">
           <option value="attendance">Conference / Attendance</option>
           <option value="speaking">Speaking</option>
           <option value="intermediary">Intermediary Event</option>
           <option value="owned">Owned Event</option>
-          <option value="comms">Comms / Nurture</option>
         </select>
       </div>
-      <div class="field"><label>Notes</label><textarea id="a-notes" rows="2" placeholder="Any context..."></textarea></div>
+      <div class="field"><label>Notes (optional)</label><textarea id="add-notes" rows="2" placeholder="Any context…"></textarea></div>
     </div>
-    <div class="add-modal-foot">
-      <button class="btn-ghost" onclick="closeAddDirect()">Cancel</button>
-      <button class="btn-primary" onclick="saveEvt()">Save Event</button>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeAddModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveEvent()">Save Event</button>
     </div>
   </div>
 </div>
 
 <script>
-const SUPABASE_URL='https://iehkvlyjumkzccoqqgxl.supabase.co';
-const ANON='sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
-const WEBHOOK='https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
-const PWD='jungle2026';
+const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
+const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
+const QA_PIN = '2627';
 
-function checkPwd(){
-  if(document.getElementById('pwd-input').value===PWD){
-    sessionStorage.setItem('jc_auth','1');
-    document.getElementById('pwd-gate').style.display='none';
-  } else {
-    document.getElementById('pwd-error').style.display='block';
-  }
-}
-document.getElementById('pwd-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPwd();});
-if(sessionStorage.getItem('jc_auth')==='1')document.getElementById('pwd-gate').style.display='none';
+const MONTHS = [
+  {label:'Apr 26',year:2026,month:3},{label:'May 26',year:2026,month:4},{label:'Jun 26',year:2026,month:5},
+  {label:'Jul 26',year:2026,month:6},{label:'Aug 26',year:2026,month:7},{label:'Sep 26',year:2026,month:8},
+  {label:'Oct 26',year:2026,month:9},{label:'Nov 26',year:2026,month:10},{label:'Dec 26',year:2026,month:11},
+  {label:'Jan 27',year:2027,month:0},{label:'Feb 27',year:2027,month:1},{label:'Mar 27',year:2027,month:2},
+];
+const PLAN_START = new Date(2026,3,1), PLAN_END = new Date(2027,3,1);
 
-const MONTHS=[{l:'Apr 26',y:2026,m:3},{l:'May 26',y:2026,m:4},{l:'Jun 26',y:2026,m:5},{l:'Jul 26',y:2026,m:6},{l:'Aug 26',y:2026,m:7},{l:'Sep 26',y:2026,m:8},{l:'Oct 26',y:2026,m:9},{l:'Nov 26',y:2026,m:10},{l:'Dec 26',y:2026,m:11},{l:'Jan 27',y:2027,m:0},{l:'Feb 27',y:2027,m:1},{l:'Mar 27',y:2027,m:2}];
-const PS=new Date(2026,3,1),PE=new Date(2027,4,1);
-
-const SECTIONS=[
-  {id:'int',label:'Intermediary Plan',rows:[{key:'intermediary-ingenuity',label:'Ingenuity+'},{key:'intermediary-oystercatchers',label:'Oystercatchers'},{key:'intermediary-aar',label:'AAR'},{key:'intermediary-masterclassing',label:'Masterclassing'}]},
-  {id:'own',label:'Owned Events',rows:[{key:'owned-events',label:'Jungle Event'}]},
-  {id:'spk',label:'Speaking',rows:[{key:'event-speaking',label:'Speaking Slots'}]},
-  {id:'att',label:'Event Attendance',rows:[{key:'event-attendance',label:'Conferences'}]},
-  {id:'cms',label:'Comms & Nurture',rows:[{key:'comms-intermediary',label:'Intermediary nurture'},{key:'comms-prospect',label:'Prospect outreach'},{key:'comms-content',label:'Thought leadership'}]},
+const SECTIONS = [
+  {id:'intermediaries',label:'Intermediary Activity',rows:[
+    {key:'intermediary-ingenuity',label:'Ingenuity+'},
+    {key:'intermediary-oystercatchers',label:'Oystercatchers'},
+    {key:'intermediary-aar',label:'AAR'},
+    {key:'intermediary-masterclassing',label:'Masterclassing'},
+  ]},
+  {id:'owned',label:'Owned Events',rows:[{key:'owned-events',label:'Jungle Event'}]},
+  {id:'speaking',label:'Speaking',rows:[{key:'event-speaking',label:'Speaking Slots'}]},
+  {id:'attendance',label:'Event Attendance',rows:[{key:'event-attendance',label:'Conferences'}]},
+  {id:'content',label:'Content & Comms',rows:[
+    {key:'content-thought-leadership',label:'Thought Leadership',placeholder:true},
+    {key:'content-nurture',label:'Nurture Cadence',placeholder:true},
+    {key:'content-social',label:'Owned Social',placeholder:true},
+  ]},
 ];
 
-const SEED=[
-  {id:'s1',name:'MAD Meets',category:'intermediary',start_date:'2026-05-14',end_date:'2026-05-14',location:'London',description:'Ingenuity+ quarterly event for brand marketers and senior agency contacts.',row_key:'intermediary-ingenuity'},
+const PILLARS = [
+  {number:'01',status:'confirmed',name:'Social Maturity',desc:'Where is a brand on the social maturity curve — and what does moving up actually look like in practice?',detail:`<p>Most brands know they should be doing more with social. Very few know what "more" looks like. Social Maturity is the framework for that conversation.</p><p>It gives Jungle a diagnostic entry point and eventually a proprietary index that can generate PR, data, and pipeline.</p><ul><li>Strong IP potential — could become the Social Maturity Index</li><li>Works as a pitch tool and thought leadership engine</li><li>Best serves CMOs mid-transformation</li></ul>`,icp:'CMOs, Brand Directors, in-house social leads'},
+  {number:'02',status:'confirmed',name:'Death of Vanity',desc:'Likes, reach and impressions have had their day. The only metric that matters now is commercial impact.',detail:`<p>This is a provocation — and provocations travel. The era of social as a brand awareness play is over. Brands that still measure success in follower counts are measuring the wrong thing.</p><ul><li>Highly shareable, conference-talk-ready framing</li><li>Resonates with CFOs and commercially-minded CMOs</li><li>Needs rigorous proof points to avoid sounding like a bumper sticker</li></ul>`,icp:'CFOs, commercially-minded CMOs, procurement'},
+  {number:'03',status:'candidate',name:'Commercial Impact',desc:'Social as a direct revenue driver — not a cost centre. Building the case for social in the boardroom.',detail:`<p>Closely related to Death of Vanity but more constructive. This pillar is about building the business case language Jungle can use in pitches and intermediary conversations.</p><p>The question is whether this is a standalone pillar or the evidence layer beneath Death of Vanity.</p><ul><li>Strong in pitch context — boardroom-ready language</li><li>Needs case study backbone to land credibly</li></ul>`,icp:'Finance-influenced buying committees, MD/CEO level'},
+  {number:'04',status:'candidate',name:'Social as Growth Driver',desc:'The reframe: social is not marketing support. It is a primary growth channel — when you build it right.',detail:`<p>This reframes what social is for, repositioning Jungle from "social agency" to "growth partner who happens to operate in social."</p><ul><li>Strong for new business conversations</li><li>Needs sharper language to avoid sounding like every other agency</li><li>Pressure-test: what is the Jungle-specific proof?</li></ul>`,icp:'Growth and performance-focused marketers, scale-up brands'},
+];
+
+const PLAN_MONTHS = [
+  {month:'Apr 26',theme:'Foundation',tags:['event','content'],notes:'Video Marketing World (14 Apr). Thought leadership content production begins. Intermediary outreach starts.'},
+  {month:'May 26',theme:'Launch',tags:['intermediary','event','content'],notes:'MAD Meets — Ingenuity+ (14 May). Social Media Marketing conference (20 May). First pillar content live.'},
+  {month:'Jun 26',theme:'Momentum',tags:['speaking','event','content'],notes:'Masterclassing Social speaking slot (4 Jun). Cannes Lions (22–26 Jun). Mid-year content push.'},
+  {month:'Jul 26',theme:'Build',tags:['intermediary','content'],notes:'Oystercatchers event (assumed). Speaker sourcing begins for Oct owned event. Nurture cadence active.'},
+  {month:'Aug 26',theme:'Sustain',tags:['intermediary','content'],notes:'MAD Meets — Ingenuity+ (13 Aug). Summer content programme. Owned event invitations prep.'},
+  {month:'Sep 26',theme:'Pre-event',tags:['speaking','owned','content'],notes:'Masterclassing Social (3 Sep). Jungle event invitations out (8 weeks prior). Final speaker confirmations.'},
+  {month:'Oct 26',theme:'Peak',tags:['owned','intermediary','content'],notes:'Jungle Brand Event (1 Oct). Oystercatchers (8 Oct). High-burst post-event comms. Major content moment.'},
+  {month:'Nov 26',theme:'Follow-through',tags:['intermediary','content'],notes:'MAD Meets — Ingenuity+ (12 Nov). Post-event nurture. Fortnightly comms cadence begins.'},
+  {month:'Dec 26',theme:'Consolidate',tags:['speaking','content'],notes:'Masterclassing Social (3 Dec). Year-end review content. Nurture cadence continues monthly.'},
+  {month:'Jan 27',theme:'Reset',tags:['intermediary','content'],notes:'Oystercatchers (8 Jan). New year positioning. Q1 27 planning and content refresh.'},
+  {month:'Feb 27',theme:'Renew',tags:['intermediary','content'],notes:'MAD Meets — Ingenuity+ (11 Feb). Pillar content second wave. Mid-year event planning begins.'},
+  {month:'Mar 27',theme:'Plan Ahead',tags:['content'],notes:'Year-end review. Plan 27/28. Assess what worked, double down on top performers.'},
+];
+
+const ASSETS = [
+  {icon:'📊',name:'Intermediary Deck',desc:'Tailored creds for intermediary conversations — social maturity framing, category expertise, case studies.',status:'in-progress'},
+  {icon:'📝',name:'Pillar Half-Pagers',desc:'One-page write-ups of each confirmed theme — what it means, proof points, ICP alignment.',status:'needed'},
+  {icon:'🎯',name:'Case Studies (x3)',desc:'Commercial impact case studies — one per priority ICP. Problem → approach → result.',status:'needed'},
+  {icon:'🖥️',name:'Event One-Pager',desc:'Invite and overview asset for the Oct owned event. Speaker bios, format, audience rationale.',status:'needed'},
+  {icon:'📦',name:'Slim Creds Update',desc:'Refresh the existing slim creds to reflect new pillar language and most recent work.',status:'in-progress'},
+  {icon:'📈',name:'Social Maturity Index',desc:'Proprietary diagnostic tool — the IP asset that can drive PR, lead gen, and event hooks.',status:'needed'},
+  {icon:'✉️',name:'Nurture Email Sequence',desc:'Post-event and always-on nurture comms. Pillar-themed, fortnightly → monthly cadence.',status:'needed'},
+  {icon:'🎤',name:'Speaking Abstract',desc:'Reusable abstract for conference speaking applications — pillar-led, commercially framed.',status:'needed'},
+];
+
+let allEvents = [], currentModalEvent = null;
+const unlockedSessions = new Set();
+
+const SEED = [
+  {id:'s1',name:'MAD Meets',category:'intermediary',start_date:'2026-05-14',end_date:'2026-05-14',location:'London',description:'Ingenuity+ quarterly event for brand marketers and senior agency contacts. Key opportunity for introductions and relationship building.',row_key:'intermediary-ingenuity'},
   {id:'s2',name:'MAD Meets',category:'intermediary',start_date:'2026-08-13',end_date:'2026-08-13',location:'London',description:'Ingenuity+ quarterly event.',row_key:'intermediary-ingenuity'},
   {id:'s3',name:'MAD Meets',category:'intermediary',start_date:'2026-11-12',end_date:'2026-11-12',location:'London',description:'Ingenuity+ quarterly event.',row_key:'intermediary-ingenuity'},
   {id:'s4',name:'MAD Meets',category:'intermediary',start_date:'2027-02-11',end_date:'2027-02-11',location:'London',description:'Ingenuity+ quarterly event.',row_key:'intermediary-ingenuity'},
-  {id:'s5',name:'Masterclassing Social',category:'speaking',start_date:'2026-06-04',end_date:'2026-06-04',location:'London',description:'Quarterly social marketing masterclass — speaking slot.',row_key:'event-speaking'},
-  {id:'s6',name:'Masterclassing Social',category:'speaking',start_date:'2026-09-03',end_date:'2026-09-03',location:'London',description:'Quarterly masterclass speaking slot.',row_key:'event-speaking'},
-  {id:'s7',name:'Masterclassing Social',category:'speaking',start_date:'2026-12-03',end_date:'2026-12-03',location:'London',description:'Quarterly masterclass speaking slot.',row_key:'event-speaking'},
-  {id:'s8',name:'Oystercatchers Event',category:'intermediary',start_date:'2026-07-09',end_date:'2026-07-09',location:'London',description:'Oystercatchers intermediary event (assumed quarterly). Confirm sign-up with Jade.',row_key:'intermediary-oystercatchers'},
-  {id:'s9',name:'Oystercatchers Event',category:'intermediary',start_date:'2026-10-08',end_date:'2026-10-08',location:'London',description:'Oystercatchers quarterly event.',row_key:'intermediary-oystercatchers'},
-  {id:'s10',name:'Oystercatchers Event',category:'intermediary',start_date:'2027-01-08',end_date:'2027-01-08',location:'London',description:'Oystercatchers quarterly event.',row_key:'intermediary-oystercatchers'},
-  {id:'s11',name:'Jungle Brand Event',category:'owned',start_date:'2026-10-01',end_date:'2026-10-01',location:'London',description:'Jungle Creations hosted brand event. Panel format, invite-only. Speaker sourcing starts 3 months prior; invites go out 8 weeks before.',row_key:'owned-events'},
+  {id:'s5',name:'Masterclassing Social',category:'speaking',start_date:'2026-06-04',end_date:'2026-06-04',location:'London',description:'Quarterly social marketing masterclass with a speaking slot. Audience is brand-side marketers.',row_key:'event-speaking'},
+  {id:'s6',name:'Masterclassing Social',category:'speaking',start_date:'2026-09-03',end_date:'2026-09-03',location:'London',description:'Quarterly Masterclassing speaking slot.',row_key:'event-speaking'},
+  {id:'s7',name:'Masterclassing Social',category:'speaking',start_date:'2026-12-03',end_date:'2026-12-03',location:'London',description:'Quarterly Masterclassing speaking slot.',row_key:'event-speaking'},
+  {id:'s8',name:'Oystercatchers Event',category:'intermediary',start_date:'2026-07-09',end_date:'2026-07-09',location:'London',description:'Oystercatchers quarterly event (assumed). Confirm sign-up with Jade.',row_key:'intermediary-oystercatchers'},
+  {id:'s9',name:'Oystercatchers Event',category:'intermediary',start_date:'2026-10-08',end_date:'2026-10-08',location:'London',description:'Oystercatchers quarterly event (assumed).',row_key:'intermediary-oystercatchers'},
+  {id:'s10',name:'Oystercatchers Event',category:'intermediary',start_date:'2027-01-08',end_date:'2027-01-08',location:'London',description:'Oystercatchers quarterly event (assumed).',row_key:'intermediary-oystercatchers'},
+  {id:'s11',name:'Jungle Brand Event',category:'owned',start_date:'2026-10-01',end_date:'2026-10-01',location:'London',description:'Jungle Creations hosted brand event. Panel format, invite-only. Target: brand-side CMOs and senior marketers. Prep starts 3 months prior.',row_key:'owned-events'},
   {id:'s12',name:'Video Marketing World',category:'attendance',start_date:'2026-04-14',end_date:'2026-04-14',location:'London',description:'Video marketing industry conference.',row_key:'event-attendance'},
   {id:'s13',name:'Social Media Marketing',category:'attendance',start_date:'2026-05-20',end_date:'2026-05-20',location:'London',description:'Social marketing conference.',row_key:'event-attendance'},
   {id:'s14',name:'Cannes Lions',category:'attendance',start_date:'2026-06-22',end_date:'2026-06-26',location:'Cannes, France',description:'Cannes Lions International Festival of Creativity.',row_key:'event-attendance'},
-  {id:'c1',name:'Nurture send',category:'comms',start_date:'2026-05-01',end_date:'2026-05-01',location:'',description:'Monthly nurture email to intermediary contacts.',row_key:'comms-intermediary'},
-  {id:'c2',name:'Nurture send',category:'comms',start_date:'2026-06-01',end_date:'2026-06-01',location:'',description:'Monthly nurture email.',row_key:'comms-intermediary'},
-  {id:'c3',name:'Nurture send',category:'comms',start_date:'2026-07-01',end_date:'2026-07-01',location:'',description:'Monthly nurture email.',row_key:'comms-intermediary'},
-  {id:'c4',name:'Nurture send',category:'comms',start_date:'2026-08-01',end_date:'2026-08-01',location:'',description:'Monthly nurture email.',row_key:'comms-intermediary'},
-  {id:'c5',name:'Nurture send',category:'comms',start_date:'2026-09-01',end_date:'2026-09-01',location:'',description:'Monthly nurture email.',row_key:'comms-intermediary'},
-  {id:'c6',name:'Nurture send',category:'comms',start_date:'2026-10-01',end_date:'2026-10-01',location:'',description:'Monthly nurture email.',row_key:'comms-intermediary'},
-  {id:'c7',name:'TL piece — Social Maturity',category:'comms',start_date:'2026-05-15',end_date:'2026-05-15',location:'',description:'First long-form POV piece on the Social Maturity pillar.',row_key:'comms-content'},
-  {id:'c8',name:'TL piece — Death of Vanity',category:'comms',start_date:'2026-07-15',end_date:'2026-07-15',location:'',description:'Death of Vanity pillar POV piece.',row_key:'comms-content'},
-  {id:'c9',name:'TL piece — Commercial Impact',category:'comms',start_date:'2026-09-15',end_date:'2026-09-15',location:'',description:'Commercial Impact pillar piece — timed before October event.',row_key:'comms-content'},
-  {id:'c10',name:'Prospect outreach',category:'comms',start_date:'2026-06-15',end_date:'2026-06-15',location:'',description:'Quarterly new-name outreach. Cannes hook.',row_key:'comms-prospect'},
-  {id:'c11',name:'Prospect outreach',category:'comms',start_date:'2026-09-15',end_date:'2026-09-15',location:'',description:'Quarterly outreach. October event invite hook.',row_key:'comms-prospect'},
 ];
 
-const PILLARS=[
-  {name:'Social Maturity',status:'confirmed',summary:'Where brands sit on the spectrum from vanity metrics to commercial performance — and how Jungle moves them forward.',icp:'Brand CMOs & heads of social'},
-  {name:'Death of Vanity',status:'confirmed',summary:"The shift away from likes and followers toward meaningful business outcomes. Jungle's sharpest provocation.",icp:'CFOs and commercially-minded MDs'},
-  {name:'Commercial Impact of Social',status:'candidate',summary:'The ROI case for social investment — with real data and client stories. Still needs refinement into Jungle language.',icp:'Procurement and brand finance leads'},
-  {name:'Social as a Growth Driver',status:'candidate',summary:'Social not as a channel but as a strategic engine for growth. Broader claim — needs tightening before carrying a programme.',icp:'TBC — pressure-test with Jade'},
-];
+async function sbFetch(path, opts={}) {
+  const h = {'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json',...(opts.headers||{})};
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opts,headers:h});
+}
+async function loadEvents() {
+  try { const r = await sbFetch('events?select=*&order=start_date.asc'); if(r.ok){const d=await r.json();if(d.length>0)return d;} } catch(e){}
+  return [...SEED, ...JSON.parse(localStorage.getItem('jc_events')||'[]')];
+}
+async function loadQuestions(ctx) {
+  try { const r = await sbFetch(`questions?context=eq.${encodeURIComponent(ctx)}&order=submitted_at.asc`); if(r.ok)return await r.json(); } catch(e){}
+  return JSON.parse(localStorage.getItem('jc_questions')||'[]').filter(q=>q.context===ctx);
+}
+async function saveQuestion(context, question) {
+  const q = {id:'q-'+Date.now(),context,question,submitted_at:new Date().toISOString(),status:'yet-to-start'};
+  try { await sbFetch('questions',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(q)}); } catch(e){}
+  const all = JSON.parse(localStorage.getItem('jc_questions')||'[]'); all.push(q); localStorage.setItem('jc_questions',JSON.stringify(all));
+  try { await fetch(MAKE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context,question,submitted_at:q.submitted_at})}); } catch(e){}
+  return q;
+}
+async function updateStatus(id, status) {
+  try { await sbFetch(`questions?id=eq.${id}`,{method:'PATCH',headers:{'Prefer':'return=minimal'},body:JSON.stringify({status})}); } catch(e){}
+  const all = JSON.parse(localStorage.getItem('jc_questions')||'[]'); const i=all.findIndex(q=>q.id===id); if(i>-1){all[i].status=status;localStorage.setItem('jc_questions',JSON.stringify(all));}
+}
 
-const THEME_DEFS=[
-  {name:'Social Maturity',what:'A framework for assessing how strategically a brand uses social — from broadcasting to genuine audience-first thinking.',jungle:'Jungle has a point of view on what maturity looks like and the gaps most brands still have.',icp:'Brand CMOs, heads of digital/social who want a benchmark.',strong:'Yes — lends itself to a proprietary index, event format and ongoing research.'},
-  {name:'Death of Vanity',what:'The idea that follower counts and surface engagement are dead as real metrics. What replaces them: commercial outcomes.',jungle:'Commercial outcomes: leads, conversions, brand lift, sales influence.',icp:'CFOs and commercially-minded marketing directors sceptical of social spend.',strong:'Yes — strong provocation. Works as a talk title, white paper and pitch language.'},
-  {name:'Commercial Impact / ROI of Social',what:'The concrete business case for social investment, backed by data and Jungle client results.',jungle:'TBD — needs Jungle to decide which numbers and stories to anchor this on.',icp:'Procurement, CFOs, brand finance leads.',strong:'Candidate — powerful if backed by data. Too generic without proof points.'},
-  {name:'Social as a Growth Driver',what:'Reframing social from a comms channel to a genuine commercial growth engine.',jungle:'TBD — broadest of the four claims. Needs a crisper Jungle angle.',icp:'Not yet defined.',strong:'Candidate — too broad as stated. Needs narrowing before carrying a programme.'},
-];
-
-const ASSETS=[
-  {name:'Intermediary deck',tag:'Creds & positioning',status:'todo'},
-  {name:'Social Maturity 1-pager',tag:'Thought leadership',status:'todo'},
-  {name:'Death of Vanity 1-pager',tag:'Thought leadership',status:'todo'},
-  {name:'Case study — creator brand activation',tag:'Proof',status:'progress'},
-  {name:'Case study — commercial results',tag:'Proof',status:'todo'},
-  {name:'Slim creds (updated)',tag:'Pitch collateral',status:'progress'},
-  {name:'Event invite template',tag:'Owned event',status:'todo'},
-  {name:'Post-event nurture sequence',tag:'Comms',status:'todo'},
-  {name:'Theme write-ups (all 4)',tag:'Internal & pitch',status:'todo'},
-  {name:'Prospect research list',tag:'Outreach',status:'todo'},
-];
-
-let events=[];
-let activeEvt=null;
-let questions=JSON.parse(localStorage.getItem('jc_questions')||'[]');
-
-async function sbGet(t){try{const r=await fetch(SUPABASE_URL+'/rest/v1/'+t+'?select=*&order=start_date.asc',{headers:{'apikey':ANON,'Authorization':'Bearer '+ANON}});if(r.ok){const d=await r.json();if(d.length>0)return d;}}catch(e){}return null;}
-async function sbPost(t,d){try{const r=await fetch(SUPABASE_URL+'/rest/v1/'+t,{method:'POST',headers:{'apikey':ANON,'Authorization':'Bearer '+ANON,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify(d)});return r.ok;}catch(e){return false;}}
-
-function fr(ds){return Math.max(0,Math.min(1,(new Date(ds)-PS)/(PE-PS)));}
-function cx(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||82;}
-function sx(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||160;}
-function fd(d){if(typeof d==='string')d=new Date(d);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
-function fr2(s,e){if(!e||e===s)return fd(new Date(s));const sd=new Date(s),ed=new Date(e);if(sd.getMonth()===ed.getMonth()&&sd.getFullYear()===ed.getFullYear())return sd.getDate()+'\u2013'+ed.getDate()+' '+sd.toLocaleString('en-GB',{month:'short'})+' '+sd.getFullYear();return fd(sd)+' \u2013 '+fd(ed);}
-function aD(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
-function aM(d,n){const r=new Date(d);r.setMonth(r.getMonth()+n);return r;}
-function tsNow(){return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
-
-function switchView(view,btn){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('view-'+view).classList.add('active');
+function switchView(v, btn) {
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById(v==='calendar'?'calendar-view':'programme-view-el').classList.add('active');
   btn.classList.add('active');
+  document.getElementById('add-btn').style.display = v==='calendar'?'':'none';
+  document.getElementById('legend').style.display = v==='calendar'?'':'none';
 }
 
-function renderHeader(){
-  const t=new Date();
-  document.getElementById('month-header').innerHTML='<div class="month-spacer"></div>'+MONTHS.map(m=>'<div class="month-label'+(t.getFullYear()===m.y&&t.getMonth()===m.m?' is-current':'')+'">'+ m.l+'</div>').join('');
+function cw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||80;}
+function sw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||190;}
+function df(d){return Math.max(0,Math.min(1,(new Date(d)-PLAN_START)/(PLAN_END-PLAN_START)));}
+
+function renderMonthHeader() {
+  const today=new Date(), hdr=document.getElementById('month-header');
+  let h=`<div style="width:var(--sidebar-w)"></div>`;
+  MONTHS.forEach(m=>{const cur=today.getFullYear()===m.year&&today.getMonth()===m.month; h+=`<div class="month-label${cur?' current':''}">${m.label}</div>`;});
+  hdr.innerHTML=h;
 }
 
-function renderRows(){
-  const c=document.getElementById('rows-container');c.innerHTML='';
-  SECTIONS.forEach(sec=>{
-    const sg=document.createElement('div');sg.className='section-group';sg.dataset.sid=sec.id;
-    const sh=document.createElement('div');sh.className='section-header';sh.onclick=()=>sg.classList.toggle('collapsed');
-    sh.innerHTML='<div class="section-label-cell"><div class="section-chevron"><svg viewBox="0 0 8 8" fill="currentColor"><path d="M1 2l3 4 3-4z"/></svg></div><div class="section-title">'+sec.label+'</div></div><div class="section-header-cells">'+MONTHS.map(()=>'<div class="section-header-cell"></div>').join('')+'</div>';
+function renderRows() {
+  const c=document.getElementById('rows-container'); c.innerHTML='';
+  SECTIONS.forEach(s=>{
+    const sg=document.createElement('div'); sg.className='section-group'; sg.dataset.section=s.id;
+    const sh=document.createElement('div'); sh.className='section-header'; sh.onclick=()=>sg.classList.toggle('collapsed');
+    sh.innerHTML=`<div></div><div style="display:flex;align-items:center"><div class="section-title">${s.label}</div><div class="section-chevron"><svg viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z"/></svg></div></div>`;
     sg.appendChild(sh);
-    const sr=document.createElement('div');sr.className='section-rows';
-    sec.rows.forEach(rc=>{sr.appendChild(buildRow(rc,events.filter(e=>e.row_key===rc.key),sec.id));});
-    sg.appendChild(sr);c.appendChild(sg);
+    const sr=document.createElement('div'); sr.className='section-rows';
+    s.rows.forEach(rc=>{sr.appendChild(rc.placeholder?buildPlaceholder(rc):buildRow(rc,allEvents.filter(e=>e.row_key===rc.key),s.id));});
+    sg.appendChild(sr); c.appendChild(sg);
   });
-  requestAnimationFrame(renderToday);
+  renderTodayLine();
 }
 
-function buildRow(rc,evts,sid){
-  const row=document.createElement('div');row.className='row';
-  row.innerHTML='<div class="row-label">'+rc.label+'</div>'+MONTHS.map(()=>'<div class="row-cell"></div>').join('');
-  requestAnimationFrame(()=>{
-    const cw=cx(),sw=sx(),tw=cw*12;
-    if(sid==='own'){evts.forEach(e=>{const ps=aM(new Date(e.start_date),-3);const bar=document.createElement('div');bar.className='prep-bar';bar.style.cssText='left:'+(sw+fr(ps.toISOString().split("T")[0])*tw)+'px;width:'+Math.max(0,(fr(e.start_date)-fr(ps.toISOString().split("T")[0]))*tw)+'px;background:var(--c-owned)';row.appendChild(bar);});}
-    evts.forEach(e=>{
-      const isBar=e.end_date&&e.end_date!==e.start_date&&(new Date(e.end_date)-new Date(e.start_date))>86400000;
-      const el=document.createElement('div');
-      if(isBar){el.className='event-bar cat-'+e.category;el.style.cssText='left:'+(sw+fr(e.start_date)*tw)+'px;width:'+Math.max(24,(fr(e.end_date)-fr(e.start_date))*tw)+'px';el.innerHTML='<span>'+e.name+'</span>';}
-      else{el.className='event-dot cat-'+e.category;el.style.left=(sw+fr(e.start_date)*tw-4.5)+'px';}
-      attachH(el,e);row.appendChild(el);
-    });
-  });
+function buildPlaceholder(rc) {
+  const row=document.createElement('div'); row.className='placeholder-row';
+  row.innerHTML=`<div class="placeholder-label">${rc.label}</div>`+MONTHS.map(()=>`<div class="placeholder-cell"><div class="placeholder-dash"></div></div>`).join('');
   return row;
 }
 
-function renderToday(){
+function buildRow(rc, events, sectionId) {
+  const row=document.createElement('div'); row.className='row'; row.dataset.rowKey=rc.key;
+  row.innerHTML=`<div class="row-label">${rc.label}</div>`;
+  MONTHS.forEach(()=>{const c=document.createElement('div');c.className='row-cell';row.appendChild(c);});
+  requestAnimationFrame(()=>plotEvents(row,events,sectionId));
+  return row;
+}
+
+function plotEvents(row, events, sectionId) {
+  const s=sw(), total=cw()*12;
+  if(sectionId==='owned'){events.forEach(evt=>{const ed=new Date(evt.start_date),ps=new Date(ed);ps.setMonth(ps.getMonth()-3);addPrepBar(row,ps,ed,'#7B6FE0',s,total);});}
+  events.forEach(evt=>{
+    const sf=df(evt.start_date),ef=df(evt.end_date||evt.start_date);
+    const multi=(new Date(evt.end_date||evt.start_date)-new Date(evt.start_date))>86400000;
+    if(multi){
+      const bar=document.createElement('div'); bar.className=`event-bar category-${evt.category}`;
+      bar.style.left=(s+sf*total)+'px'; bar.style.width=Math.max(20,(ef-sf)*total)+'px';
+      bar.innerHTML=`<span>${evt.name}</span>`; attachH(bar,evt); row.appendChild(bar);
+    } else {
+      const dot=document.createElement('div'); dot.className=`event-dot category-${evt.category}`;
+      dot.style.left=(s+sf*total-5)+'px'; attachH(dot,evt); row.appendChild(dot);
+    }
+  });
+}
+
+function addPrepBar(row,start,end,color,s,total){
+  const bar=document.createElement('div'); bar.className='prep-bar';
+  const sf=df(start.toISOString().split('T')[0]),ef=df(end.toISOString().split('T')[0]);
+  bar.style.left=(s+sf*total)+'px'; bar.style.width=Math.max(0,(ef-sf)*total)+'px';
+  bar.style.background=color; row.appendChild(bar);
+}
+
+function renderTodayLine(){
   document.querySelectorAll('.today-line').forEach(e=>e.remove());
-  const t=new Date().toISOString().split('T')[0];const f=fr(t);if(f<=0||f>=1)return;
-  const x=sx()+f*cx()*12;
-  document.querySelectorAll('.row').forEach(r=>{const l=document.createElement('div');l.className='today-line';l.style.left=x+'px';r.appendChild(l);});
+  const f=df(new Date().toISOString().split('T')[0]);
+  if(f<0||f>1)return;
+  const x=sw()+f*cw()*12;
+  document.querySelectorAll('.row').forEach(row=>{const l=document.createElement('div');l.className='today-line';l.style.left=x+'px';row.appendChild(l);});
 }
 
-const tip=document.getElementById('tooltip');
-function attachH(el,e){
-  el.addEventListener('mouseenter',ev=>{tip.querySelector('.tt-name').textContent=e.name;tip.querySelector('.tt-date').textContent=fr2(e.start_date,e.end_date);tip.querySelector('.tt-loc').textContent=e.location||'';tip.classList.add('show');mv(ev);});
-  el.addEventListener('mousemove',mv);
-  el.addEventListener('mouseleave',()=>tip.classList.remove('show'));
-  el.addEventListener('click',ev=>{ev.stopPropagation();openDtl(e);});
+const tooltip=document.getElementById('tooltip');
+function attachH(el,evt){
+  el.addEventListener('mouseenter',e=>{tooltip.querySelector('.tt-name').textContent=evt.name;tooltip.querySelector('.tt-date').textContent=fmtR(evt.start_date,evt.end_date);tooltip.querySelector('.tt-loc').textContent=evt.location||'';tooltip.classList.add('visible');mvTip(e);});
+  el.addEventListener('mousemove',mvTip);
+  el.addEventListener('mouseleave',()=>tooltip.classList.remove('visible'));
+  el.addEventListener('click',e=>{e.stopPropagation();openModal(evt);});
 }
-function mv(e){tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-10)+'px';}
+function mvTip(e){tooltip.style.left=(e.clientX+14)+'px';tooltip.style.top=(e.clientY-10)+'px';}
 
-const STATUSES=['yet-to-start','in-progress','actioned'];
-const STATUS_LABELS={'yet-to-start':'Yet to start','in-progress':'In progress','actioned':'Actioned'};
-function saveQuestions(){localStorage.setItem('jc_questions',JSON.stringify(questions));}
-function renderQLog(cid,evtId){
-  const log=document.getElementById(cid);
-  const items=evtId?questions.filter(q=>q.evtId===evtId):questions.filter(q=>!q.evtId);
-  if(!items.length){log.innerHTML='';return;}
-  log.innerHTML=items.map(q=>'<div class="qa-log-item"><div class="qa-log-q">'+q.text+'</div><div class="qa-log-footer"><div class="qa-log-date">'+q.ts+'</div><button class="qa-status-btn '+q.status+'" onclick="cycleStatus(\''+q.id+'\')">'+STATUS_LABELS[q.status]+'</button></div></div>').join('');
+async function openModal(evt) {
+  currentModalEvent=evt;
+  const labels={intermediary:'Intermediary',owned:'Owned Event',speaking:'Speaking',attendance:'Attendance',content:'Content',nurture:'Nurture'};
+  const pill=document.getElementById('modal-pill'); pill.textContent=labels[evt.category]||evt.category; pill.className=`modal-cat-pill ${evt.category}`;
+  document.getElementById('modal-title').textContent=evt.name;
+  document.getElementById('modal-date').textContent=fmtR(evt.start_date,evt.end_date);
+  const meta=document.getElementById('modal-meta');
+  meta.innerHTML=(evt.location?`<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`:'')+`<div class="modal-meta-item">Type<strong>${labels[evt.category]}</strong></div>`;
+  const prep=document.getElementById('modal-prep');
+  if(evt.category==='owned'){
+    const ed=new Date(evt.start_date);
+    const steps=[[addM(ed,-3),'Speaker sourcing begins (3 months out)'],[addD(ed,-56),'Invitations sent (8 weeks out)'],[addD(ed,-21),'Final reminders + nurture comms'],[ed,'Event day'],[addD(ed,7),'Post-event burst comms (1–3 weeks)'],[addD(ed,35),'Fortnightly nurture → monthly cadence']];
+    prep.innerHTML=`<div class="prep-timeline"><h4>Preparation Timeline</h4>${steps.map(([d,t],i,a)=>`<div class="prep-item"><div class="prep-dot-line"><div class="prep-dot"></div>${i<a.length-1?'<div class="prep-line"></div>':''}</div><div class="prep-text"><strong>${fmtDate(d)}</strong>${t}</div></div>`).join('')}</div>`;
+  } else { prep.innerHTML=''; }
+  document.getElementById('modal-desc').textContent=evt.description||'';
+  document.getElementById('qa-input').value=''; document.getElementById('qa-btn').disabled=false; document.getElementById('qa-btn').textContent='Submit';
+  await renderQALog(evt);
+  document.getElementById('modal-overlay').classList.add('open');
 }
-function cycleStatus(qid){
-  const q=questions.find(x=>x.id===qid);if(!q)return;
-  q.status=STATUSES[(STATUSES.indexOf(q.status)+1)%STATUSES.length];
-  saveQuestions();renderQLog('evt-qa-log',activeEvt?activeEvt.id:null);renderQLog('prog-qa-log',null);
-}
+function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');currentModalEvent=null;}
 
-const CL={intermediary:'Intermediary',owned:'Owned event',speaking:'Speaking',attendance:'Attendance',comms:'Comms'};
-function openDtl(e){
-  activeEvt=e;
-  document.getElementById('d-pill').textContent=CL[e.category]||e.category;
-  document.getElementById('d-pill').className='cat-pill '+(e.category);
-  document.getElementById('d-title').textContent=e.name;
-  document.getElementById('d-date').textContent=fr2(e.start_date,e.end_date);
-  let m='';
-  if(e.location)m+='<div class="modal-meta-item"><div class="modal-meta-label">Location</div><div class="modal-meta-val">'+e.location+'</div></div>';
-  m+='<div class="modal-meta-item"><div class="modal-meta-label">Type</div><div class="modal-meta-val">'+(CL[e.category]||e.category)+'</div></div>';
-  document.getElementById('d-meta').innerHTML=m;
-  const prep=document.getElementById('d-prep');
-  if(e.category==='owned'){
-    const ed=new Date(e.start_date);
-    const steps=[{d:aM(ed,-3),l:'Speaker sourcing begins',n:'3 months out'},{d:aD(ed,-56),l:'Invitations sent',n:'8 weeks out'},{d:aD(ed,-21),l:'Final reminders + nurture comms',n:'3 weeks out'},{d:ed,l:'Event day',n:''},{d:aD(ed,7),l:'Post-event burst comms',n:'1\u20133 weeks after'},{d:aD(ed,35),l:'Fortnightly \u2192 monthly nurture cadence',n:'ongoing'}];
-    prep.innerHTML='<div class="prep-timeline"><div class="prep-timeline-title">Preparation &amp; comms timeline</div>'+steps.map(s=>'<div class="prep-step"><div class="prep-step-dot-wrap"><div class="prep-step-dot"></div><div class="prep-step-line"></div></div><div class="prep-step-text"><strong>'+fd(s.d)+(s.n?' \u2014 '+s.n:'')+'</strong>'+s.l+'</div></div>').join('')+'</div>';
-  } else {prep.innerHTML='';}
-  document.getElementById('d-desc').textContent=e.description||'';
-  document.getElementById('qa-input').value='';
-  document.getElementById('qa-success').textContent='';
-  document.getElementById('qa-success').style.display='none';
-  const b=document.getElementById('qa-btn');b.disabled=false;b.textContent='Submit';
-  renderQLog('evt-qa-log',e.id);
-  document.getElementById('detail-bd').classList.add('open');
-}
-function closeDtl(e){if(e.target===document.getElementById('detail-bd'))closeDtlDirect();}
-function closeDtlDirect(){document.getElementById('detail-bd').classList.remove('open');activeEvt=null;}
-
-async function submitQ(){
-  const q=document.getElementById('qa-input').value.trim();if(!q)return;
-  const b=document.getElementById('qa-btn');b.disabled=true;b.textContent='Sending\u2026';
-  const ctx=activeEvt?activeEvt.name+' ('+fr2(activeEvt.start_date,activeEvt.end_date)+')':'BD Planner';
-  const newQ={id:'q'+Date.now(),text:q,ts:tsNow(),status:'yet-to-start',evtId:activeEvt?activeEvt.id:null};
-  try{
-    await sbPost('questions',{context:ctx,question:q});
-    await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context:ctx,question:q,submitted_at:new Date().toISOString()})});
-    questions.push(newQ);saveQuestions();
-    renderQLog('evt-qa-log',activeEvt?activeEvt.id:null);
-    const s=document.getElementById('qa-success');s.textContent='Sent \u2014 reply coming to Slack';s.style.display='block';s.style.fontSize='11px';s.style.color='#166534';s.style.marginTop='6px';
-    document.getElementById('qa-input').value='';b.textContent='Sent \u2713';
-  }catch(e){b.disabled=false;b.textContent='Submit';}
+async function renderQALog(evt) {
+  const ctx=`${evt.name} (${fmtR(evt.start_date,evt.end_date)})`;
+  const logEl=document.getElementById('qa-log');
+  const unlocked=unlockedSessions.has(ctx);
+  const safeKey=ctx.replace(/[^a-z0-9]/gi,'_');
+  if(!unlocked){
+    logEl.innerHTML=`<div class="qa-log"><div class="qa-log-header"><div class="qa-log-title">Questions log</div></div><div class="qa-log-locked"><p>Enter PIN to view questions log</p><div><input class="qa-pin-input" type="password" maxlength="4" placeholder="——" id="pin_${safeKey}"><button class="qa-pin-btn" onclick="checkPin('${ctx}','${safeKey}')">Unlock</button></div><div class="qa-pin-error" id="pinerr_${safeKey}">Incorrect PIN</div></div></div>`;
+    return;
+  }
+  const qs=await loadQuestions(ctx);
+  const statusOpts=['yet-to-start','in-progress','actioned'];
+  const statusLabels={'yet-to-start':'Yet to start','in-progress':'In progress','actioned':'Actioned'};
+  let html=`<div class="qa-log"><div class="qa-log-header"><div class="qa-log-title">Questions log</div><button class="qa-lock-btn" onclick="lockLog('${ctx}')">🔒 Lock</button></div>`;
+  if(!qs.length){html+=`<div class="qa-empty">No questions yet.</div>`;}
+  else{
+    html+=`<div class="qa-items">`;
+    qs.forEach(q=>{
+      const cur=q.status||'yet-to-start';
+      const next=statusOpts[(statusOpts.indexOf(cur)+1)%statusOpts.length];
+      html+=`<div class="qa-item"><div class="qa-item-top"><div class="qa-item-q">${esc(q.question)}</div><div class="qa-item-date">${fmtDate(new Date(q.submitted_at))}</div></div><button class="status-pill ${cur}" onclick="cycleStatus('${q.id}','${next}',this,'${ctx}')">${statusLabels[cur]}</button></div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`</div>`;
+  logEl.innerHTML=html;
 }
 
-async function submitProgQ(){
-  const q=document.getElementById('prog-qa-input').value.trim();if(!q)return;
-  const b=document.getElementById('prog-qa-btn');b.disabled=true;b.textContent='Sending\u2026';
-  const ctx='Programme \u2014 26/27 Comms Plan';
-  const newQ={id:'q'+Date.now(),text:q,ts:tsNow(),status:'yet-to-start',evtId:null};
-  try{
-    await sbPost('questions',{context:ctx,question:q});
-    await fetch(WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context:ctx,question:q,submitted_at:new Date().toISOString()})});
-    questions.push(newQ);saveQuestions();renderQLog('prog-qa-log',null);
-    document.getElementById('prog-qa-success').style.display='block';
-    document.getElementById('prog-qa-input').value='';b.textContent='Sent \u2713';
-    setTimeout(()=>{b.disabled=false;b.textContent='Submit';document.getElementById('prog-qa-success').style.display='none';},3500);
-  }catch(e){b.disabled=false;b.textContent='Submit';}
+function checkPin(ctx,safeKey){
+  const val=document.getElementById('pin_'+safeKey)?.value;
+  if(val===QA_PIN){unlockedSessions.add(ctx);if(currentModalEvent)renderQALog(currentModalEvent);}
+  else{const err=document.getElementById('pinerr_'+safeKey);if(err){err.style.display='block';setTimeout(()=>err.style.display='none',2000);}}
 }
-
-const rkMap={attendance:'event-attendance',speaking:'event-speaking',intermediary:'intermediary-custom',owned:'owned-events',comms:'comms-content'};
-function openAddModal(){document.getElementById('add-bd').classList.add('open');}
-function closeAdd(e){if(e.target===document.getElementById('add-bd'))closeAddDirect();}
-function closeAddDirect(){document.getElementById('add-bd').classList.remove('open');}
-async function saveEvt(){
-  const name=document.getElementById('a-name').value.trim();const start=document.getElementById('a-start').value;const end=document.getElementById('a-end').value||start;const loc=document.getElementById('a-loc').value.trim();const cat=document.getElementById('a-cat').value;const notes=document.getElementById('a-notes').value.trim();
-  if(!name||!start){alert('Name and start date are required.');return;}
-  const e={id:'l'+Date.now(),name,category:cat,start_date:start,end_date:end,location:loc,description:notes,row_key:rkMap[cat]};
-  const ok=await sbPost('events',{name,category:cat,start_date:start,end_date:end,location:loc,description:notes,row_key:rkMap[cat]});
-  if(!ok){const lc=JSON.parse(localStorage.getItem('jc_extra')||'[]');lc.push(e);localStorage.setItem('jc_extra',JSON.stringify(lc));}
-  events.push(e);updateStats();renderRows();closeAddDirect();
-  ['a-name','a-start','a-end','a-loc','a-notes'].forEach(id=>document.getElementById(id).value='');
+function lockLog(ctx){unlockedSessions.delete(ctx);if(currentModalEvent)renderQALog(currentModalEvent);}
+async function cycleStatus(id,nextStatus,btn,ctx){
+  const labels={'yet-to-start':'Yet to start','in-progress':'In progress','actioned':'Actioned'};
+  const opts=['yet-to-start','in-progress','actioned'];
+  const next2=opts[(opts.indexOf(nextStatus)+1)%opts.length];
+  btn.className=`status-pill ${nextStatus}`; btn.textContent=labels[nextStatus];
+  btn.setAttribute('onclick',`cycleStatus('${id}','${next2}',this,'${ctx}')`);
+  await updateStatus(id,nextStatus);
 }
-
-function updateStats(){
-  document.getElementById('s-total').textContent=events.filter(e=>e.category!=='comms').length;
-  document.getElementById('s-int').textContent=events.filter(e=>e.category==='intermediary').length;
-  document.getElementById('s-spk').textContent=events.filter(e=>e.category==='speaking').length;
-  document.getElementById('s-att').textContent=events.filter(e=>e.category==='attendance').length;
+async function submitQuestion(){
+  const q=document.getElementById('qa-input').value.trim();
+  if(!q||!currentModalEvent)return;
+  const btn=document.getElementById('qa-btn'); btn.disabled=true; btn.textContent='Sending…';
+  await saveQuestion(`${currentModalEvent.name} (${fmtR(currentModalEvent.start_date,currentModalEvent.end_date)})`,q);
+  document.getElementById('qa-input').value=''; btn.textContent='Sent ✓';
+  await renderQALog(currentModalEvent);
+}
+async function submitProgQuestion(){
+  const q=document.getElementById('prog-qa-input').value.trim(); if(!q)return;
+  const btn=document.getElementById('prog-qa-btn'); btn.disabled=true; btn.textContent='Sending…';
+  await saveQuestion('Programme Overview',q);
+  document.getElementById('prog-qa-input').value='';
+  document.getElementById('prog-qa-success').style.display='block'; btn.textContent='Sent ✓';
 }
 
 function renderPillars(){
-  document.getElementById('pillars-grid').innerHTML=PILLARS.map(p=>'<div class="pillar-card"><div class="pillar-status '+p.status+'">'+(p.status==='confirmed'?'\u2713 Confirmed':'Under review')+'</div><div class="pillar-name">'+p.name+'</div><div class="pillar-summary">'+p.summary+'</div><div class="pillar-icp"><div class="pillar-icp-dot"></div>'+p.icp+'</div></div>').join('');
+  document.getElementById('pillars-grid').innerHTML=PILLARS.map((p,i)=>`
+    <div class="pillar-card ${p.status}" onclick="togglePillar(${i})">
+      <div class="pillar-status ${p.status}">${p.status==='confirmed'?'✓ Confirmed':'↻ Under review'}</div>
+      <div class="pillar-number">${p.number}</div>
+      <div class="pillar-name">${p.name}</div>
+      <div class="pillar-desc">${p.desc}</div>
+      <div class="pillar-icp">Best ICP fit<strong>${p.icp}</strong></div>
+      <div class="pillar-expand" id="pexp${i}">+ Read more</div>
+      <div class="pillar-detail" id="pdet${i}">${p.detail}</div>
+    </div>`).join('');
 }
-
-function renderThemeDefs(){
-  document.getElementById('theme-defs').innerHTML=THEME_DEFS.map((t,i)=>'<div class="theme-def-row"><div class="theme-def-head" onclick="toggleDef('+i+')"><div class="theme-def-name">'+t.name+'</div><div class="theme-def-toggle" id="td-toggle-'+i+'">+</div></div><div class="theme-def-body" id="td-body-'+i+'"><div class="theme-def-grid"><div class="tdef-item"><div class="tdef-label">What it means</div><div class="tdef-val">'+t.what+'</div></div><div class="tdef-item"><div class="tdef-label">In Jungle language</div><div class="tdef-val'+(t.jungle.startsWith('TBD')?' placeholder':'')+'">'+t.jungle+'</div></div><div class="tdef-item"><div class="tdef-label">Best serves</div><div class="tdef-val">'+t.icp+'</div></div><div class="tdef-item"><div class="tdef-label">Strong enough to carry a programme?</div><div class="tdef-val">'+t.strong+'</div></div></div></div></div>').join('');
+function togglePillar(i){
+  const d=document.getElementById('pdet'+i),e=document.getElementById('pexp'+i);
+  e.textContent=d.classList.toggle('open')?'− Show less':'+ Read more';
 }
-
-function toggleDef(i){
-  const body=document.getElementById('td-body-'+i);const tog=document.getElementById('td-toggle-'+i);
-  tog.textContent=body.classList.toggle('open')?'\u2212':'+';
+function renderPlanGrid(){
+  document.getElementById('plan-grid').innerHTML=PLAN_MONTHS.map(m=>`
+    <div class="plan-month">
+      <div class="plan-month-label">${m.month}</div>
+      <div class="plan-month-title">${m.theme}</div>
+      <div class="plan-tags">${m.tags.map(t=>`<span class="plan-tag ${t}">${t}</span>`).join('')}</div>
+      <div class="plan-notes">${m.notes}</div>
+    </div>`).join('');
 }
-
 function renderAssets(){
-  document.getElementById('asset-list').innerHTML=ASSETS.map(a=>'<div class="asset-item"><div class="asset-status-dot '+a.status+'"></div><div><div class="asset-name">'+a.name+'</div><div class="asset-tag">'+a.tag+'</div></div></div>').join('');
+  document.getElementById('asset-list').innerHTML=ASSETS.map(a=>`
+    <div class="asset-item">
+      <div class="asset-icon">${a.icon}</div>
+      <div><div class="asset-name">${a.name}</div><div class="asset-desc">${a.desc}</div><span class="asset-status-pill ${a.status}">${a.status.replace('-',' ')}</span></div>
+    </div>`).join('');
 }
+
+function openAddModal(){document.getElementById('add-modal-overlay').classList.add('open');}
+function closeAddModal(e){if(e.target===document.getElementById('add-modal-overlay'))closeAddModalDirect();}
+function closeAddModalDirect(){document.getElementById('add-modal-overlay').classList.remove('open');}
+async function saveEvent(){
+  const name=document.getElementById('add-name').value.trim(), start=document.getElementById('add-start').value;
+  const end=document.getElementById('add-end').value||start, location=document.getElementById('add-location').value.trim();
+  const category=document.getElementById('add-category').value, notes=document.getElementById('add-notes').value.trim();
+  if(!name||!start){alert('Name and start date required.');return;}
+  const rkMap={attendance:'event-attendance',speaking:'event-speaking',intermediary:'intermediary-custom',owned:'owned-events'};
+  const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rkMap[category]};
+  try{await sbFetch('events',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({name,category,start_date:start,end_date:end,location,description:notes,row_key:rkMap[category]})});}catch(e){}
+  const local=JSON.parse(localStorage.getItem('jc_events')||'[]'); local.push(evt); localStorage.setItem('jc_events',JSON.stringify(local));
+  allEvents.push(evt); renderRows(); closeAddModalDirect();
+  ['add-name','add-start','add-end','add-location','add-notes'].forEach(id=>document.getElementById(id).value='');
+}
+
+function fmtR(s,e){
+  if(!e||e===s)return fmtDate(new Date(s));
+  const sd=new Date(s),ed=new Date(e);
+  if(sd.getMonth()===ed.getMonth()&&sd.getFullYear()===ed.getFullYear())return `${sd.getDate()}–${ed.getDate()} ${sd.toLocaleString('en-GB',{month:'short'})} ${sd.getFullYear()}`;
+  return `${fmtDate(sd)} – ${fmtDate(ed)}`;
+}
+function fmtDate(d){if(typeof d==='string')d=new Date(d);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function addM(d,n){const r=new Date(d);r.setMonth(r.getMonth()+n);return r;}
+function addD(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
 async function init(){
-  renderHeader();
-  const remote=await sbGet('events');
-  const local=JSON.parse(localStorage.getItem('jc_extra')||'[]');
-  events=remote?remote:[...SEED,...local];
-  updateStats();renderRows();
-  renderPillars();renderThemeDefs();renderAssets();
-  renderQLog('prog-qa-log',null);
-  const f=fr(new Date().toISOString().split('T')[0]);
-  setTimeout(()=>{document.getElementById('planner-wrap').scrollLeft=Math.max(0,sx()+f*cx()*12-window.innerWidth*0.38);},150);
+  renderMonthHeader();
+  allEvents=await loadEvents();
+  renderRows();
+  renderPillars();
+  renderPlanGrid();
+  renderAssets();
+  const f=df(new Date().toISOString().split('T')[0]);
+  document.getElementById('planner-wrap').scrollLeft=Math.max(0,sw()+f*cw()*12-window.innerWidth*0.4);
 }
 init();
 </script>
