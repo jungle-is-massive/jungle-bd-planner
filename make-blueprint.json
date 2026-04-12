@@ -1,0 +1,131 @@
+{
+  "name": "Jungle BD Planner — Question → OpenAI → Slack",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 1,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "label": "BD Planner Questions",
+              "data": { "editable": true }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "hook",
+            "type": "hook:gateway-webhook",
+            "label": "Webhook",
+            "required": true
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "label": "Maximum number of results"
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "module": "openai-gpt-3:CreateCompletion",
+      "version": 1,
+      "parameters": {
+        "connection": 1
+      },
+      "mapper": {
+        "model": "gpt-4o",
+        "messages": [
+          {
+            "role": "system",
+            "content": "You are a helpful assistant for Jungle Creations, a social-first creative agency based in London. You answer questions about their new business planning dashboard — covering intermediary relationships (Ingenuity+, AAR, Oystercatchers, Masterclassing), owned events, speaking opportunities, and conference attendance across Apr 2026 to Mar 2027.\n\nBe concise, practical and direct. Keep answers under 150 words. If you don't know something specific, say so and suggest what Coris (the Growth Director) might want to check or confirm. Always end with one clear next step or recommendation."
+          },
+          {
+            "role": "user",
+            "content": "Context: {{1.context}}\n\nQuestion: {{1.question}}"
+          }
+        ],
+        "max_tokens": 300,
+        "temperature": 0.5
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {
+          "parameters": {
+            "connection": {
+              "label": "OpenAI Connection",
+              "data": { "editable": true }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connection",
+            "type": "account:openai-gpt-3",
+            "label": "Connection",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "slack:CreateMessage",
+      "version": 1,
+      "parameters": {
+        "connection": 2
+      },
+      "mapper": {
+        "channelId": "#bd-planner",
+        "text": "*❓ New question from BD Planner*\n\n*Context:* {{1.context}}\n*Submitted:* {{formatDate(1.submitted_at; \"D MMM YYYY [at] HH:mm\")}}\n\n*Question:*\n> {{1.question}}\n\n*Suggested answer:*\n{{2.choices[].message.content}}\n\n_— Auto-answered by OpenAI. Review before using._"
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 },
+        "restore": {
+          "parameters": {
+            "connection": {
+              "label": "Slack Connection",
+              "data": { "editable": true }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "connection",
+            "type": "account:slack",
+            "label": "Connection",
+            "required": true
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu1.make.com"
+  }
+}
