@@ -588,18 +588,18 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 </div>
 
 <!-- BD CONTACT MODAL -->
-<div class="modal-overlay" id="bd-modal-overlay" onclick="closeBdModal(event)">
-  <div class="modal-box" style="width:min(600px,94vw)">
-    <div class="modal-hdr">
-      <div class="modal-hdr-title" id="bd-modal-title">Add BD Contact</div>
+<div id="bd-modal-overlay" onclick="closeBdModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="bd-modal-box" style="background:var(--cream);border-radius:16px;width:min(580px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);">
+      <div id="bd-modal-title" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Add BD Contact</div>
       <button class="modal-close" onclick="closeBdModalDirect()">✕</button>
     </div>
-    <div class="modal-body" style="padding:16px 22px 4px">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div class="m-field"><label>Name</label><input type="text" id="bd-name" placeholder="Full name"></div>
-        <div class="m-field"><label>Title</label><input type="text" id="bd-title" placeholder="Job title"></div>
-        <div class="m-field"><label>Organisation</label><input type="text" id="bd-org" placeholder="Company or intermediary"></div>
-        <div class="m-field"><label>Status</label>
+    <div style="padding:18px 22px 8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label>Name</label><input type="text" id="bd-name" placeholder="Full name"></div>
+        <div class="field"><label>Title</label><input type="text" id="bd-title" placeholder="Job title"></div>
+        <div class="field"><label>Organisation</label><input type="text" id="bd-org" placeholder="Company or intermediary"></div>
+        <div class="field"><label>Status</label>
           <select id="bd-status">
             <option>In progress</option>
             <option>Warm, in progress</option>
@@ -612,11 +612,11 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
           </select>
         </div>
       </div>
-      <div class="m-field" style="margin-top:12px"><label>Current Action</label><textarea id="bd-current" rows="2" placeholder="What's the current state of this relationship?"></textarea></div>
-      <div class="m-field"><label>Next Action</label><textarea id="bd-next" rows="2" placeholder="What needs to happen next?"></textarea></div>
-      <div class="m-field"><label>LinkedIn URL (optional)</label><input type="url" id="bd-linkedin" placeholder="https://www.linkedin.com/in/…"></div>
+      <div class="field"><label>Current Action</label><textarea id="bd-current" rows="2" placeholder="What's the current state of this relationship?"></textarea></div>
+      <div class="field"><label>Next Action</label><textarea id="bd-next" rows="2" placeholder="What needs to happen next?"></textarea></div>
+      <div class="field"><label>LinkedIn URL (optional)</label><input type="url" id="bd-linkedin" placeholder="https://www.linkedin.com/in/…"></div>
     </div>
-    <div class="modal-footer">
+    <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;">
       <button class="btn-cancel" onclick="closeBdModalDirect()">Cancel</button>
       <button class="btn-save" onclick="saveBdContact()">Save</button>
     </div>
@@ -1009,6 +1009,7 @@ function filterBdContacts() {
 function openBdModal(id=null) {
   bdEditingId = id;
   const overlay = document.getElementById('bd-modal-overlay');
+  const box = document.getElementById('bd-modal-box');
   document.getElementById('bd-modal-title').textContent = id ? 'Edit BD Contact' : 'Add BD Contact';
   if(id) {
     const c = bdData.find(x=>x.id===id);
@@ -1025,11 +1026,20 @@ function openBdModal(id=null) {
     ['bd-name','bd-title','bd-org','bd-current','bd-next','bd-linkedin'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('bd-status').value = 'Not started yet';
   }
-  overlay.classList.add('open');
+  overlay.style.opacity = '1';
+  overlay.style.pointerEvents = 'all';
+  box.style.transform = 'translateY(0)';
 }
 
 function closeBdModal(e) { if(e.target===document.getElementById('bd-modal-overlay')) closeBdModalDirect(); }
-function closeBdModalDirect() { document.getElementById('bd-modal-overlay').classList.remove('open'); bdEditingId=null; }
+function closeBdModalDirect() {
+  const overlay = document.getElementById('bd-modal-overlay');
+  const box = document.getElementById('bd-modal-box');
+  overlay.style.opacity = '0';
+  overlay.style.pointerEvents = 'none';
+  box.style.transform = 'translateY(16px)';
+  bdEditingId = null;
+}
 
 async function saveBdContact() {
   const payload = {
@@ -1213,18 +1223,93 @@ function buildRow(rc, events, sectionId) {
 function plotEvents(row, events, sectionId) {
   const s=sw(), total=cw()*12;
   if(sectionId==='owned'){events.forEach(evt=>{const ed=new Date(evt.start_date),ps=new Date(ed);ps.setMonth(ps.getMonth()-3);addPrepBar(row,ps,ed,'#7B6FE0',s,total);});}
-  events.forEach(evt=>{
+
+  // Group single-day events by date to handle overlaps
+  const singles = events.filter(evt => (new Date(evt.end_date||evt.start_date)-new Date(evt.start_date)) <= 86400000);
+  const multis  = events.filter(evt => (new Date(evt.end_date||evt.start_date)-new Date(evt.start_date)) > 86400000);
+
+  // Render multi-day bars normally
+  multis.forEach(evt=>{
     const sf=df(evt.start_date),ef=df(evt.end_date||evt.start_date);
-    const multi=(new Date(evt.end_date||evt.start_date)-new Date(evt.start_date))>86400000;
-    if(multi){
-      const bar=document.createElement('div'); bar.className=`event-bar category-${evt.category}`;
-      bar.style.left=(s+sf*total)+'px'; bar.style.width=Math.max(20,(ef-sf)*total)+'px';
-      bar.innerHTML=`<span>${evt.name}</span>`; attachH(bar,evt); row.appendChild(bar);
+    const bar=document.createElement('div'); bar.className=`event-bar category-${evt.category}`;
+    bar.style.left=(s+sf*total)+'px'; bar.style.width=Math.max(20,(ef-sf)*total)+'px';
+    bar.innerHTML=`<span>${evt.name}</span>`; attachH(bar,evt); row.appendChild(bar);
+  });
+
+  // Group singles by date
+  const byDate = {};
+  singles.forEach(evt => {
+    const key = evt.start_date;
+    if(!byDate[key]) byDate[key] = [];
+    byDate[key].push(evt);
+  });
+
+  Object.entries(byDate).forEach(([date, evts]) => {
+    const sf = df(date);
+    const x = s + sf * total - 5;
+    if(evts.length === 1) {
+      const dot=document.createElement('div'); dot.className=`event-dot category-${evts[0].category}`;
+      dot.style.left=x+'px'; attachH(dot,evts[0]); row.appendChild(dot);
     } else {
-      const dot=document.createElement('div'); dot.className=`event-dot category-${evt.category}`;
-      dot.style.left=(s+sf*total-5)+'px'; attachH(dot,evt); row.appendChild(dot);
+      // Cluster badge — show count, click opens a mini popover listing all
+      const cluster = document.createElement('div');
+      cluster.className = `event-dot category-${evts[0].category}`;
+      cluster.style.left = x + 'px';
+      cluster.style.width = '18px';
+      cluster.style.height = '18px';
+      cluster.style.borderRadius = '100px';
+      cluster.style.display = 'flex';
+      cluster.style.alignItems = 'center';
+      cluster.style.justifyContent = 'center';
+      cluster.style.fontSize = '9px';
+      cluster.style.fontWeight = '700';
+      cluster.style.color = evts[0].category === 'owned' ? 'var(--black)' : 'white';
+      cluster.style.fontFamily = "'DM Mono', monospace";
+      cluster.style.zIndex = '12';
+      cluster.textContent = evts.length;
+      // Tooltip shows all names
+      cluster.addEventListener('mouseenter', e => {
+        tooltip.querySelector('.tt-name').textContent = `${evts.length} events`;
+        tooltip.querySelector('.tt-date').textContent = evts.map(ev=>ev.name).join(' · ');
+        tooltip.querySelector('.tt-loc').textContent = '';
+        tooltip.classList.add('visible'); mvTip(e);
+      });
+      cluster.addEventListener('mousemove', mvTip);
+      cluster.addEventListener('mouseleave', ()=>tooltip.classList.remove('visible'));
+      cluster.addEventListener('click', e => { e.stopPropagation(); openClusterModal(evts); });
+      row.appendChild(cluster);
     }
   });
+}
+
+function openClusterModal(evts) {
+  // Show first event's modal but with a list of all events to pick from
+  // Build a picker in the existing modal
+  currentModalEvent = evts[0];
+  const labels={intermediary:'Intermediary',owned:'Owned Event',speaking:'Speaking',attendance:'Attendance',content:'Content',nurture:'Nurture'};
+  const pill=document.getElementById('modal-pill');
+  pill.textContent = `${evts.length} Events`;
+  pill.className = `modal-cat-pill attendance`;
+  document.getElementById('modal-title').textContent = fmtR(evts[0].start_date, evts[0].end_date);
+  document.getElementById('modal-date').textContent = `${evts.length} events on this date`;
+  const meta = document.getElementById('modal-meta');
+  meta.innerHTML = evts.map((evt,i) => `
+    <div style="width:100%;padding:10px 0;border-bottom:1px solid var(--grey-light);cursor:pointer" onclick="openModal(window._clusterEvts[${i}])">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--c-${evt.category});flex-shrink:0;${evt.category==='owned'?'border:1.5px solid var(--black)':''}"></div>
+        <span style="font-size:13px;font-weight:600">${esc(evt.name)}</span>
+        <span style="font-size:11px;color:var(--grey-mid);margin-left:auto">${esc(labels[evt.category]||evt.category)}</span>
+      </div>
+      ${evt.location?`<div style="font-size:11px;color:var(--grey-mid);margin-top:3px;padding-left:16px">${esc(evt.location)}</div>`:''}
+    </div>`).join('');
+  window._clusterEvts = evts;
+  document.getElementById('modal-prep').innerHTML = '';
+  document.getElementById('modal-desc').textContent = 'Click an event to see its details.';
+  document.getElementById('qa-input').value='';
+  document.getElementById('qa-btn').disabled=false;
+  document.getElementById('qa-btn').textContent='Submit';
+  document.getElementById('qa-log').innerHTML='';
+  document.getElementById('modal-overlay').classList.add('open');
 }
 
 function addPrepBar(row,start,end,color,s,total){
