@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jungle — Social Maturity Index Event Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E8;
+  --black: #0E0E0E;
+  --green: #CAFF4E;
+  --green-dim: #9DC23A;
+  --grey: #C8C3B8;
+  --grey-mid: #8A8880;
+  --grey-light: #E8E3DA;
+  --white: #FFFFFF;
+  --border: rgba(14,14,14,0.1);
+  --border-strong: rgba(14,14,14,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--cream);color:var(--black);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;}
+
+/* GATE */
+#gate{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;align-items:center;justify-content:center;transition:opacity 0.3s;}
+#gate.hidden{opacity:0;pointer-events:none;}
+.gate-box{text-align:center;padding:0 24px;}
+.gate-wm{font-size:22px;font-weight:700;letter-spacing:-0.03em;color:var(--cream);margin-bottom:32px;}
+.gate-wm span{color:var(--green);}
+.gate-lbl{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px;letter-spacing:0.06em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.gate-inp{display:block;width:220px;margin:0 auto 14px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--cream);font-family:'DM Mono',monospace;font-size:18px;letter-spacing:0.15em;text-align:center;padding:12px 16px;outline:none;transition:border-color 0.15s;}
+.gate-inp:focus{border-color:var(--green);}
+.gate-inp.error{border-color:#FF6B4A;animation:shake 0.3s ease;}
+.gate-btn{background:var(--green);color:var(--black);border:none;border-radius:100px;padding:11px 32px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s;width:220px;}
+.gate-btn:hover{opacity:0.85;}
+.gate-err{font-size:12px;color:#FF6B4A;margin-top:12px;min-height:18px;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;}
+.nav-left{display:flex;align-items:center;gap:16px;}
+.nav-wm{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:var(--cream);}
+.nav-wm span{color:var(--green);}
+.nav-back{font-size:11px;color:rgba(255,255,255,0.4);text-decoration:none;letter-spacing:0.04em;display:flex;align-items:center;gap:5px;transition:color 0.15s;}
+.nav-back:hover{color:var(--cream);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-pill{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:100px;background:rgba(202,255,78,0.15);color:var(--green);border:1px solid rgba(202,255,78,0.25);}
+.nav-edit-btn{background:rgba(255,255,255,0.1);color:var(--cream);border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:background 0.15s;}
+.nav-edit-btn:hover{background:rgba(255,255,255,0.18);}
+.nav-edit-btn.active{background:var(--green);color:var(--black);border-color:var(--green);}
+
+/* HERO */
+.hero{background:var(--black);padding:52px 0 40px;border-bottom:2px solid var(--black);}
+.hero-inner{max-width:1100px;margin:0 auto;padding:0 32px;}
+.hero-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:12px;}
+.hero-title{font-size:clamp(36px,5vw,64px);font-weight:700;letter-spacing:-0.04em;color:var(--cream);line-height:1.0;margin-bottom:8px;}
+.hero-title .accent{color:var(--green);}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.5);max-width:560px;line-height:1.6;margin-bottom:28px;}
+.hero-meta{display:flex;gap:24px;flex-wrap:wrap;}
+.hero-meta-item{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.06em;text-transform:uppercase;}
+.hero-meta-item strong{color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;display:block;margin-top:2px;}
+
+/* LAYOUT */
+.page-wrap{max-width:1100px;margin:0 auto;padding:0 32px 120px;}
+
+/* SECTION */
+.hub-section{margin-top:48px;padding-top:36px;border-top:1px solid var(--border);}
+.hub-section:first-child{border-top:none;margin-top:32px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;}
+.section-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--grey-mid);letter-spacing:0.08em;margin-right:10px;}
+.section-title{font-size:18px;font-weight:700;letter-spacing:-0.02em;}
+.section-add-btn{font-size:11px;font-weight:600;color:var(--grey-mid);background:none;border:1px dashed var(--grey);border-radius:100px;padding:4px 12px;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.section-add-btn:hover{border-color:var(--black);color:var(--black);border-style:solid;}
+
+/* EDITABLE FIELD */
+.field-block{margin-bottom:16px;}
+.field-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);margin-bottom:5px;}
+[contenteditable]{outline:none;border-radius:6px;transition:background 0.15s,box-shadow 0.15s;padding:2px 4px;margin:-2px -4px;}
+[contenteditable]:hover{background:rgba(0,0,0,0.04);}
+[contenteditable]:focus{background:var(--white);box-shadow:0 0 0 2px var(--black);}
+.editable-body{font-size:13px;line-height:1.7;color:#3a3a3a;}
+.editable-title{font-size:16px;font-weight:600;color:var(--black);}
+
+/* STATUS PILL */
+.status-pill{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;cursor:pointer;border:none;transition:opacity 0.15s;display:inline-block;}
+.status-pill:hover{opacity:0.75;}
+.s-todo{background:var(--grey-light);color:var(--grey-mid);}
+.s-inprogress{background:#FFF3CD;color:#856404;}
+.s-done{background:#D4F4E2;color:#1A6B3C;}
+.s-blocked{background:#FFE4E1;color:#9B1C1C;}
+
+/* 2-COL GRID */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+@media(max-width:700px){.three-col{grid-template-columns:1fr;}}
+
+/* CARD */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px;transition:border-color 0.15s;}
+.card:hover{border-color:var(--border-strong);}
+.card-title{font-size:13px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.card-body{font-size:12px;color:#555;line-height:1.6;}
+
+/* TIMELINE TABLE */
+.timeline-table{width:100%;border-collapse:collapse;}
+.timeline-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border-strong);background:var(--grey-light);font-weight:500;}
+.timeline-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.5;}
+.timeline-table tr:last-child td{border-bottom:none;}
+.timeline-table tr:hover td{background:rgba(0,0,0,0.015);}
+.timeline-table td:first-child{font-weight:600;font-size:12px;white-space:nowrap;color:var(--black);}
+.timeline-table .week-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);display:block;margin-top:1px;}
+
+/* INVITE COPY TABS */
+.copy-tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--grey-light);border-radius:100px;padding:3px;width:fit-content;}
+.copy-tab{padding:6px 16px;border-radius:100px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--grey-mid);transition:all 0.15s;}
+.copy-tab.active{background:var(--black);color:var(--green);}
+.copy-panel{display:none;}
+.copy-panel.active{display:block;}
+.copy-box{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:18px;}
+.copy-box-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);margin-bottom:10px;}
+.copy-text{font-size:12px;line-height:1.7;color:#3a3a3a;white-space:pre-wrap;}
+.copy-actions{display:flex;gap:8px;margin-top:12px;}
+.copy-btn{font-size:11px;font-weight:600;color:var(--grey-mid);background:none;border:1px solid var(--border-strong);border-radius:100px;padding:4px 12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.copy-btn:hover{border-color:var(--black);color:var(--black);}
+.copy-btn.copied{background:var(--green);color:var(--black);border-color:var(--green);}
+
+/* COMMS TABLE */
+.comms-table{width:100%;border-collapse:collapse;}
+.comms-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border-strong);background:var(--grey-light);font-weight:500;}
+.comms-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.5;}
+.comms-table tr:last-child td{border-bottom:none;}
+.comms-table tr:hover td{background:rgba(0,0,0,0.015);}
+.comms-table td:first-child{font-weight:600;white-space:nowrap;}
+
+/* PEOPLE */
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.person-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px;}
+.person-initial{width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;margin-bottom:10px;}
+.person-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.person-role{font-size:11px;color:var(--grey-mid);}
+.person-tasks{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.person-task{font-size:11px;color:#555;padding:3px 0;display:flex;gap:6px;align-items:flex-start;}
+.person-task::before{content:'—';color:var(--grey);flex-shrink:0;}
+
+/* ASSETS */
+.asset-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.asset-row:last-child{border-bottom:none;}
+.asset-icon{font-size:18px;width:36px;text-align:center;flex-shrink:0;}
+.asset-info{flex:1;}
+.asset-name{font-size:13px;font-weight:600;margin-bottom:1px;}
+.asset-desc{font-size:11px;color:var(--grey-mid);}
+
+/* SAVE INDICATOR */
+#save-indicator{position:fixed;bottom:24px;right:24px;background:var(--black);color:var(--green);font-family:'DM Mono',monospace;font-size:11px;padding:8px 16px;border-radius:100px;opacity:0;transition:opacity 0.2s;pointer-events:none;z-index:50;}
+#save-indicator.show{opacity:1;}
+
+/* ADD ROW MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal-box{background:var(--cream);border-radius:16px;width:min(480px,92vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);}
+.modal-overlay.open .modal-box{transform:translateY(0);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);}
+.modal-hdr-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;}
+.modal-close{background:var(--grey-light);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--grey-mid);}
+.modal-close:hover{background:var(--grey);}
+.modal-body{padding:16px 22px 22px;}
+.m-field{margin-bottom:12px;}
+.m-field label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);display:block;margin-bottom:4px;}
+.m-field input,.m-field select,.m-field textarea{width:100%;border:1.5px solid var(--grey-light);border-radius:8px;background:var(--white);padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;color:var(--black);transition:border-color 0.15s;appearance:none;}
+.m-field input:focus,.m-field select:focus,.m-field textarea:focus{border-color:var(--black);}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;padding:0 22px 20px;}
+.btn-cancel{background:var(--grey-light);border:none;border-radius:100px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--grey-mid);}
+.btn-save{background:var(--black);color:var(--green);border:none;border-radius:100px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
+
+/* DELETE BTN */
+.del-btn{background:none;border:none;cursor:pointer;color:var(--grey);font-size:12px;opacity:0;transition:opacity 0.1s,color 0.1s;padding:2px 6px;border-radius:4px;}
+.card:hover .del-btn,.asset-row:hover .del-btn,.timeline-table tr:hover .del-btn,.comms-table tr:hover .del-btn{opacity:1;}
+.del-btn:hover{color:#c0392b;}
+
+/* QA BAR */
+.qa-bar{background:var(--black);border-radius:12px;padding:20px 24px;margin-top:48px;}
+.qa-bar-label{font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.qa-bar-label::before{content:'?';width:18px;height:18px;border-radius:50%;background:var(--green);color:var(--black);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.qa-row{display:flex;gap:10px;}
+.qa-inp{flex:1;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--cream);outline:none;transition:border-color 0.15s;}
+.qa-inp::placeholder{color:rgba(255,255,255,0.25);}
+.qa-inp:focus{border-color:var(--green);}
+.qa-submit{background:var(--green);color:var(--black);border:none;border-radius:100px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;}
+.qa-submit:hover{opacity:0.85;}
+.qa-sent{font-size:11px;color:rgba(255,255,255,0.4);margin-top:8px;display:none;font-family:'DM Mono',monospace;}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-wm">JUNGLE<span>.</span></div>
+    <div class="gate-lbl">Enter password to continue</div>
+    <input class="gate-inp" type="password" id="gate-inp" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter')checkGate()">
+    <br>
+    <button class="gate-btn" onclick="checkGate()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-wm">JUNGLE<span>.</span></div>
+    <a class="nav-back" href="index.html">← BD Planner</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-pill">Event Hub</span>
+    <button class="nav-edit-btn" id="edit-toggle" onclick="toggleEdit()">Edit Mode</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Jungle Brand Event — Oct 2026</div>
+    <h1 class="hero-title">The Social<br><span class="accent">Maturity Index</span></h1>
+    <p class="hero-sub" id="hero-desc" contenteditable="false">A Jungle Creations flagship event bringing together senior brand marketers to explore what separates high-performing social strategies from the rest. Attendees will leave with a clearer understanding of where their brand sits on the social maturity curve — and what moving up actually looks like.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">Date<strong id="hero-date" contenteditable="false">1 Oct 2026 — TBC</strong></div>
+      <div class="hero-meta-item">Format<strong id="hero-format" contenteditable="false">Panel + Roundtable, Invite-Only</strong></div>
+      <div class="hero-meta-item">Venue<strong id="hero-venue" contenteditable="false">TBC — London</strong></div>
+      <div class="hero-meta-item">Target Attendance<strong id="hero-attendance" contenteditable="false">40–60 senior brand marketers</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- 1. EVENT DEFINITION -->
+  <div class="hub-section" id="sec-definition">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">01</span><h2 class="section-title">Event Definition</h2></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="field-label">Event Name</div>
+        <div class="editable-title" id="ev-name" contenteditable="false">The Social Maturity Index</div>
+        <div class="field-label" style="margin-top:14px">Strapline</div>
+        <div class="editable-body" id="ev-strapline" contenteditable="false">Where do brands really stand — and what does it take to move up?</div>
+      </div>
+      <div class="card">
+        <div class="field-label">What attendees will get</div>
+        <div class="editable-body" id="ev-outcomes" contenteditable="false">A benchmark for where their brand sits on the social maturity curve. Peer perspectives from senior marketers across sectors. Practical frameworks for making the case for social investment internally. Jungle's proprietary SMI data and methodology — first look.</div>
+      </div>
+      <div class="card">
+        <div class="field-label">Target audience</div>
+        <div class="editable-body" id="ev-audience" contenteditable="false">CMOs, Marketing Directors and Head of Social at brand-side organisations. Mix of existing Jungle clients, warm prospects, and new contacts introduced via intermediary relationships. Target sectors: FMCG, retail, finance, tech.</div>
+      </div>
+      <div class="card">
+        <div class="field-label">Topic / theme</div>
+        <div class="editable-body" id="ev-topic" contenteditable="false">Social Maturity — the gap between where most brands are operating and where they need to be. The conversation will centre on commercial performance, not vanity metrics. Jungle will introduce a framework for measuring maturity across five dimensions: strategy, content, distribution, data, and culture.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. PLANNING TIMELINE -->
+  <div class="hub-section" id="sec-timeline">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">02</span><h2 class="section-title">Planning Timeline</h2></div>
+      <button class="section-add-btn" onclick="openModal('timeline')">+ Add milestone</button>
+    </div>
+    <table class="timeline-table" id="timeline-tbl">
+      <thead><tr><th>When</th><th>Milestone</th><th>Owner</th><th>Status</th><th></th></tr></thead>
+      <tbody id="timeline-body"></tbody>
+    </table>
+  </div>
+
+  <!-- 3. SPEAKERS & GUESTS -->
+  <div class="hub-section" id="sec-speakers">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">03</span><h2 class="section-title">Speakers & Guest List</h2></div>
+      <button class="section-add-btn" onclick="openModal('speaker')">+ Add speaker / guest</button>
+    </div>
+    <div class="field-block" style="margin-bottom:20px">
+      <div class="field-label">Speaker brief</div>
+      <div class="editable-body" id="speaker-brief" contenteditable="false">We need 2–3 brand-side speakers who can speak credibly about social maturity at their organisations — ideally from different sectors. Speakers should be senior (Director level+), willing to share real data or candid experience, and comfortable in a panel format. Jungle will provide a speaker guide and do a prep call 2 weeks before the event.</div>
+    </div>
+    <div id="speakers-grid" class="two-col"></div>
+  </div>
+
+  <!-- 4. LOGISTICS -->
+  <div class="hub-section" id="sec-logistics">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">04</span><h2 class="section-title">Logistics</h2></div>
+    </div>
+    <div class="three-col" id="logistics-grid"></div>
+  </div>
+
+  <!-- 5. INVITE COPY -->
+  <div class="hub-section" id="sec-copy">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">05</span><h2 class="section-title">Invite Copy & Registration</h2></div>
+    </div>
+    <div class="field-block" style="margin-bottom:20px">
+      <div class="field-label">Registration page description</div>
+      <div class="editable-body" id="reg-desc" contenteditable="false">Join Jungle Creations for an evening of frank conversation about what social maturity really means for ambitious brands. We'll be sharing our Social Maturity Index — a framework for benchmarking where your brand stands and what moving up the curve actually requires in practice. Expect candid panels, peer discussion, and a few uncomfortable questions about whether your social strategy is built for commercial growth or just comfort. Spaces are limited and by invitation only.</div>
+    </div>
+    <div class="copy-tabs">
+      <button class="copy-tab active" onclick="switchCopy('email',this)">Email</button>
+      <button class="copy-tab" onclick="switchCopy('linkedin',this)">LinkedIn DM</button>
+      <button class="copy-tab" onclick="switchCopy('cs-email',this)">CS Team Email</button>
+      <button class="copy-tab" onclick="switchCopy('reminder',this)">Reminder</button>
+    </div>
+    <div class="copy-panel active" id="copy-email">
+      <div class="copy-box">
+        <div class="copy-box-label">Email invite — initial outreach</div>
+        <div class="copy-text editable-body" id="copy-email-text" contenteditable="false">Subject: You're invited — The Social Maturity Index [Date]
+
+Hi [First name],
+
+I wanted to reach out personally to invite you to an evening we're hosting in October — The Social Maturity Index.
+
+It's a small, invite-only event for senior brand marketers, built around a simple but uncomfortable question: where does your brand actually sit on the social maturity curve, and does it matter commercially?
+
+We'll be sharing a framework we've been developing — the Social Maturity Index — and bringing together a panel of brand leaders who can speak honestly about what it takes to move up.
+
+No pitches. No fluff. Just a genuine conversation with people who are grappling with the same questions.
+
+Spaces are limited to [X] people. Would you like one?
+
+[Name]
+[Title], Jungle Creations</div>
+        <div class="copy-actions">
+          <button class="copy-btn" onclick="copyText('copy-email-text',this)">Copy text</button>
+        </div>
+      </div>
+    </div>
+    <div class="copy-panel" id="copy-linkedin">
+      <div class="copy-box">
+        <div class="copy-box-label">LinkedIn DM — personal outreach</div>
+        <div class="copy-text editable-body" id="copy-linkedin-text" contenteditable="false">Hi [Name] — we're hosting a small invite-only event in October called The Social Maturity Index. It's for senior brand marketers and focuses on a framework we've been building around commercial social performance. Thought it might be relevant given your work at [Company]. Would love to send you the details if you're interested?</div>
+        <div class="copy-actions">
+          <button class="copy-btn" onclick="copyText('copy-linkedin-text',this)">Copy text</button>
+        </div>
+      </div>
+    </div>
+    <div class="copy-panel" id="copy-cs-email">
+      <div class="copy-box">
+        <div class="copy-box-label">CS team — client outreach template</div>
+        <div class="copy-text editable-body" id="copy-cs-text" contenteditable="false">Hi [Client name],
+
+As you may know, we're hosting an event in October — The Social Maturity Index — and we'd love to have you there.
+
+It's a small evening with senior brand marketers, built around a framework we've been developing that benchmarks social maturity across strategy, content, distribution, data and culture.
+
+Given what we've been working on together, I think you'd find it really useful — and it's a good opportunity to compare notes with other senior marketers in a no-pitch environment.
+
+I can send over the full details. Are you likely to be around on [date]?
+
+[Your name]</div>
+        <div class="copy-actions">
+          <button class="copy-btn" onclick="copyText('copy-cs-text',this)">Copy text</button>
+        </div>
+      </div>
+    </div>
+    <div class="copy-panel" id="copy-reminder">
+      <div class="copy-box">
+        <div class="copy-box-label">Reminder — 2 weeks before</div>
+        <div class="copy-text editable-body" id="copy-reminder-text" contenteditable="false">Subject: See you on [date] — The Social Maturity Index
+
+Hi [First name],
+
+Just a reminder that The Social Maturity Index is coming up on [date] at [venue].
+
+We'll be sending the full agenda and speaker lineup next week, but wanted to make sure it's in your diary.
+
+If anything has changed and you can no longer make it, please do let me know so we can offer the space to someone else.
+
+Looking forward to seeing you there.
+
+[Name]</div>
+        <div class="copy-actions">
+          <button class="copy-btn" onclick="copyText('copy-reminder-text',this)">Copy text</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. COMMS & CONTENT PLAN -->
+  <div class="hub-section" id="sec-comms">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">06</span><h2 class="section-title">Comms & Content Plan</h2></div>
+      <button class="section-add-btn" onclick="openModal('comms')">+ Add row</button>
+    </div>
+    <table class="comms-table" id="comms-tbl">
+      <thead><tr><th>Month</th><th>Comms activity</th><th>Content needed</th><th>Status</th><th></th></tr></thead>
+      <tbody id="comms-body"></tbody>
+    </table>
+  </div>
+
+  <!-- 7. POST-EVENT ASSETS -->
+  <div class="hub-section" id="sec-assets">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">07</span><h2 class="section-title">Post-Event Assets</h2></div>
+      <button class="section-add-btn" onclick="openModal('asset')">+ Add asset</button>
+    </div>
+    <div id="assets-list"></div>
+  </div>
+
+  <!-- 8. ROLES & RESPONSIBILITIES -->
+  <div class="hub-section" id="sec-roles">
+    <div class="section-hdr">
+      <div style="display:flex;align-items:center"><span class="section-num">08</span><h2 class="section-title">Roles & Responsibilities</h2></div>
+      <button class="section-add-btn" onclick="openModal('person')">+ Add person</button>
+    </div>
+    <div class="people-grid" id="people-grid"></div>
+  </div>
+
+  <!-- QA BAR -->
+  <div class="qa-bar">
+    <div class="qa-bar-label">Have a question about this event?</div>
+    <div class="qa-row">
+      <input class="qa-inp" id="qa-inp" type="text" placeholder="Ask anything — it'll be routed to Slack with a suggested answer">
+      <button class="qa-submit" onclick="submitQA()">Submit</button>
+    </div>
+    <div class="qa-sent" id="qa-sent">✓ Sent — reply coming to Slack</div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- ADD ITEM MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-hdr-title" id="modal-title">Add item</div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-fields"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveModalItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="save-indicator">Saved</div>
+
+<script>
+const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
+const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
+const GATE_PASSWORD = 'massive';
+const STORE_KEY = 'jc_smi_hub';
+
+// ── DEFAULT DATA ──────────────────────────────────────────────────
+const DEFAULTS = {
+  timeline: [
+    {id:'t1', when:'Jul 2026', week:'W/C 7 Jul', milestone:'Confirm venue and date', owner:'Coris', status:'todo'},
+    {id:'t2', when:'Jul 2026', week:'W/C 7 Jul', milestone:'Finalise event topic and format', owner:'Jade + Coris', status:'todo'},
+    {id:'t3', when:'Jul 2026', week:'W/C 14 Jul', milestone:'Speaker outreach begins (3 months out)', owner:'Coris', status:'todo'},
+    {id:'t4', when:'Aug 2026', week:'W/C 4 Aug', milestone:'Registration page live', owner:'TBC', status:'todo'},
+    {id:'t5', when:'Aug 2026', week:'W/C 11 Aug', milestone:'Invitations sent — first wave (8 weeks out)', owner:'Coris + CS', status:'todo'},
+    {id:'t6', when:'Sep 2026', week:'W/C 1 Sep', milestone:'Speaker confirmations locked', owner:'Coris', status:'todo'},
+    {id:'t7', when:'Sep 2026', week:'W/C 8 Sep', milestone:'Reminder comms — second wave invites', owner:'Coris', status:'todo'},
+    {id:'t8', when:'Sep 2026', week:'W/C 22 Sep', milestone:'Final attendee list confirmed', owner:'Coris', status:'todo'},
+    {id:'t9', when:'Sep 2026', week:'W/C 22 Sep', milestone:'Presentation deck finished', owner:'Ro + TBC', status:'todo'},
+    {id:'t10', when:'Sep 2026', week:'W/C 29 Sep', milestone:'Speaker run-through call', owner:'Coris', status:'todo'},
+    {id:'t11', when:'1 Oct 2026', week:'Event day', milestone:'THE SOCIAL MATURITY INDEX', owner:'All', status:'todo'},
+    {id:'t12', when:'Oct 2026', week:'W/C 5 Oct', milestone:'Post-event burst comms — hot follow-up', owner:'Coris + CS', status:'todo'},
+    {id:'t13', when:'Oct 2026', week:'W/C 12 Oct', milestone:'Highlights article / video published', owner:'TBC', status:'todo'},
+    {id:'t14', when:'Nov–Dec 2026', week:'Ongoing', milestone:'Fortnightly nurture emails to attendees', owner:'Coris', status:'todo'},
+  ],
+  speakers: [
+    {id:'sp1', name:'TBC — Brand Speaker 1', company:'Target: FMCG sector', role:'Panellist', status:'todo', notes:'Senior marketer who can speak to social transformation. Director level+.'},
+    {id:'sp2', name:'TBC — Brand Speaker 2', company:'Target: Retail or Finance', role:'Panellist', status:'todo', notes:'Different sector to Speaker 1 for range of perspective.'},
+    {id:'sp3', name:'Jungle Host / Moderator', company:'Jungle Creations', role:'Host + Moderator', status:'inprogress', notes:'Introduces SMI framework, moderates panel, closes event.'},
+  ],
+  logistics: [
+    {id:'l1', icon:'📍', name:'Venue', value:'TBC — central London. Ideally a space that feels premium but not corporate. Capacity for 50–70. Private room.', status:'todo'},
+    {id:'l2', icon:'🎤', name:'AV & Tech', value:'Presentation screen, lapel mics for panel, roving mic for audience Q&A. Recording capability if possible.', status:'todo'},
+    {id:'l3', icon:'🍽️', name:'Catering', value:'Evening format — drinks reception from 6pm, panel from 7pm. Canapés and drinks.', status:'todo'},
+    {id:'l4', icon:'📋', name:'Registration', value:'Simple registration page via Eventbrite or equivalent. Collect: name, title, company, dietary requirements.', status:'todo'},
+    {id:'l5', icon:'📸', name:'Photography', value:'Photographer to capture event for content use. Attendee permission required on registration.', status:'todo'},
+    {id:'l6', icon:'📄', name:'On-the-night collateral', value:'Printed SMI benchmark card per attendee. Event programme. Name badges.', status:'todo'},
+  ],
+  comms: [
+    {id:'c1', month:'Jul 2026', activity:'Speaker outreach emails', content:'Speaker brief document', status:'todo'},
+    {id:'c2', month:'Aug 2026', activity:'Invitations sent — email + LinkedIn DM. CS team client outreach.', content:'Registration page live. Invite copy blocks.', status:'todo'},
+    {id:'c3', month:'Sep 2026', activity:'Reminder emails — second wave. Final push invites.', content:'Updated speaker lineup. Agenda teaser.', status:'todo'},
+    {id:'c4', month:'Oct 2026 (pre)', activity:'Final reminder (1 week before). Day-before confirmation.', content:'On-the-night agenda. Speaker bios.', status:'todo'},
+    {id:'c5', month:'Oct 2026 (post)', activity:'Day-after thank you. Week-after follow up with SMI report teaser.', content:'Event highlights, key quotes.', status:'todo'},
+    {id:'c6', month:'Nov 2026', activity:'Fortnightly nurture — email + LI message', content:'SMI report / highlights article', status:'todo'},
+    {id:'c7', month:'Dec 2026', activity:'Monthly nurture — email + LI message', content:'Video highlights or sector cut-down', status:'todo'},
+    {id:'c8', month:'Jan–Mar 2027', activity:'Monthly nurture continues', content:'New thought leadership tied to SMI themes', status:'todo'},
+  ],
+  assets: [
+    {id:'a1', icon:'📊', name:'Presentation Deck', desc:'Main event presentation introducing the SMI framework. Designed to be left-behind / shareable.', status:'todo'},
+    {id:'a2', icon:'📑', name:'SMI Report', desc:'Written report based on event insights and Jungle data. 8–12 pages. Gated download for lead gen.', status:'todo'},
+    {id:'a3', icon:'✉️', name:'Post-Event Nurture Sequence', desc:'6-touch email sequence for attendees over 3 months. Pillar-themed, personalised by sector where possible.', status:'todo'},
+    {id:'a4', icon:'🎬', name:'Highlights Video (2–3 min)', desc:'Event atmosphere + key panel quotes. For LinkedIn and email nurture use.', status:'todo'},
+    {id:'a5', icon:'📰', name:'Highlights Article', desc:'Written summary of key themes and takeaways. 600–800 words. LinkedIn article + email version.', status:'todo'},
+    {id:'a6', icon:'📱', name:'Social Cuts (x3)', desc:'30-second clips from panel — one per key theme. LinkedIn + Instagram format.', status:'todo'},
+    {id:'a7', icon:'📌', name:'SMI Benchmark Card', desc:'One-page printable/digital card attendees can use to self-assess their social maturity.', status:'todo'},
+  ],
+  people: [
+    {id:'p1', initials:'C', name:'Coris', role:'Growth Director', tasks:['Event strategy and planning lead','Intermediary + prospect invitations','Speaker sourcing and management','Comms plan and nurture sequence']},
+    {id:'p2', initials:'J', name:'Jade', role:'Senior Leadership', tasks:['Event concept sign-off','Host / moderator on the night','Spokesperson for SMI framework']},
+    {id:'p3', initials:'R', name:'Ro', role:'Content / Strategy', tasks:['Presentation deck content','SMI framework narrative','Highlights article author']},
+    {id:'p4', initials:'M', name:'Mal', role:'Senior Presenter', tasks:['Potential co-moderator','Presentation delivery']},
+  ]
+};
+
+let editMode = false;
+let modalType = '';
+let state = {};
+
+// ── STORAGE ───────────────────────────────────────────────────────
+function loadState() {
+  try { const s = localStorage.getItem(STORE_KEY); if(s) return JSON.parse(s); } catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  showSaved();
+}
+function showSaved() {
+  const ind = document.getElementById('save-indicator');
+  ind.classList.add('show');
+  setTimeout(()=>ind.classList.remove('show'), 1800);
+}
+
+// ── GATE ──────────────────────────────────────────────────────────
+function checkGate() {
+  const val = document.getElementById('gate-inp').value;
+  if(val === GATE_PASSWORD) {
+    sessionStorage.setItem('jc_auth','1');
+    const g = document.getElementById('gate');
+    g.classList.add('hidden');
+    setTimeout(()=>g.remove(), 350);
+    init();
+  } else {
+    const inp = document.getElementById('gate-inp');
+    inp.classList.add('error');
+    document.getElementById('gate-err').textContent = 'Incorrect password';
+    setTimeout(()=>{ inp.classList.remove('error'); inp.value=''; document.getElementById('gate-err').textContent=''; }, 1000);
+  }
+}
+
+// ── EDIT MODE ─────────────────────────────────────────────────────
+function toggleEdit() {
+  editMode = !editMode;
+  const btn = document.getElementById('edit-toggle');
+  btn.classList.toggle('active', editMode);
+  btn.textContent = editMode ? 'Done Editing' : 'Edit Mode';
+  document.querySelectorAll('[contenteditable]').forEach(el => {
+    el.contentEditable = editMode ? 'true' : 'false';
+  });
+  document.querySelectorAll('.section-add-btn').forEach(el => el.style.display = editMode ? '' : 'none');
+  if(!editMode) persistEditables();
+}
+
+function persistEditables() {
+  const fields = ['hero-desc','hero-date','hero-format','hero-venue','hero-attendance',
+    'ev-name','ev-strapline','ev-outcomes','ev-audience','ev-topic',
+    'speaker-brief','reg-desc',
+    'copy-email-text','copy-linkedin-text','copy-cs-text','copy-reminder-text'];
+  fields.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) { if(!state.text) state.text={}; state.text[id] = el.innerText; }
+  });
+  saveState();
+}
+
+function restoreEditables() {
+  if(!state.text) return;
+  Object.entries(state.text).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if(el) el.innerText = val;
+  });
+}
+
+// ── STATUS CYCLING ────────────────────────────────────────────────
+const STATUS_CYCLE = ['todo','inprogress','done','blocked'];
+const STATUS_LABEL = {todo:'To do',inprogress:'In progress',done:'Done',blocked:'Blocked'};
+const STATUS_CLASS = {todo:'s-todo',inprogress:'s-inprogress',done:'s-done',blocked:'s-blocked'};
+
+function statusPill(status, onclick) {
+  return `<button class="status-pill ${STATUS_CLASS[status]||'s-todo'}" onclick="${onclick}">${STATUS_LABEL[status]||status}</button>`;
+}
+function cycleStatus(arr, id, field) {
+  const item = arr.find(x=>x.id===id); if(!item) return;
+  const cur = item[field||'status']||'todo';
+  item[field||'status'] = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur)+1)%STATUS_CYCLE.length];
+  saveState(); render();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────
+function render() {
+  renderTimeline();
+  renderSpeakers();
+  renderLogistics();
+  renderComms();
+  renderAssets();
+  renderPeople();
+  restoreEditables();
+  // Hide add buttons unless in edit mode
+  document.querySelectorAll('.section-add-btn').forEach(el => el.style.display = editMode ? '' : 'none');
+}
+
+function renderTimeline() {
+  const tbody = document.getElementById('timeline-body');
+  tbody.innerHTML = (state.timeline||[]).map(t => `
+    <tr>
+      <td>${esc(t.when)}<span class="week-num">${esc(t.week||'')}</span></td>
+      <td>${esc(t.milestone)}</td>
+      <td>${esc(t.owner||'—')}</td>
+      <td>${statusPill(t.status, `cycleStatus(state.timeline,'${t.id}','status');`)}</td>
+      <td><button class="del-btn" onclick="delItem('timeline','${t.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderSpeakers() {
+  document.getElementById('speakers-grid').innerHTML = (state.speakers||[]).map(s => `
+    <div class="card">
+      <div class="card-title">
+        <span>${esc(s.name)}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${statusPill(s.status, `cycleStatus(state.speakers,'${s.id}','status');`)}
+          <button class="del-btn" style="opacity:0" onclick="delItem('speakers','${s.id}')">✕</button>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--grey-mid);margin-bottom:8px">${esc(s.company)} · ${esc(s.role)}</div>
+      <div class="card-body">${esc(s.notes||'')}</div>
+    </div>`).join('');
+}
+
+function renderLogistics() {
+  document.getElementById('logistics-grid').innerHTML = (state.logistics||[]).map(l => `
+    <div class="card" style="position:relative">
+      <div class="card-title">
+        <span>${l.icon} ${esc(l.name)}</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${statusPill(l.status, `cycleStatus(state.logistics,'${l.id}','status');`)}
+          <button class="del-btn" style="opacity:0" onclick="delItem('logistics','${l.id}')">✕</button>
+        </div>
+      </div>
+      <div class="card-body">${esc(l.value)}</div>
+    </div>`).join('');
+}
+
+function renderComms() {
+  document.getElementById('comms-body').innerHTML = (state.comms||[]).map(c => `
+    <tr>
+      <td>${esc(c.month)}</td>
+      <td>${esc(c.activity)}</td>
+      <td>${esc(c.content)}</td>
+      <td>${statusPill(c.status, `cycleStatus(state.comms,'${c.id}','status');`)}</td>
+      <td><button class="del-btn" onclick="delItem('comms','${c.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+function renderAssets() {
+  document.getElementById('assets-list').innerHTML = (state.assets||[]).map(a => `
+    <div class="asset-row">
+      <div class="asset-icon">${a.icon}</div>
+      <div class="asset-info">
+        <div class="asset-name">${esc(a.name)}</div>
+        <div class="asset-desc">${esc(a.desc)}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+        ${statusPill(a.status, `cycleStatus(state.assets,'${a.id}','status');`)}
+        <button class="del-btn" onclick="delItem('assets','${a.id}')">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderPeople() {
+  document.getElementById('people-grid').innerHTML = (state.people||[]).map(p => `
+    <div class="person-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="person-initial">${esc(p.initials)}</div>
+        <button class="del-btn" style="opacity:0;margin-top:4px" onclick="delItem('people','${p.id}')">✕</button>
+      </div>
+      <div class="person-name">${esc(p.name)}</div>
+      <div class="person-role">${esc(p.role)}</div>
+      <div class="person-tasks">${(p.tasks||[]).map(t=>`<div class="person-task">${esc(t)}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+function delItem(arr, id) {
+  if(!editMode) return;
+  state[arr] = state[arr].filter(x=>x.id!==id);
+  saveState(); render();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────
+const MODAL_CONFIGS = {
+  timeline: {
+    title: 'Add Timeline Milestone',
+    fields: [
+      {id:'when',label:'When (e.g. Jul 2026)',type:'text'},
+      {id:'week',label:'Week / detail',type:'text'},
+      {id:'milestone',label:'Milestone',type:'textarea'},
+      {id:'owner',label:'Owner',type:'text'},
+    ]
+  },
+  speaker: {
+    title: 'Add Speaker / Guest',
+    fields: [
+      {id:'name',label:'Name',type:'text'},
+      {id:'company',label:'Company / sector',type:'text'},
+      {id:'role',label:'Role (e.g. Panellist)',type:'text'},
+      {id:'notes',label:'Notes',type:'textarea'},
+    ]
+  },
+  comms: {
+    title: 'Add Comms Row',
+    fields: [
+      {id:'month',label:'Month',type:'text'},
+      {id:'activity',label:'Comms activity',type:'textarea'},
+      {id:'content',label:'Content needed',type:'textarea'},
+    ]
+  },
+  asset: {
+    title: 'Add Post-Event Asset',
+    fields: [
+      {id:'icon',label:'Icon (emoji)',type:'text'},
+      {id:'name',label:'Asset name',type:'text'},
+      {id:'desc',label:'Description',type:'textarea'},
+    ]
+  },
+  person: {
+    title: 'Add Person',
+    fields: [
+      {id:'name',label:'Name',type:'text'},
+      {id:'initials',label:'Initials (1-2 chars)',type:'text'},
+      {id:'role',label:'Role / title',type:'text'},
+      {id:'tasks',label:'Responsibilities (one per line)',type:'textarea'},
+    ]
+  },
+};
+
+function openModal(type) {
+  if(!editMode) return;
+  modalType = type;
+  const cfg = MODAL_CONFIGS[type];
+  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => `
+    <div class="m-field">
+      <label>${f.label}</label>
+      ${f.type==='textarea'
+        ? `<textarea id="mf-${f.id}" rows="3" placeholder="${f.label}"></textarea>`
+        : `<input type="text" id="mf-${f.id}" placeholder="${f.label}">`}
+    </div>`).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) { if(e.target===document.getElementById('modal-overlay'))closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function saveModalItem() {
+  const cfg = MODAL_CONFIGS[modalType];
+  const item = {id: modalType[0]+'-'+Date.now(), status:'todo'};
+  cfg.fields.forEach(f => {
+    const el = document.getElementById('mf-'+f.id);
+    if(el) item[f.id] = el.value.trim();
+  });
+  if(modalType === 'person') {
+    item.tasks = (item.tasks||'').split('\n').map(t=>t.trim()).filter(Boolean);
+  }
+  const arrMap = {timeline:'timeline',speaker:'speakers',comms:'comms',asset:'assets',person:'people'};
+  state[arrMap[modalType]].push(item);
+  saveState(); render(); closeModalDirect();
+}
+
+// ── COPY TABS ─────────────────────────────────────────────────────
+function switchCopy(tab, btn) {
+  document.querySelectorAll('.copy-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.copy-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('copy-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function copyText(id, btn) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent='Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='Copy text'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── QA ────────────────────────────────────────────────────────────
+async function submitQA() {
+  const q = document.getElementById('qa-inp').value.trim();
+  if(!q) return;
+  const btn = document.querySelector('.qa-submit');
+  btn.disabled=true; btn.textContent='Sending…';
+  try {
+    await fetch(MAKE_WEBHOOK, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({context:'Social Maturity Index Event Hub', question:q, submitted_at:new Date().toISOString()})
+    });
+  } catch(e){}
+  document.getElementById('qa-inp').value='';
+  document.getElementById('qa-sent').style.display='block';
+  btn.textContent='Sent ✓';
+}
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── INIT ──────────────────────────────────────────────────────────
+function init() {
+  state = loadState();
+  render();
+}
+
+if(sessionStorage.getItem('jc_auth')==='1') {
+  document.getElementById('gate').remove();
+  init();
+} else {
+  document.getElementById('gate-inp').focus();
+}
+</script>
+</body>
+</html>
