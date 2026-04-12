@@ -847,13 +847,17 @@ function renderProspectsTable(rows) {
   }
 
   const COLS = [
-    {key:'full_name', label:'Name'},
-    {key:'title', label:'Title'},
+    {key:'first_name', label:'First Name'},
+    {key:'last_name', label:'Last Name'},
     {key:'company', label:'Company'},
-    {key:'campaign', label:'Campaign'},
-    {key:'status', label:'Status'},
+    {key:'title', label:'Job Title'},
     {key:'linkedin_url', label:'LinkedIn'},
-    {key:'connected_at', label:'Connected'},
+    {key:'email', label:'Email'},
+    {key:'manual_email', label:'Manual Email'},
+    {key:'corporate_email', label:'Corporate Email'},
+    {key:'linkedin_email', label:'LinkedIn Email'},
+    {key:'company_website', label:'Company Website'},
+    {key:'campaign', label:'Dripify Campaign'},
   ];
 
   thead.innerHTML = `<tr>${COLS.map(c=>`<th>${c.label}</th>`).join('')}</tr>`;
@@ -864,8 +868,8 @@ function renderProspectsTable(rows) {
       if(c.key === 'linkedin_url' && val) {
         return `<td><a href="${esc(val)}" target="_blank" rel="noopener">View ↗</a></td>`;
       }
-      if(c.key === 'connected_at' && val) {
-        return `<td>${new Date(val).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>`;
+      if(c.key === 'company_website' && val) {
+        return `<td><a href="${val.startsWith('http')?esc(val):'https://'+esc(val)}" target="_blank" rel="noopener">${esc(val.replace(/^https?:\/\//,''))}</a></td>`;
       }
       if(c.key === 'status') {
         const cls = val==='connected'?'s-connected':val==='replied'?'s-replied':val==='meeting'?'s-meeting':'s-default';
@@ -883,7 +887,7 @@ function filterProspects() {
   const q = document.getElementById('prospects-search').value.toLowerCase().trim();
   if(!q) { renderProspectsTable(prospectsData); return; }
   const filtered = prospectsData.filter(row =>
-    ['full_name','title','company','campaign','status'].some(k => String(row[k]||'').toLowerCase().includes(q))
+    ['first_name','last_name','company','title','campaign','email'].some(k => String(row[k]||'').toLowerCase().includes(q))
   );
   renderProspectsTable(filtered);
   document.getElementById('prospects-count').textContent = `${filtered.length} of ${prospectsData.length} prospects`;
