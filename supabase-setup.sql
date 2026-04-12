@@ -33,7 +33,34 @@ alter table public.questions enable row level security;
 create policy "anon_all" on public.questions
   for all to anon using (true) with check (true);
 
--- SEED DATA
+-- ASSETS TABLE
+create table if not exists public.assets (
+  id uuid default gen_random_uuid() primary key,
+  icon text default '📄',
+  name text not null,
+  description text,
+  status text not null default 'needed',
+  doc_url text default '',
+  created_at timestamptz default now()
+);
+
+alter table public.assets enable row level security;
+
+create policy "anon_all" on public.assets
+  for all to anon using (true) with check (true);
+
+-- SEED ASSETS
+insert into public.assets (icon, name, description, status) values
+  ('📊', 'Intermediary Deck', 'Tailored creds for intermediary conversations — social maturity framing, category expertise, case studies.', 'in-progress'),
+  ('📝', 'Pillar Half-Pagers', 'One-page write-ups of each confirmed theme — what it means, proof points, ICP alignment.', 'needed'),
+  ('🎯', 'Case Studies (x3)', 'Commercial impact case studies — one per priority ICP. Problem → approach → result.', 'needed'),
+  ('🖥️', 'Event One-Pager', 'Invite and overview asset for the Oct owned event. Speaker bios, format, audience rationale.', 'needed'),
+  ('📦', 'Slim Creds Update', 'Refresh the existing slim creds to reflect new pillar language and most recent work.', 'in-progress'),
+  ('📈', 'Social Maturity Index', 'Proprietary diagnostic tool — the IP asset that can drive PR, lead gen, and event hooks.', 'needed'),
+  ('✉️', 'Nurture Email Sequence', 'Post-event and always-on nurture comms. Pillar-themed, fortnightly → monthly cadence.', 'needed'),
+  ('🎤', 'Speaking Abstract', 'Reusable abstract for conference speaking applications — pillar-led, commercially framed.', 'needed');
+
+
 insert into public.events (name, category, start_date, end_date, location, description, row_key) values
   ('MAD Meets', 'intermediary', '2026-05-14', '2026-05-14', 'London', 'Ingenuity+ quarterly event for brand marketers and senior agency contacts.', 'intermediary-ingenuity'),
   ('MAD Meets', 'intermediary', '2026-08-13', '2026-08-13', 'London', 'Ingenuity+ quarterly event.', 'intermediary-ingenuity'),
