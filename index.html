@@ -54,7 +54,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 /* CALENDAR */
 #planner-wrap { overflow-x: auto; overflow-y: visible; min-height: calc(100vh - var(--header-h)); padding-bottom: 100px; }
 #planner { display: grid; min-width: calc(var(--sidebar-w) + var(--col-w) * 12 + 40px); position: relative; }
-#month-header { position: sticky; top: 0; z-index: 90; display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); background: var(--cream); border-bottom: 2px solid var(--black); }
+#month-header { position: sticky; top: 0; z-index: 90; display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); background: var(--cream); border-bottom: 2px solid var(--black); box-shadow: 0 1px 0 var(--grey-light); }
 .month-label { padding: 14px 0 10px; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); border-left: 1px solid var(--grey-light); }
 .month-label.current { color: var(--black); }
 .month-label.current::after { content: ''; display: block; margin: 4px auto 0; width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
@@ -286,7 +286,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .gate-error { font-size: 12px; color: #FF6B4A; margin-top: 12px; min-height: 18px; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 
-#planner-wrap::-webkit-scrollbar { height: 4px; }
+#ws-modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#ws-modal-overlay.open { opacity: 1; pointer-events: all; }
+#ws-modal-overlay #add-modal { transform: translateY(20px); transition: transform 0.25s; }
+#ws-modal-overlay.open #add-modal { transform: translateY(0); }
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 </style>
@@ -311,8 +314,9 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
   </div>
-  <div>
+  <div style="display:flex;gap:8px;align-items:center">
     <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
+    <button class="add-btn" id="ws-btn" onclick="openWsModal()" style="opacity:0.7">+ Workstream</button>
   </div>
 </header>
 
@@ -398,25 +402,46 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       <button class="modal-close" onclick="closeAddModalDirect()">✕</button>
     </div>
     <div class="add-modal-body">
-      <div class="field"><label>Event Name</label><input type="text" id="add-name" placeholder="e.g. Marketing Week Live"></div>
+      <div class="field"><label>Event Name</label><input type="text" id="add-name" placeholder="e.g. Masterclassing Social — Jun"></div>
       <div class="field-row">
         <div class="field"><label>Start Date</label><input type="date" id="add-start"></div>
         <div class="field"><label>End Date (optional)</label><input type="date" id="add-end"></div>
       </div>
       <div class="field"><label>Location</label><input type="text" id="add-location" placeholder="e.g. London"></div>
-      <div class="field"><label>Category</label>
-        <select id="add-category">
-          <option value="attendance">Conference / Attendance</option>
-          <option value="speaking">Speaking</option>
-          <option value="intermediary">Intermediary Event</option>
-          <option value="owned">Owned Event</option>
-        </select>
+      <div class="field"><label>Workstream (row)</label>
+        <select id="add-rowkey"></select>
       </div>
       <div class="field"><label>Notes (optional)</label><textarea id="add-notes" rows="2" placeholder="Any context…"></textarea></div>
     </div>
     <div class="add-modal-footer">
       <button class="btn-cancel" onclick="closeAddModalDirect()">Cancel</button>
       <button class="btn-save" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD WORKSTREAM MODAL -->
+<div id="ws-modal-overlay" onclick="closeWsModal(event)">
+  <div id="add-modal" style="max-width:400px">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Add Workstream</div>
+      <button class="modal-close" onclick="closeWsModalDirect()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <div class="field"><label>Workstream Name</label><input type="text" id="ws-name" placeholder="e.g. Creativebrief"></div>
+      <div class="field"><label>Section</label>
+        <select id="ws-section">
+          <option value="intermediaries">Intermediary Activity</option>
+          <option value="owned">Owned Events</option>
+          <option value="speaking">Speaking</option>
+          <option value="attendance">Event Attendance</option>
+          <option value="content">Content & Comms</option>
+        </select>
+      </div>
+    </div>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeWsModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveWorkstream()">Add Row</button>
     </div>
   </div>
 </div>
@@ -435,7 +460,7 @@ const MONTHS = [
 ];
 const PLAN_START = new Date(2026,3,1), PLAN_END = new Date(2027,3,1);
 
-const SECTIONS = [
+let SECTIONS = [
   {id:'intermediaries',label:'Intermediary Activity',rows:[
     {key:'intermediary-ingenuity',label:'Ingenuity+'},
     {key:'intermediary-oystercatchers',label:'Oystercatchers'},
@@ -534,8 +559,10 @@ function switchView(v, btn) {
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
   document.getElementById(v==='calendar'?'calendar-view':'programme-view-el').classList.add('active');
   btn.classList.add('active');
-  document.getElementById('add-btn').style.display = v==='calendar'?'':'none';
-  document.getElementById('legend').style.display = v==='calendar'?'':'none';
+  const show = v==='calendar';
+  document.getElementById('add-btn').style.display = show?'':'none';
+  document.getElementById('ws-btn').style.display = show?'':'none';
+  document.getElementById('legend').style.display = show?'':'none';
 }
 
 function cw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||80;}
@@ -549,11 +576,18 @@ function renderMonthHeader() {
   hdr.innerHTML=h;
 }
 
+function getCollapseState() { return JSON.parse(localStorage.getItem('jc_collapse')||'{}'); }
+function saveCollapseState(id, collapsed) { const s=getCollapseState(); s[id]=collapsed; localStorage.setItem('jc_collapse',JSON.stringify(s)); }
+
 function renderRows() {
   const c=document.getElementById('rows-container'); c.innerHTML='';
+  const collapseState = getCollapseState();
   SECTIONS.forEach(s=>{
-    const sg=document.createElement('div'); sg.className='section-group collapsed'; sg.dataset.section=s.id;
-    const sh=document.createElement('div'); sh.className='section-header'; sh.onclick=()=>sg.classList.toggle('collapsed');
+    // Default collapsed = true (first visit), unless explicitly saved as false
+    const isCollapsed = collapseState[s.id] !== false;
+    const sg=document.createElement('div'); sg.className='section-group'+(isCollapsed?' collapsed':''); sg.dataset.section=s.id;
+    const sh=document.createElement('div'); sh.className='section-header';
+    sh.onclick=()=>{ sg.classList.toggle('collapsed'); saveCollapseState(s.id, sg.classList.contains('collapsed')); };
     sh.innerHTML=`<div></div><div style="display:flex;align-items:center"><div class="section-title">${s.label}</div><div class="section-chevron"><svg viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z"/></svg></div></div>`;
     sg.appendChild(sh);
     const sr=document.createElement('div'); sr.className='section-rows';
@@ -730,20 +764,59 @@ function renderAssets(){
     </div>`).join('');
 }
 
-function openAddModal(){document.getElementById('add-modal-overlay').classList.add('open');}
+function openAddModal(){
+  // Populate workstream dropdown from current SECTIONS
+  const sel = document.getElementById('add-rowkey');
+  sel.innerHTML = '';
+  SECTIONS.forEach(section => {
+    section.rows.filter(r=>!r.placeholder).forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.key;
+      // Derive category from section
+      const catMap = {intermediaries:'intermediary',owned:'owned',speaking:'speaking',attendance:'attendance',content:'content'};
+      opt.dataset.category = catMap[section.id] || 'attendance';
+      opt.textContent = `${section.label} — ${r.label}`;
+      sel.appendChild(opt);
+    });
+  });
+  document.getElementById('add-modal-overlay').classList.add('open');
+}
 function closeAddModal(e){if(e.target===document.getElementById('add-modal-overlay'))closeAddModalDirect();}
 function closeAddModalDirect(){document.getElementById('add-modal-overlay').classList.remove('open');}
 async function saveEvent(){
   const name=document.getElementById('add-name').value.trim(), start=document.getElementById('add-start').value;
   const end=document.getElementById('add-end').value||start, location=document.getElementById('add-location').value.trim();
-  const category=document.getElementById('add-category').value, notes=document.getElementById('add-notes').value.trim();
+  const sel=document.getElementById('add-rowkey');
+  const rowKey=sel.value, category=sel.options[sel.selectedIndex]?.dataset.category||'attendance';
+  const notes=document.getElementById('add-notes').value.trim();
   if(!name||!start){alert('Name and start date required.');return;}
-  const rkMap={attendance:'event-attendance',speaking:'event-speaking',intermediary:'intermediary-custom',owned:'owned-events'};
-  const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rkMap[category]};
-  try{await sbFetch('events',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({name,category,start_date:start,end_date:end,location,description:notes,row_key:rkMap[category]})});}catch(e){}
+  const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey};
+  try{await sbFetch('events',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(evt)});}catch(e){}
   const local=JSON.parse(localStorage.getItem('jc_events')||'[]'); local.push(evt); localStorage.setItem('jc_events',JSON.stringify(local));
-  allEvents.push(evt); renderRows(); closeAddModalDirect();
+  allEvents.push(evt);
+  // Expand the section this event belongs to so it's immediately visible
+  SECTIONS.forEach(s=>{ if(s.rows.find(r=>r.key===rowKey)){ const state=getCollapseState(); state[s.id]=false; localStorage.setItem('jc_collapse',JSON.stringify(state)); } });
+  renderRows(); closeAddModalDirect();
   ['add-name','add-start','add-end','add-location','add-notes'].forEach(id=>document.getElementById(id).value='');
+}
+
+function openWsModal(){ document.getElementById('ws-modal-overlay').classList.add('open'); document.getElementById('ws-name').value=''; }
+function closeWsModal(e){ if(e.target===document.getElementById('ws-modal-overlay'))closeWsModalDirect(); }
+function closeWsModalDirect(){ document.getElementById('ws-modal-overlay').classList.remove('open'); }
+function saveWorkstream(){
+  const name=document.getElementById('ws-name').value.trim();
+  const sectionId=document.getElementById('ws-section').value;
+  if(!name)return;
+  const key='custom-'+name.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
+  const section=SECTIONS.find(s=>s.id===sectionId);
+  if(section){ section.rows.push({key, label:name}); }
+  // Persist custom workstreams
+  const custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]');
+  custom.push({key, label:name, sectionId});
+  localStorage.setItem('jc_workstreams',JSON.stringify(custom));
+  // Expand the section
+  const state=getCollapseState(); state[sectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
+  renderRows(); closeWsModalDirect();
 }
 
 function fmtR(s,e){
@@ -776,6 +849,9 @@ function checkGate() {
 }
 
 async function init(){
+  // Load any custom workstreams saved previously
+  const custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]');
+  custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
   renderMonthHeader();
   allEvents=await loadEvents();
   renderRows();
