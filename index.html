@@ -1258,7 +1258,14 @@ async function openModal(evt) {
   document.getElementById('modal-title').textContent=evt.name;
   document.getElementById('modal-date').textContent=fmtR(evt.start_date,evt.end_date);
   const meta=document.getElementById('modal-meta');
-  meta.innerHTML=(evt.location?`<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`:'')+`<div class="modal-meta-item">Type<strong>${labels[evt.category]}</strong></div>`;
+  // Edit/delete buttons for attendance events (and any locally-added events)
+  const canEdit = evt.category === 'attendance' || (evt.id && String(evt.id).startsWith('local-'));
+  const editBtns = canEdit ? `
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="openEditEvent()" style="background:var(--black);color:var(--green);border:none;border-radius:100px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">✎ Edit</button>
+      <button onclick="deleteEvent('${evt.id}')" style="background:none;border:1.5px solid rgba(192,57,43,0.3);color:#c0392b;border-radius:100px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer">Delete</button>
+    </div>` : '';
+  meta.innerHTML=(evt.location?`<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`:'')+`<div class="modal-meta-item">Type<strong>${labels[evt.category]}</strong></div>${editBtns}`;
   const prep=document.getElementById('modal-prep');
   if(evt.category==='owned'){
     const ed=new Date(evt.start_date);
@@ -1272,6 +1279,41 @@ async function openModal(evt) {
 }
 function closeModal(e){if(e.target===document.getElementById('modal-overlay'))closeModalDirect();}
 function closeModalDirect(){document.getElementById('modal-overlay').classList.remove('open');currentModalEvent=null;}
+
+function openEditEvent() {
+  if(!currentModalEvent) return;
+  const evt = currentModalEvent;
+  // Close the detail modal and open add modal pre-filled
+  closeModalDirect();
+  // Pre-fill the add event form
+  document.getElementById('add-name').value = evt.name || '';
+  document.getElementById('add-start').value = evt.start_date || '';
+  document.getElementById('add-end').value = evt.end_date || '';
+  document.getElementById('add-location').value = evt.location || '';
+  document.getElementById('add-notes').value = evt.description || '';
+  // Set the workstream dropdown to match
+  const sel = document.getElementById('add-rowkey');
+  // Rebuild dropdown first
+  openAddModal();
+  // Then set value and mark as editing
+  sel.value = evt.row_key || 'event-attendance';
+  // Store the id we're editing
+  window._editingEventId = evt.id;
+  document.querySelector('#add-modal .add-modal-title').textContent = 'Edit Event';
+  document.querySelector('#add-modal .btn-save').textContent = 'Save Changes';
+}
+
+async function deleteEvent(id) {
+  const evt = allEvents.find(e => e.id === id);
+  if(!evt) return;
+  if(!confirm(`Delete "${evt.name}"? This can't be undone.`)) return;
+  closeModalDirect();
+  try {
+    await sbFetch(`events?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
+  } catch(e) {}
+  allEvents = allEvents.filter(e => e.id !== id);
+  renderRows();
+}
 
 async function renderQALog(evt) {
   const ctx=`${evt.name} (${fmtR(evt.start_date,evt.end_date)})`;
@@ -1500,7 +1542,6 @@ function openAddModal(){
   document.getElementById('add-modal-overlay').classList.add('open');
 }
 function closeAddModal(e){if(e.target===document.getElementById('add-modal-overlay'))closeAddModalDirect();}
-function closeAddModalDirect(){document.getElementById('add-modal-overlay').classList.remove('open');}
 async function saveEvent(){
   const name=document.getElementById('add-name').value.trim(), start=document.getElementById('add-start').value;
   const end=document.getElementById('add-end').value||start, location=document.getElementById('add-location').value.trim();
@@ -1508,20 +1549,43 @@ async function saveEvent(){
   const rowKey=sel.value, category=sel.options[sel.selectedIndex]?.dataset.category||'attendance';
   const notes=document.getElementById('add-notes').value.trim();
   if(!name||!start){alert('Name and start date required.');return;}
-  const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey};
-  let saved = false;
-  try{
-    const r = await sbFetch('events',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey})});
-    if(r.ok){ const d=await r.json(); if(d[0]) evt.id=d[0].id; saved=true; }
-  }catch(e){}
-  if(!saved){
-    const local=JSON.parse(localStorage.getItem('jc_events')||'[]'); local.push(evt); localStorage.setItem('jc_events',JSON.stringify(local));
+
+  const editId = window._editingEventId;
+
+  if(editId) {
+    // Edit existing event
+    const payload = {name, category, start_date:start, end_date:end, location, description:notes, row_key:rowKey};
+    try {
+      await sbFetch(`events?id=eq.${editId}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(payload)});
+    } catch(e){}
+    const idx = allEvents.findIndex(e=>e.id===editId);
+    if(idx>-1) allEvents[idx] = {...allEvents[idx], ...payload};
+    window._editingEventId = null;
+  } else {
+    // Add new event
+    const evt={id:'local-'+Date.now(),name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey};
+    let saved=false;
+    try{
+      const r=await sbFetch('events',{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify({name,category,start_date:start,end_date:end,location,description:notes,row_key:rowKey})});
+      if(r.ok){const d=await r.json();if(d[0])evt.id=d[0].id;saved=true;}
+    }catch(e){}
+    if(!saved){const local=JSON.parse(localStorage.getItem('jc_events')||'[]');local.push(evt);localStorage.setItem('jc_events',JSON.stringify(local));}
+    allEvents.push(evt);
   }
-  allEvents.push(evt);
-  // Expand the section this event belongs to so it's immediately visible
+
   SECTIONS.forEach(s=>{ if(s.rows.find(r=>r.key===rowKey)){ const state=getCollapseState(); state[s.id]=false; localStorage.setItem('jc_collapse',JSON.stringify(state)); } });
   renderRows(); closeAddModalDirect();
   ['add-name','add-start','add-end','add-location','add-notes'].forEach(id=>document.getElementById(id).value='');
+}
+
+function closeAddModalDirect(){
+  document.getElementById('add-modal-overlay').classList.remove('open');
+  // Reset modal back to "Add" state in case it was in edit mode
+  window._editingEventId = null;
+  const titleEl = document.querySelector('#add-modal .add-modal-title');
+  const saveEl = document.querySelector('#add-modal .btn-save');
+  if(titleEl) titleEl.textContent = 'Add Event';
+  if(saveEl) saveEl.textContent = 'Save Event';
 }
 
 function openWsModal(){ document.getElementById('ws-modal-overlay').classList.add('open'); document.getElementById('ws-name').value=''; }
