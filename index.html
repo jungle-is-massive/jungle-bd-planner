@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jungle — BD Planner 26/27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────── */
+:root {
+  --cream: #F5F0E8;
+  --black: #0E0E0E;
+  --green: #CAFF4E;
+  --green-dim: #9DC23A;
+  --grey: #C8C3B8;
+  --grey-mid: #8A8880;
+  --grey-light: #E8E3DA;
+  --white: #FFFFFF;
+  --row-h: 56px;
+  --header-h: 72px;
+  --col-w: 80px;
+  --sidebar-w: 180px;
+
+  /* row colours */
+  --c-intermediary: #7B6FE0;
+  --c-owned: #CAFF4E;
+  --c-speaking: #FF6B4A;
+  --c-attendance: #4ABFFF;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--cream);
+  color: var(--black);
+  font-family: 'Syne', sans-serif;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ── TOPBAR ─────────────────────────────────────── */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-h);
+  background: var(--black);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+}
+#topbar .wordmark {
+  font-size: 18px; font-weight: 800; letter-spacing: -0.03em;
+  color: var(--cream);
+}
+#topbar .wordmark span { color: var(--green); }
+#topbar .meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--grey);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#topbar .add-btn {
+  background: var(--green); color: var(--black);
+  border: none; border-radius: 100px;
+  padding: 8px 18px; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 0.15s, background 0.15s;
+}
+#topbar .add-btn:hover { transform: scale(1.04); background: #d6ff6a; }
+
+/* ── PLANNER LAYOUT ─────────────────────────────── */
+#planner-wrap {
+  margin-top: var(--header-h);
+  overflow-x: auto;
+  overflow-y: visible;
+  min-height: calc(100vh - var(--header-h));
+  padding-bottom: 80px;
+}
+
+#planner {
+  display: grid;
+  min-width: calc(var(--sidebar-w) + var(--col-w) * 12 + 40px);
+  position: relative;
+}
+
+/* ── MONTH HEADER ───────────────────────────────── */
+#month-header {
+  position: sticky; top: var(--header-h); z-index: 90;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w));
+  background: var(--cream);
+  border-bottom: 2px solid var(--black);
+  padding: 0 20px 0 0;
+}
+.month-label-spacer { /* empty corner */ }
+.month-label {
+  padding: 16px 0 12px;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-mid);
+  border-left: 1px solid var(--grey-light);
+}
+.month-label.current {
+  color: var(--black); font-weight: 500;
+}
+.month-label.current::after {
+  content: '';
+  display: block; margin: 4px auto 0;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+/* ── SECTION GROUPS ─────────────────────────────── */
+.section-group { border-bottom: 1px solid var(--grey-light); }
+.section-header {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  align-items: center;
+  padding: 20px 20px 20px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.section-header:hover .section-title { opacity: 0.7; }
+.section-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--grey-mid);
+  padding: 0 16px;
+  transition: opacity 0.15s;
+}
+.section-chevron {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--grey-mid);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-left: 10px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.section-chevron svg { width: 6px; height: 6px; fill: var(--grey-mid); }
+.section-group.collapsed .section-chevron { transform: rotate(-90deg); }
+.section-rows { overflow: hidden; }
+.section-group.collapsed .section-rows { display: none; }
+
+/* ── ROWS ───────────────────────────────────────── */
+.row {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w));
+  height: var(--row-h);
+  align-items: center;
+  border-top: 1px solid var(--grey-light);
+  position: relative;
+  padding-right: 20px;
+}
+.row:hover { background: rgba(0,0,0,0.015); }
+.row-label {
+  padding: 0 16px;
+  font-size: 11px; font-weight: 600;
+  color: var(--black);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.row-cell {
+  height: 100%;
+  border-left: 1px solid var(--grey-light);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── TODAY LINE ─────────────────────────────────── */
+.today-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 1.5px;
+  background: var(--green);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── DOTS / EVENTS ──────────────────────────────── */
+.event-dot {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.15s, box-shadow 0.15s;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.event-dot:hover {
+  transform: translateY(-50%) scale(1.5);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.08);
+}
+.event-dot.category-intermediary { background: var(--c-intermediary); }
+.event-dot.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-dot.category-speaking { background: var(--c-speaking); }
+.event-dot.category-attendance { background: var(--c-attendance); }
+
+/* Multi-day event bar */
+.event-bar {
+  position: absolute;
+  height: 20px;
+  border-radius: 100px;
+  cursor: pointer;
+  z-index: 10;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity 0.15s, transform 0.15s;
+  display: flex; align-items: center;
+  padding: 0 8px;
+  overflow: hidden;
+}
+.event-bar:hover { opacity: 0.85; transform: translateY(-50%) scaleY(1.1); }
+.event-bar span {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px; font-weight: 500;
+  white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.04em;
+}
+.event-bar.category-intermediary { background: var(--c-intermediary); }
+.event-bar.category-intermediary span { color: white; }
+.event-bar.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-bar.category-owned span { color: var(--black); }
+.event-bar.category-speaking { background: var(--c-speaking); }
+.event-bar.category-speaking span { color: white; }
+.event-bar.category-attendance { background: var(--c-attendance); }
+.event-bar.category-attendance span { color: white; }
+
+/* Prep bar (muted, dashed) */
+.prep-bar {
+  position: absolute;
+  height: 6px;
+  border-radius: 100px;
+  opacity: 0.25;
+  z-index: 8;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ── TOOLTIP ────────────────────────────────────── */
+#tooltip {
+  position: fixed;
+  background: var(--black);
+  color: var(--cream);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  max-width: 220px;
+  z-index: 500;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+#tooltip.visible { opacity: 1; }
+#tooltip .tt-name { font-weight: 700; margin-bottom: 3px; }
+#tooltip .tt-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--grey);
+}
+#tooltip .tt-loc { font-size: 10px; color: var(--grey); margin-top: 2px; }
+
+/* ── MODAL ──────────────────────────────────────── */
+#modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(14,14,14,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+#modal-overlay.open { opacity: 1; pointer-events: all; }
+#modal {
+  background: var(--cream);
+  border-radius: 16px;
+  width: min(540px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.25s;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+#modal-overlay.open #modal { transform: translateY(0); }
+.modal-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 28px 28px 16px;
+  border-bottom: 1px solid var(--grey-light);
+}
+.modal-cat-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 100px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+.modal-cat-pill.intermediary { background: var(--c-intermediary); color: white; }
+.modal-cat-pill.owned { background: var(--c-owned); color: var(--black); }
+.modal-cat-pill.speaking { background: var(--c-speaking); color: white; }
+.modal-cat-pill.attendance { background: var(--c-attendance); color: white; }
+.modal-title { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.modal-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--grey-mid);
+  margin-top: 6px; letter-spacing: 0.04em;
+}
+.modal-close {
+  background: var(--grey-light); border: none;
+  width: 32px; height: 32px; border-radius: 50%;
+  cursor: pointer; font-size: 16px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--grey-mid);
+  transition: background 0.15s;
+}
+.modal-close:hover { background: var(--grey); color: var(--black); }
+.modal-body { padding: 20px 28px 28px; }
+.modal-desc {
+  font-size: 14px; line-height: 1.6;
+  color: #3a3a3a; margin-bottom: 24px;
+}
+.modal-meta-row {
+  display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.modal-meta-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--grey-mid);
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.modal-meta-item strong { color: var(--black); display: block; margin-top: 2px; font-style: normal; font-family: 'Syne', sans-serif; font-size: 12px; letter-spacing: 0; text-transform: none; }
+
+/* Owned event prep timeline */
+.prep-timeline {
+  background: var(--black);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+.prep-timeline h4 {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--green); margin-bottom: 14px;
+}
+.prep-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 10px;
+}
+.prep-item:last-child { margin-bottom: 0; }
+.prep-dot-line {
+  display: flex; flex-direction: column; align-items: center;
+  flex-shrink: 0;
+}
+.prep-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.prep-line { width: 1px; height: 20px; background: rgba(255,255,255,0.15); margin-top: 3px; }
+.prep-item:last-child .prep-line { display: none; }
+.prep-text { font-size: 12px; color: var(--grey); }
+.prep-text strong { color: var(--cream); font-weight: 600; display: block; margin-bottom: 1px; }
+
+/* Q&A section */
+.qa-section {
+  border-top: 1px solid var(--grey-light);
+  padding-top: 20px;
+}
+.qa-label {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.qa-label::before {
+  content: '?';
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--black); color: var(--green);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; flex-shrink: 0;
+}
+.qa-textarea {
+  width: 100%; border: 1.5px solid var(--grey-light);
+  border-radius: 8px; background: var(--white);
+  padding: 10px 12px; font-family: 'Syne', sans-serif;
+  font-size: 13px; resize: none; min-height: 72px;
+  outline: none; color: var(--black);
+  transition: border-color 0.15s;
+}
+.qa-textarea:focus { border-color: var(--black); }
+.qa-submit {
+  margin-top: 10px; background: var(--black); color: var(--green);
+  border: none; border-radius: 100px;
+  padding: 10px 20px; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s;
+}
+.qa-submit:hover { opacity: 0.8; }
+.qa-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+.qa-success {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; color: var(--green-dim);
+  margin-top: 8px; display: none;
+}
+
+/* ── ADD EVENT MODAL ────────────────────────────── */
+#add-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(14,14,14,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+#add-modal-overlay.open { opacity: 1; pointer-events: all; }
+#add-modal {
+  background: var(--cream);
+  border-radius: 16px;
+  width: min(440px, 92vw);
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.25s;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+#add-modal-overlay.open #add-modal { transform: translateY(0); }
+.add-modal-header {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid var(--grey-light);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.add-modal-title { font-size: 18px; font-weight: 800; letter-spacing: -0.03em; }
+.add-modal-body { padding: 20px 24px 24px; }
+.field { margin-bottom: 16px; }
+.field label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--grey-mid); display: block; margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; border: 1.5px solid var(--grey-light);
+  border-radius: 8px; background: var(--white);
+  padding: 9px 12px; font-family: 'Syne', sans-serif;
+  font-size: 13px; outline: none; color: var(--black);
+  transition: border-color 0.15s; appearance: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--black);
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.add-modal-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding: 0 24px 24px;
+}
+.btn-cancel {
+  background: var(--grey-light); border: none;
+  border-radius: 100px; padding: 10px 18px;
+  font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+  cursor: pointer; color: var(--grey-mid);
+  transition: background 0.15s;
+}
+.btn-cancel:hover { background: var(--grey); color: var(--black); }
+.btn-save {
+  background: var(--black); color: var(--green);
+  border: none; border-radius: 100px;
+  padding: 10px 22px; font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-save:hover { opacity: 0.8; }
+
+/* ── LEGEND ─────────────────────────────────────── */
+#legend {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--black); border-radius: 100px;
+  display: flex; align-items: center; gap: 20px;
+  padding: 10px 24px; z-index: 90;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.legend-item {
+  display: flex; align-items: center; gap: 7px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--grey);
+}
+.legend-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── SCROLLBAR ──────────────────────────────────── */
+#planner-wrap::-webkit-scrollbar { height: 4px; }
+#planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
+#planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
+
+/* ── RESPONSIVE ─────────────────────────────────── */
+@media (max-width: 700px) {
+  :root { --col-w: 60px; --sidebar-w: 130px; }
+  #topbar .meta { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topbar">
+  <div class="wordmark">JUNGLE<span>.</span></div>
+  <div class="meta">BD Planner — Apr 26 → Mar 27</div>
+  <button class="add-btn" onclick="openAddModal()">+ Add Event</button>
+</header>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="tt-name"></div>
+  <div class="tt-date"></div>
+  <div class="tt-loc"></div>
+</div>
+
+<!-- MAIN PLANNER -->
+<div id="planner-wrap">
+  <div id="planner">
+    <!-- Month header injected by JS -->
+    <div id="month-header"></div>
+    <!-- Rows injected by JS -->
+    <div id="rows-container"></div>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-intermediary)"></div>Intermediary</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-owned);border:1px solid #666"></div>Owned Event</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-speaking)"></div>Speaking</div>
+  <div class="legend-item"><div class="legend-dot" style="background:var(--c-attendance)"></div>Attending</div>
+</div>
+
+<!-- EVENT DETAIL MODAL -->
+<div id="modal-overlay" onclick="closeModal(event)">
+  <div id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-cat-pill" id="modal-pill"></div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-date" id="modal-date"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta-row" id="modal-meta"></div>
+      <div id="modal-prep"></div>
+      <p class="modal-desc" id="modal-desc"></p>
+      <div class="qa-section">
+        <div class="qa-label">Have a question about this?</div>
+        <textarea class="qa-textarea" id="qa-input" placeholder="Ask anything about this event or activity…" rows="3"></textarea>
+        <button class="qa-submit" id="qa-btn" onclick="submitQuestion()">Submit</button>
+        <div class="qa-success" id="qa-success">✓ Sent — you'll get a reply in Slack</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div id="add-modal-overlay" onclick="closeAddModal(event)">
+  <div id="add-modal">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Add Event</div>
+      <button class="modal-close" onclick="closeAddModalDirect()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <div class="field">
+        <label>Event Name</label>
+        <input type="text" id="add-name" placeholder="e.g. Marketing Week Live">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start Date</label>
+          <input type="date" id="add-start">
+        </div>
+        <div class="field">
+          <label>End Date (optional)</label>
+          <input type="date" id="add-end">
+        </div>
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="add-location" placeholder="e.g. London">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="add-category">
+          <option value="attendance">Conference / Attendance</option>
+          <option value="speaking">Speaking</option>
+          <option value="intermediary">Intermediary Event</option>
+          <option value="owned">Owned Event</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea id="add-notes" rows="2" placeholder="Any context…"></textarea>
+      </div>
+    </div>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeAddModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
+const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
+
+// ── MONTHS ──────────────────────────────────────────────────────
+const MONTHS = [
+  { label: 'Apr 26', year: 2026, month: 3 },
+  { label: 'May 26', year: 2026, month: 4 },
+  { label: 'Jun 26', year: 2026, month: 5 },
+  { label: 'Jul 26', year: 2026, month: 6 },
+  { label: 'Aug 26', year: 2026, month: 7 },
+  { label: 'Sep 26', year: 2026, month: 8 },
+  { label: 'Oct 26', year: 2026, month: 9 },
+  { label: 'Nov 26', year: 2026, month: 10 },
+  { label: 'Dec 26', year: 2026, month: 11 },
+  { label: 'Jan 27', year: 2027, month: 0 },
+  { label: 'Feb 27', year: 2027, month: 1 },
+  { label: 'Mar 27', year: 2027, month: 2 },
+];
+
+const PLAN_START = new Date(2026, 3, 1); // Apr 1 2026
+const PLAN_END   = new Date(2027, 3, 1); // Apr 1 2027
+const PLAN_DAYS  = (PLAN_END - PLAN_START) / 86400000;
+
+// ── ROW CONFIG ───────────────────────────────────────────────────
+// Each section has rows; each row has a key that matches event.row_key
+const SECTIONS = [
+  {
+    id: 'intermediaries',
+    label: 'Intermediary Plan',
+    rows: [
+      { key: 'intermediary-ingenuity',       label: 'Ingenuity+' },
+      { key: 'intermediary-oystercatchers',  label: 'Oystercatchers' },
+      { key: 'intermediary-aar',             label: 'AAR' },
+      { key: 'intermediary-masterclassing',  label: 'Masterclassing' },
+    ]
+  },
+  {
+    id: 'owned',
+    label: 'Owned Events',
+    rows: [
+      { key: 'owned-events', label: 'Jungle Event' },
+    ]
+  },
+  {
+    id: 'speaking',
+    label: 'Speaking',
+    rows: [
+      { key: 'event-speaking', label: 'Speaking Slots' },
+    ]
+  },
+  {
+    id: 'attendance',
+    label: 'Event Attendance',
+    rows: [
+      { key: 'event-attendance', label: 'Conferences' },
+    ]
+  },
+];
+
+// ── STATE ────────────────────────────────────────────────────────
+let allEvents = [];
+let currentModalEvent = null;
+
+// ── SEED DATA (fallback if Supabase not available) ───────────────
+const SEED_EVENTS = [
+  { id:'s1', name:'MAD Meets', category:'intermediary', start_date:'2026-05-14', end_date:'2026-05-14', location:'London', description:'Ingenuity+ quarterly event for brand marketers and senior agency contacts. Key opportunity for introductions and relationship building.', row_key:'intermediary-ingenuity' },
+  { id:'s2', name:'MAD Meets', category:'intermediary', start_date:'2026-08-13', end_date:'2026-08-13', location:'London', description:'Ingenuity+ quarterly event.', row_key:'intermediary-ingenuity' },
+  { id:'s3', name:'MAD Meets', category:'intermediary', start_date:'2026-11-12', end_date:'2026-11-12', location:'London', description:'Ingenuity+ quarterly event.', row_key:'intermediary-ingenuity' },
+  { id:'s4', name:'MAD Meets', category:'intermediary', start_date:'2027-02-11', end_date:'2027-02-11', location:'London', description:'Ingenuity+ quarterly event.', row_key:'intermediary-ingenuity' },
+  { id:'s5', name:'Masterclassing Social', category:'speaking', start_date:'2026-06-04', end_date:'2026-06-04', location:'London', description:'Quarterly social marketing masterclass with a speaking slot. Audience is brand-side marketers. Key platform to demonstrate Jungle\'s social expertise.', row_key:'event-speaking' },
+  { id:'s6', name:'Masterclassing Social', category:'speaking', start_date:'2026-09-03', end_date:'2026-09-03', location:'London', description:'Quarterly social marketing masterclass — speaking slot.', row_key:'event-speaking' },
+  { id:'s7', name:'Masterclassing Social', category:'speaking', start_date:'2026-12-03', end_date:'2026-12-03', location:'London', description:'Quarterly social marketing masterclass — speaking slot.', row_key:'event-speaking' },
+  { id:'s8', name:'Oystercatchers Event', category:'intermediary', start_date:'2026-07-09', end_date:'2026-07-09', location:'London', description:'Oystercatchers intermediary event (assumed quarterly). TBC whether Jungle is signed up — confirm with Jade.', row_key:'intermediary-oystercatchers' },
+  { id:'s9', name:'Oystercatchers Event', category:'intermediary', start_date:'2026-10-08', end_date:'2026-10-08', location:'London', description:'Oystercatchers quarterly event (assumed).', row_key:'intermediary-oystercatchers' },
+  { id:'s10', name:'Oystercatchers Event', category:'intermediary', start_date:'2027-01-08', end_date:'2027-01-08', location:'London', description:'Oystercatchers quarterly event (assumed).', row_key:'intermediary-oystercatchers' },
+  { id:'s11', name:'Jungle Brand Event', category:'owned', start_date:'2026-10-01', end_date:'2026-10-01', location:'London', description:'Jungle Creations hosted brand event. Panel format, invite-only. Target audience: brand-side CMOs and senior marketers. Prep starts 3 months prior — speaker sourcing in July, invites out 8 weeks before.', row_key:'owned-events' },
+  { id:'s12', name:'Video Marketing World', category:'attendance', start_date:'2026-04-14', end_date:'2026-04-14', location:'London', description:'Video marketing industry conference.', row_key:'event-attendance' },
+  { id:'s13', name:'Social Media Marketing', category:'attendance', start_date:'2026-05-20', end_date:'2026-05-20', location:'London', description:'Social marketing conference.', row_key:'event-attendance' },
+  { id:'s14', name:'Cannes Lions', category:'attendance', start_date:'2026-06-22', end_date:'2026-06-26', location:'Cannes, France', description:'Cannes Lions International Festival of Creativity. Key industry event for senior agency contacts and brand CMOs.', row_key:'event-attendance' },
+];
+
+// ── SUPABASE HELPERS ─────────────────────────────────────────────
+async function sbFetch(path, opts = {}) {
+  const headers = {
+    'apikey': SUPABASE_ANON,
+    'Authorization': `Bearer ${SUPABASE_ANON}`,
+    'Content-Type': 'application/json',
+    ...opts.headers
+  };
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { ...opts, headers });
+  return r;
+}
+
+async function loadEvents() {
+  try {
+    const r = await sbFetch('events?select=*&order=start_date.asc');
+    if (r.ok) {
+      const data = await r.json();
+      if (data.length > 0) return data;
+    }
+  } catch(e) {}
+  // Fall back to seed data + localStorage extras
+  const local = JSON.parse(localStorage.getItem('jc_events') || '[]');
+  return [...SEED_EVENTS, ...local];
+}
+
+async function saveEventToSupabase(evt) {
+  try {
+    const r = await sbFetch('events', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify(evt)
+    });
+    return r.ok;
+  } catch(e) {
+    return false;
+  }
+}
+
+async function saveQuestion(context, question) {
+  try {
+    await sbFetch('questions', {
+      method: 'POST',
+      headers: { 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ context, question })
+    });
+  } catch(e) {}
+  // Always fire Make webhook regardless
+  await fetch(MAKE_WEBHOOK, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ context, question, submitted_at: new Date().toISOString() })
+  });
+}
+
+// ── LAYOUT UTILS ─────────────────────────────────────────────────
+function dateFraction(dateStr) {
+  const d = new Date(dateStr);
+  return Math.max(0, Math.min(1, (d - PLAN_START) / (PLAN_END - PLAN_START)));
+}
+
+function colWidth() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w')) || 80;
+}
+function sidebarWidth() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w')) || 180;
+}
+
+function xForDate(dateStr) {
+  const f = dateFraction(dateStr);
+  return sidebarWidth() + f * (colWidth() * 12);
+}
+
+// ── RENDER MONTH HEADER ──────────────────────────────────────────
+function renderMonthHeader() {
+  const hdr = document.getElementById('month-header');
+  const today = new Date();
+  let html = `<div class="month-label-spacer" style="width:var(--sidebar-w)"></div>`;
+  MONTHS.forEach(m => {
+    const isCurrent = today.getFullYear() === m.year && today.getMonth() === m.month;
+    html += `<div class="month-label${isCurrent ? ' current' : ''}">${m.label}</div>`;
+  });
+  hdr.innerHTML = html;
+}
+
+// ── RENDER ROWS ──────────────────────────────────────────────────
+function renderRows() {
+  const container = document.getElementById('rows-container');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const sg = document.createElement('div');
+    sg.className = 'section-group';
+    sg.dataset.section = section.id;
+
+    // Section header
+    const sh = document.createElement('div');
+    sh.className = 'section-header';
+    sh.onclick = () => toggleSection(section.id);
+    sh.innerHTML = `
+      <div></div>
+      <div style="display:flex;align-items:center">
+        <div class="section-title">${section.label}</div>
+        <div class="section-chevron">
+          <svg viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z"/></svg>
+        </div>
+      </div>`;
+    sg.appendChild(sh);
+
+    const sr = document.createElement('div');
+    sr.className = 'section-rows';
+
+    section.rows.forEach(rowConfig => {
+      const rowEvents = allEvents.filter(e => e.row_key === rowConfig.key);
+      const rowEl = buildRow(rowConfig, rowEvents, section.id);
+      sr.appendChild(rowEl);
+    });
+
+    sg.appendChild(sr);
+    container.appendChild(sg);
+  });
+
+  // Today line (after rows painted)
+  renderTodayLine();
+}
+
+function buildRow(rowConfig, events, sectionId) {
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.dataset.rowKey = rowConfig.key;
+
+  // Label
+  row.innerHTML = `<div class="row-label">${rowConfig.label}</div>`;
+
+  // Month cells
+  MONTHS.forEach(() => {
+    const cell = document.createElement('div');
+    cell.className = 'row-cell';
+    row.appendChild(cell);
+  });
+
+  // Plot events after DOM insertion (need offsetWidth)
+  requestAnimationFrame(() => plotEventsOnRow(row, events, sectionId));
+
+  return row;
+}
+
+function plotEventsOnRow(row, events, sectionId) {
+  const sw = sidebarWidth();
+  const cw = colWidth();
+  const totalW = cw * 12;
+
+  // For owned events, add prep bars
+  if (sectionId === 'owned') {
+    events.forEach(evt => {
+      // 3-month speaker search bar
+      const eventDate = new Date(evt.start_date);
+      const speakerStart = new Date(eventDate);
+      speakerStart.setMonth(speakerStart.getMonth() - 3);
+      const inviteStart = new Date(eventDate);
+      inviteStart.setDate(inviteStart.getDate() - 56);
+
+      addPrepBar(row, speakerStart, eventDate, '#7B6FE0', sw, totalW);
+    });
+  }
+
+  events.forEach(evt => {
+    const startF = dateFraction(evt.start_date);
+    const endF = dateFraction(evt.end_date || evt.start_date);
+    const isMultiDay = (new Date(evt.end_date || evt.start_date) - new Date(evt.start_date)) > 86400000;
+
+    if (isMultiDay) {
+      const bar = document.createElement('div');
+      bar.className = `event-bar category-${evt.category}`;
+      const x = sw + startF * totalW;
+      const w = Math.max(20, (endF - startF) * totalW);
+      bar.style.left = x + 'px';
+      bar.style.width = w + 'px';
+      bar.innerHTML = `<span>${evt.name}</span>`;
+      attachEventHandlers(bar, evt);
+      row.appendChild(bar);
+    } else {
+      const dot = document.createElement('div');
+      dot.className = `event-dot category-${evt.category}`;
+      const x = sw + startF * totalW;
+      dot.style.left = (x - 5) + 'px';
+      attachEventHandlers(dot, evt);
+      row.appendChild(dot);
+    }
+  });
+}
+
+function addPrepBar(row, start, end, color, sw, totalW) {
+  const bar = document.createElement('div');
+  bar.className = 'prep-bar';
+  const sf = dateFraction(start.toISOString().split('T')[0]);
+  const ef = dateFraction(end.toISOString().split('T')[0]);
+  bar.style.left = (sw + sf * totalW) + 'px';
+  bar.style.width = Math.max(0, (ef - sf) * totalW) + 'px';
+  bar.style.background = color;
+  row.appendChild(bar);
+}
+
+function renderTodayLine() {
+  document.querySelectorAll('.today-line').forEach(e => e.remove());
+  const today = new Date().toISOString().split('T')[0];
+  const f = dateFraction(today);
+  if (f < 0 || f > 1) return;
+  const sw = sidebarWidth();
+  const cw = colWidth();
+  const x = sw + f * (cw * 12);
+
+  document.querySelectorAll('.row').forEach(row => {
+    const line = document.createElement('div');
+    line.className = 'today-line';
+    line.style.left = x + 'px';
+    row.appendChild(line);
+  });
+}
+
+// ── EVENT HANDLERS ───────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+
+function attachEventHandlers(el, evt) {
+  el.addEventListener('mouseenter', (e) => showTooltip(e, evt));
+  el.addEventListener('mousemove', moveTooltip);
+  el.addEventListener('mouseleave', hideTooltip);
+  el.addEventListener('click', (e) => { e.stopPropagation(); openModal(evt); });
+}
+
+function showTooltip(e, evt) {
+  tooltip.querySelector('.tt-name').textContent = evt.name;
+  tooltip.querySelector('.tt-date').textContent = formatDateRange(evt.start_date, evt.end_date);
+  tooltip.querySelector('.tt-loc').textContent = evt.location || '';
+  tooltip.classList.add('visible');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  tooltip.style.left = (e.clientX + 14) + 'px';
+  tooltip.style.top  = (e.clientY - 10) + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+
+// ── MODAL ────────────────────────────────────────────────────────
+function openModal(evt) {
+  currentModalEvent = evt;
+  const overlay = document.getElementById('modal-overlay');
+  const pill = document.getElementById('modal-pill');
+  const catLabels = { intermediary: 'Intermediary', owned: 'Owned Event', speaking: 'Speaking', attendance: 'Attendance' };
+
+  pill.textContent = catLabels[evt.category] || evt.category;
+  pill.className = `modal-cat-pill ${evt.category}`;
+  document.getElementById('modal-title').textContent = evt.name;
+  document.getElementById('modal-date').textContent = formatDateRange(evt.start_date, evt.end_date);
+
+  // Meta
+  const meta = document.getElementById('modal-meta');
+  meta.innerHTML = '';
+  if (evt.location) {
+    meta.innerHTML += `<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`;
+  }
+  meta.innerHTML += `<div class="modal-meta-item">Type<strong>${catLabels[evt.category]}</strong></div>`;
+
+  // Prep timeline for owned events
+  const prep = document.getElementById('modal-prep');
+  if (evt.category === 'owned') {
+    const evtDate = new Date(evt.start_date);
+    const m3 = addMonths(evtDate, -3);
+    const m2 = addMonths(evtDate, -2);
+    const w8 = addDays(evtDate, -56);
+    const w3 = addDays(evtDate, -21);
+    const w1 = addDays(evtDate, 7);
+    const w5 = addDays(evtDate, 35);
+    prep.innerHTML = `
+    <div class="prep-timeline">
+      <h4>Preparation Timeline</h4>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div><div class="prep-line"></div></div>
+        <div class="prep-text"><strong>${fmtDate(m3)}</strong>Speaker sourcing begins (3 months out)</div>
+      </div>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div><div class="prep-line"></div></div>
+        <div class="prep-text"><strong>${fmtDate(w8)}</strong>Invitations sent (8 weeks out)</div>
+      </div>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div><div class="prep-line"></div></div>
+        <div class="prep-text"><strong>${fmtDate(w3)}</strong>Final reminders + nurture comms</div>
+      </div>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div><div class="prep-line"></div></div>
+        <div class="prep-text"><strong>${fmtDate(evtDate)}</strong>Event day</div>
+      </div>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div><div class="prep-line"></div></div>
+        <div class="prep-text"><strong>${fmtDate(w1)}</strong>Post-event burst comms (1–3 weeks)</div>
+      </div>
+      <div class="prep-item">
+        <div class="prep-dot-line"><div class="prep-dot"></div></div>
+        <div class="prep-text"><strong>${fmtDate(w5)}+</strong>Fortnightly nurture → monthly cadence</div>
+      </div>
+    </div>`;
+  } else {
+    prep.innerHTML = '';
+  }
+
+  document.getElementById('modal-desc').textContent = evt.description || '';
+  document.getElementById('qa-input').value = '';
+  document.getElementById('qa-success').style.display = 'none';
+  document.getElementById('qa-btn').disabled = false;
+
+  overlay.classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  currentModalEvent = null;
+}
+
+// ── QUESTION SUBMIT ──────────────────────────────────────────────
+async function submitQuestion() {
+  const q = document.getElementById('qa-input').value.trim();
+  if (!q) return;
+  const btn = document.getElementById('qa-btn');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  const context = currentModalEvent ? `${currentModalEvent.name} (${formatDateRange(currentModalEvent.start_date, currentModalEvent.end_date)})` : 'BD Planner';
+  try {
+    await saveQuestion(context, q);
+    document.getElementById('qa-success').style.display = 'block';
+    document.getElementById('qa-input').value = '';
+    btn.textContent = 'Sent ✓';
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Submit';
+  }
+}
+
+// ── SECTION TOGGLE ───────────────────────────────────────────────
+function toggleSection(id) {
+  const sg = document.querySelector(`[data-section="${id}"]`);
+  if (sg) sg.classList.toggle('collapsed');
+}
+
+// ── ADD EVENT MODAL ──────────────────────────────────────────────
+function openAddModal() {
+  document.getElementById('add-modal-overlay').classList.add('open');
+}
+function closeAddModal(e) {
+  if (e.target === document.getElementById('add-modal-overlay')) closeAddModalDirect();
+}
+function closeAddModalDirect() {
+  document.getElementById('add-modal-overlay').classList.remove('open');
+}
+
+async function saveEvent() {
+  const name = document.getElementById('add-name').value.trim();
+  const start = document.getElementById('add-start').value;
+  const end = document.getElementById('add-end').value || start;
+  const location = document.getElementById('add-location').value.trim();
+  const category = document.getElementById('add-category').value;
+  const notes = document.getElementById('add-notes').value.trim();
+
+  if (!name || !start) { alert('Name and start date are required.'); return; }
+
+  const rowKeyMap = {
+    attendance: 'event-attendance',
+    speaking: 'event-speaking',
+    intermediary: 'intermediary-custom',
+    owned: 'owned-events'
+  };
+
+  const evt = {
+    id: 'local-' + Date.now(),
+    name, category,
+    start_date: start, end_date: end,
+    location, description: notes,
+    row_key: rowKeyMap[category]
+  };
+
+  // Try Supabase, fall back to localStorage
+  const saved = await saveEventToSupabase({ name, category, start_date: start, end_date: end, location, description: notes, row_key: rowKeyMap[category] });
+  if (!saved) {
+    const local = JSON.parse(localStorage.getItem('jc_events') || '[]');
+    local.push(evt);
+    localStorage.setItem('jc_events', JSON.stringify(local));
+  }
+
+  allEvents.push(evt);
+  renderRows();
+  closeAddModalDirect();
+
+  // Clear form
+  ['add-name','add-start','add-end','add-location','add-notes'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ── DATE UTILS ───────────────────────────────────────────────────
+function formatDateRange(start, end) {
+  if (!end || end === start) return fmtDate(new Date(start));
+  const s = new Date(start), e = new Date(end);
+  if (s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+    return `${s.getDate()}–${e.getDate()} ${s.toLocaleString('en-GB',{month:'short'})} ${s.getFullYear()}`;
+  }
+  return `${fmtDate(s)} – ${fmtDate(e)}`;
+}
+function fmtDate(d) {
+  if (typeof d === 'string') d = new Date(d);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function addMonths(d, n) { const r = new Date(d); r.setMonth(r.getMonth() + n); return r; }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+
+// ── INIT ─────────────────────────────────────────────────────────
+async function init() {
+  renderMonthHeader();
+  allEvents = await loadEvents();
+  renderRows();
+
+  // Scroll so today is visible
+  const f = dateFraction(new Date().toISOString().split('T')[0]);
+  const scrollTo = Math.max(0, sidebarWidth() + f * (colWidth() * 12) - window.innerWidth * 0.4);
+  document.getElementById('planner-wrap').scrollLeft = scrollTo;
+}
+
+init();
+</script>
+</body>
+</html>
