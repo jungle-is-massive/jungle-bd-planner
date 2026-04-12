@@ -56,7 +56,22 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 /* CALENDAR */
 #planner-wrap { overflow-x: auto; overflow-y: visible; padding-bottom: 100px; }
 #planner { display: grid; min-width: calc(var(--sidebar-w) + var(--col-w) * 12 + 40px); position: relative; }
-#month-header { position: sticky; top: var(--header-h); z-index: 90; display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); background: var(--cream); border-bottom: 2px solid var(--black); box-shadow: 0 1px 0 var(--grey-light); }
+
+/* Month header — lives outside planner-wrap, sticks below nav */
+#month-header-sticky {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 90;
+  overflow: hidden;
+  background: var(--cream);
+  border-bottom: 2px solid var(--black);
+  box-shadow: 0 1px 0 var(--grey-light);
+}
+#month-header-inner {
+  overflow-x: hidden; /* JS controls scroll position to mirror planner-wrap */
+  pointer-events: none;
+}
+#month-header { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); min-width: calc(var(--sidebar-w) + var(--col-w) * 12); }
 .month-label { padding: 14px 0 10px; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); border-left: 1px solid var(--grey-light); }
 .month-label.current { color: var(--black); }
 .month-label.current::after { content: ''; display: block; margin: 4px auto 0; width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
@@ -367,9 +382,13 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
 <!-- CALENDAR VIEW -->
 <div class="view active" id="calendar-view">
+  <div id="month-header-sticky">
+    <div id="month-header-inner">
+      <div id="month-header"></div>
+    </div>
+  </div>
   <div id="planner-wrap">
     <div id="planner">
-      <div id="month-header"></div>
       <div id="rows-container"></div>
     </div>
   </div>
@@ -1133,6 +1152,10 @@ function checkGate() {
 }
 
 async function init(){
+  // Sync month header horizontal scroll with planner
+  const wrap = document.getElementById('planner-wrap');
+  const hdrInner = document.getElementById('month-header-inner');
+  wrap.addEventListener('scroll', () => { hdrInner.scrollLeft = wrap.scrollLeft; }, {passive: true});
   // Load any custom workstreams saved previously
   const custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]');
   custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
