@@ -786,7 +786,7 @@ async function openModal(evt) {
   if(evt.category==='owned'){
     const ed=new Date(evt.start_date);
     const steps=[[addM(ed,-3),'Speaker sourcing begins (3 months out)'],[addD(ed,-56),'Invitations sent (8 weeks out)'],[addD(ed,-21),'Final reminders + nurture comms'],[ed,'Event day'],[addD(ed,7),'Post-event burst comms (1–3 weeks)'],[addD(ed,35),'Fortnightly nurture → monthly cadence']];
-    prep.innerHTML=`<div class="prep-timeline"><h4>Preparation Timeline</h4>${steps.map(([d,t],i,a)=>`<div class="prep-item"><div class="prep-dot-line"><div class="prep-dot"></div>${i<a.length-1?'<div class="prep-line"></div>':''}</div><div class="prep-text"><strong>${fmtDate(d)}</strong>${t}</div></div>`).join('')}</div>`;
+    prep.innerHTML=`<div class="prep-timeline"><h4>Preparation Timeline</h4>${steps.map(([d,t],i,a)=>`<div class="prep-item"><div class="prep-dot-line"><div class="prep-dot"></div>${i<a.length-1?'<div class="prep-line"></div>':''}</div><div class="prep-text"><strong>${fmtDate(d)}</strong>${t}</div></div>`).join('')}</div><a href="event-smi.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:14px;background:var(--green);color:var(--black);font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;text-decoration:none;font-family:'DM Sans',sans-serif">Open Event Hub →</a>`;
   } else { prep.innerHTML=''; }
   document.getElementById('modal-desc').textContent=evt.description||'';
   document.getElementById('qa-input').value=''; document.getElementById('qa-btn').disabled=false; document.getElementById('qa-btn').textContent='Submit';
