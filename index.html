@@ -551,6 +551,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
               <th>Current Action</th>
               <th>Status</th>
               <th>Next Action</th>
+              <th>LinkedIn</th>
               <th></th>
             </tr>
           </thead>
@@ -613,6 +614,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       </div>
       <div class="m-field" style="margin-top:12px"><label>Current Action</label><textarea id="bd-current" rows="2" placeholder="What's the current state of this relationship?"></textarea></div>
       <div class="m-field"><label>Next Action</label><textarea id="bd-next" rows="2" placeholder="What needs to happen next?"></textarea></div>
+      <div class="m-field"><label>LinkedIn URL (optional)</label><input type="url" id="bd-linkedin" placeholder="https://www.linkedin.com/in/…"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeBdModalDirect()">Cancel</button>
@@ -982,6 +984,7 @@ function renderBdTable(rows) {
       <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.current_action||'')}</td>
       <td><span class="bd-status-pill ${statusClass(c.status)}">${esc(c.status||'')}</span></td>
       <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.next_action||'')}</td>
+      <td>${c.linkedin_url ? `<a href="${esc(c.linkedin_url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--black);border-bottom:1px solid var(--grey)">View ↗</a>` : ''}</td>
       <td>
         <div class="bd-row-actions">
           <button class="bd-action-btn" title="Edit" onclick="openBdModal('${c.id}')">✎</button>
@@ -1016,9 +1019,10 @@ function openBdModal(id=null) {
       document.getElementById('bd-status').value = c.status||'Not started yet';
       document.getElementById('bd-current').value = c.current_action||'';
       document.getElementById('bd-next').value = c.next_action||'';
+      document.getElementById('bd-linkedin').value = c.linkedin_url||'';
     }
   } else {
-    ['bd-name','bd-title','bd-org','bd-current','bd-next'].forEach(i=>document.getElementById(i).value='');
+    ['bd-name','bd-title','bd-org','bd-current','bd-next','bd-linkedin'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('bd-status').value = 'Not started yet';
   }
   overlay.classList.add('open');
@@ -1035,6 +1039,7 @@ async function saveBdContact() {
     status: document.getElementById('bd-status').value,
     current_action: document.getElementById('bd-current').value.trim(),
     next_action: document.getElementById('bd-next').value.trim(),
+    linkedin_url: document.getElementById('bd-linkedin').value.trim(),
     updated_at: new Date().toISOString(),
   };
   if(!payload.name) { alert('Name is required.'); return; }
