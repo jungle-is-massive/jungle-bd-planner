@@ -5,16 +5,16 @@ create table if not exists public.prospects (
   id uuid default gen_random_uuid() primary key,
   first_name text,
   last_name text,
-  full_name text,
-  title text,
   company text,
+  title text,
   linkedin_url text,
   email text,
-  connected_at timestamptz,
+  manual_email text,
+  corporate_email text,
+  linkedin_email text,
+  company_website text,
   campaign text,
-  status text default 'connected',
-  notes text,
-  raw jsonb,  -- stores the full payload from Dripify/Make so nothing is lost
+  raw jsonb,
   created_at timestamptz default now()
 );
 
