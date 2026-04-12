@@ -534,8 +534,23 @@ async function sbFetch(path, opts={}) {
   return fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opts,headers:h});
 }
 async function loadEvents() {
-  try { const r = await sbFetch('events?select=*&order=start_date.asc'); if(r.ok){const d=await r.json();if(d.length>0)return d;} } catch(e){}
-  return [...SEED, ...JSON.parse(localStorage.getItem('jc_events')||'[]')];
+  const local = JSON.parse(localStorage.getItem('jc_events')||'[]');
+  try {
+    const r = await sbFetch('events?select=*&order=start_date.asc');
+    if(r.ok){
+      const d=await r.json();
+      if(d.length>0){
+        // Merge Supabase results with any local-only events not yet synced
+        const sbIds = new Set(d.map(e=>e.id));
+        const localOnly = local.filter(e=>!sbIds.has(e.id));
+        return [...d, ...localOnly];
+      }
+    }
+  } catch(e){}
+  // Supabase unavailable or empty — use seed + local
+  const seedIds = new Set(SEED.map(e=>e.id));
+  const localOnly = local.filter(e=>!seedIds.has(e.id));
+  return [...SEED, ...localOnly];
 }
 async function loadQuestions(ctx) {
   try { const r = await sbFetch(`questions?context=eq.${encodeURIComponent(ctx)}&order=submitted_at.asc`); if(r.ok)return await r.json(); } catch(e){}
