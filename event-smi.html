@@ -449,7 +449,6 @@ const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
 const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
 const GATE_PASSWORD = 'massive';
-const STORE_KEY = 'jc_smi_hub';
 
 // ── DEFAULT DATA ──────────────────────────────────────────────────
 const DEFAULTS = {
@@ -513,15 +512,39 @@ let editMode = false;
 let modalType = '';
 let state = {};
 
-// ── STORAGE ───────────────────────────────────────────────────────
-function loadState() {
-  try { const s = localStorage.getItem(STORE_KEY); if(s) return JSON.parse(s); } catch(e){}
+// ── STORAGE — SUPABASE ────────────────────────────────────────────
+const SB_HUB_KEY = 'smi-hub-v1';
+
+async function sbFetch(path, opts={}) {
+  const h = {'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json',...(opts.headers||{})};
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {...opts, headers:h});
+}
+
+async function loadState() {
+  try {
+    const r = await sbFetch(`event_hub?key=eq.${SB_HUB_KEY}&select=value`);
+    if(r.ok) {
+      const d = await r.json();
+      if(d.length > 0 && d[0].value) return d[0].value;
+    }
+  } catch(e) {}
+  // Fall back to defaults on first load or if Supabase unreachable
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
-function saveState() {
-  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+
+async function saveState() {
+  try {
+    await sbFetch('event_hub', {
+      method: 'POST',
+      headers: {'Prefer': 'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify({key: SB_HUB_KEY, value: state, updated_at: new Date().toISOString()})
+    });
+  } catch(e) {
+    // Silent fail — state still in memory for this session
+  }
   showSaved();
 }
+
 function showSaved() {
   const ind = document.getElementById('save-indicator');
   ind.classList.add('show');
@@ -807,9 +830,14 @@ async function submitQA() {
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 // ── INIT ──────────────────────────────────────────────────────────
-function init() {
-  state = loadState();
+async function init() {
+  // Show subtle loading state
+  document.querySelector('.page-wrap').style.opacity = '0.4';
+  document.querySelector('.page-wrap').style.pointerEvents = 'none';
+  state = await loadState();
   render();
+  document.querySelector('.page-wrap').style.opacity = '';
+  document.querySelector('.page-wrap').style.pointerEvents = '';
 }
 
 if(sessionStorage.getItem('jc_auth')==='1') {
