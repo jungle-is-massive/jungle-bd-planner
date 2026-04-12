@@ -351,7 +351,41 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 
-/* PROSPECTS VIEW */
+/* PROSPECTS SUB-TABS */
+.prospects-tabs-header { border-bottom: 1px solid var(--grey-light); margin-bottom: 32px; }
+.prospects-sub-tabs { display: flex; gap: 0; }
+.prospects-sub-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 12px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--grey-mid); cursor: pointer; transition: all 0.15s; margin-bottom: -1px; }
+.prospects-sub-tab:hover { color: var(--black); }
+.prospects-sub-tab.active { color: var(--black); border-bottom-color: var(--black); }
+
+/* BD TABLE */
+.bd-table td { white-space: normal; max-width: 280px; }
+.bd-table td:nth-child(1) { font-weight: 600; white-space: nowrap; max-width: 160px; }
+.bd-table td:nth-child(2) { color: var(--grey-mid); font-size: 11px; white-space: nowrap; }
+.bd-table td:nth-child(3) { white-space: nowrap; font-weight: 500; }
+.bd-status-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 100px; display: inline-block; white-space: nowrap; }
+.bd-status-pill.s-inprogress { background: rgba(135,251,102,0.2); color: #2d6b00; }
+.bd-status-pill.s-warm-progress { background: rgba(135,251,102,0.15); color: #3a7a00; }
+.bd-status-pill.s-warm-dormant { background: #FFF3CD; color: #856404; }
+.bd-status-pill.s-not-started { background: var(--grey-light); color: var(--grey-mid); }
+.bd-status-pill.s-not-met { background: #E8E8FF; color: #4040B0; }
+.bd-status-pill.s-linkedin { background: #E0F0FF; color: #0060AA; }
+.bd-status-pill.s-research { background: #FFE8CC; color: #885500; }
+.bd-status-pill.s-low { background: #FFE4E1; color: #9B1C1C; }
+.bd-action-btn { background: none; border: 1px solid var(--grey-light); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 12px; color: var(--grey-mid); transition: all 0.12s; display: inline-flex; align-items: center; justify-content: center; }
+.bd-action-btn:hover { background: var(--grey-light); color: var(--black); }
+.bd-action-btn.del:hover { background: #FFE0E0; color: #CC0000; border-color: #FFB0B0; }
+.bd-row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.12s; }
+.bd-table tr:hover .bd-row-actions { opacity: 1; }
+
+/* MODAL OVERLAY for bd modal */
+#bd-modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+#bd-modal-overlay.open { opacity: 1; pointer-events: all; }
+#bd-modal-overlay .modal-box { transform: translateY(16px); transition: transform 0.2s; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+#bd-modal-overlay.open .modal-box { transform: translateY(0); }
+
+/* PROSPECTS SUB-TABS */
+.prospects-tabs-header { border-bottom: 1px solid var(--grey-light); margin-bottom: 32px; }
 #prospects-view { max-width: 1200px; margin: 0 auto; padding: 48px 32px 120px; }
 .prospects-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
 .prospects-refresh-btn { background: var(--grey-light); border: none; border-radius: 100px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--grey-mid); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
@@ -482,28 +516,107 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 <!-- PROSPECTS VIEW -->
 <div class="view" id="prospects-view-el">
   <div id="prospects-view">
-    <div class="prospects-header">
-      <div>
-        <div class="assets-view-label">LinkedIn / Dripify</div>
-        <h2 class="assets-view-title">Prospects</h2>
-        <p class="assets-view-sub">Live from your Dripify Google Sheet. Refreshes each time you open this tab.</p>
+
+    <!-- Sub-tabs -->
+    <div class="prospects-tabs-header">
+      <div class="prospects-sub-tabs">
+        <button class="prospects-sub-tab active" id="pst-bd" onclick="switchProspectsTab('bd',this)">BD Contacts</button>
+        <button class="prospects-sub-tab" id="pst-dripify" onclick="switchProspectsTab('dripify',this)">Dripify Connections</button>
       </div>
-      <button class="prospects-refresh-btn" onclick="loadProspects(true)" id="prospects-refresh">↻ Refresh</button>
     </div>
-    <div class="prospects-controls">
-      <input type="text" class="prospects-search" id="prospects-search" placeholder="Search by name, company or title…" oninput="filterProspects()">
-      <div class="prospects-count" id="prospects-count"></div>
-    </div>
-    <div id="prospects-table-wrap">
-      <div class="prospects-loading" id="prospects-loading">
-        <div class="prospects-spinner"></div>
-        Loading from Google Sheet…
+
+    <!-- BD CONTACTS TAB -->
+    <div id="prospects-bd-panel">
+      <div class="prospects-header">
+        <div>
+          <div class="assets-view-label">Actively managed</div>
+          <h2 class="assets-view-title">BD Contacts</h2>
+          <p class="assets-view-sub">Intermediaries, warm leads and key relationships. Add, edit and track status directly here.</p>
+        </div>
+        <button class="add-asset-btn" onclick="openBdModal()">+ Add Contact</button>
       </div>
-      <div class="prospects-error" id="prospects-error" style="display:none"></div>
-      <table class="prospects-table" id="prospects-table" style="display:none">
-        <thead id="prospects-thead"></thead>
-        <tbody id="prospects-tbody"></tbody>
-      </table>
+      <div class="prospects-controls">
+        <input type="text" class="prospects-search" id="bd-search" placeholder="Search by name, organisation or status…" oninput="filterBdContacts()">
+        <div class="prospects-count" id="bd-count"></div>
+      </div>
+      <div id="bd-table-wrap">
+        <div class="prospects-loading" id="bd-loading"><div class="prospects-spinner"></div>Loading…</div>
+        <div class="prospects-error" id="bd-error" style="display:none"></div>
+        <table class="prospects-table bd-table" id="bd-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Title</th>
+              <th>Organisation</th>
+              <th>Current Action</th>
+              <th>Status</th>
+              <th>Next Action</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="bd-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DRIPIFY TAB -->
+    <div id="prospects-dripify-panel" style="display:none">
+      <div class="prospects-header">
+        <div>
+          <div class="assets-view-label">LinkedIn / Dripify</div>
+          <h2 class="assets-view-title">Dripify Connections</h2>
+          <p class="assets-view-sub">Auto-populated as new connections come in via Dripify. Refreshes each time you open this tab.</p>
+        </div>
+        <button class="prospects-refresh-btn" onclick="loadProspects(true)" id="prospects-refresh">↻ Refresh</button>
+      </div>
+      <div class="prospects-controls">
+        <input type="text" class="prospects-search" id="prospects-search" placeholder="Search by name, company or title…" oninput="filterProspects()">
+        <div class="prospects-count" id="prospects-count"></div>
+      </div>
+      <div id="prospects-table-wrap">
+        <div class="prospects-loading" id="prospects-loading"><div class="prospects-spinner"></div>Loading from Supabase…</div>
+        <div class="prospects-error" id="prospects-error" style="display:none"></div>
+        <table class="prospects-table" id="prospects-table" style="display:none">
+          <thead id="prospects-thead"></thead>
+          <tbody id="prospects-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BD CONTACT MODAL -->
+<div class="modal-overlay" id="bd-modal-overlay" onclick="closeBdModal(event)">
+  <div class="modal-box" style="width:min(600px,94vw)">
+    <div class="modal-hdr">
+      <div class="modal-hdr-title" id="bd-modal-title">Add BD Contact</div>
+      <button class="modal-close" onclick="closeBdModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 22px 4px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="m-field"><label>Name</label><input type="text" id="bd-name" placeholder="Full name"></div>
+        <div class="m-field"><label>Title</label><input type="text" id="bd-title" placeholder="Job title"></div>
+        <div class="m-field"><label>Organisation</label><input type="text" id="bd-org" placeholder="Company or intermediary"></div>
+        <div class="m-field"><label>Status</label>
+          <select id="bd-status">
+            <option>In progress</option>
+            <option>Warm, in progress</option>
+            <option>Warm but dormant</option>
+            <option>Not started yet</option>
+            <option>Not yet met</option>
+            <option>Reached out on LinkedIn to introduce myself</option>
+            <option>Research required</option>
+            <option>Low engagement</option>
+          </select>
+        </div>
+      </div>
+      <div class="m-field" style="margin-top:12px"><label>Current Action</label><textarea id="bd-current" rows="2" placeholder="What's the current state of this relationship?"></textarea></div>
+      <div class="m-field"><label>Next Action</label><textarea id="bd-next" rows="2" placeholder="What needs to happen next?"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeBdModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveBdContact()">Save</button>
     </div>
   </div>
 </div>
@@ -798,7 +911,159 @@ function switchView(v, btn) {
   document.getElementById('ws-btn').style.display = isCalendar?'':'none';
   document.getElementById('legend').style.display = isCalendar?'':'none';
   if(v==='assets') renderAssetsView();
-  if(v==='prospects') loadProspects();
+  if(v==='prospects') loadBdContacts();
+}
+
+// ── PROSPECTS SUB-TABS ────────────────────────────────────────────
+let activeProspectsTab = 'bd';
+
+function switchProspectsTab(tab, btn) {
+  activeProspectsTab = tab;
+  document.querySelectorAll('.prospects-sub-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('prospects-bd-panel').style.display = tab === 'bd' ? '' : 'none';
+  document.getElementById('prospects-dripify-panel').style.display = tab === 'dripify' ? '' : 'none';
+  if(tab === 'bd') loadBdContacts();
+  if(tab === 'dripify') loadProspects();
+}
+
+// ── BD CONTACTS ───────────────────────────────────────────────────
+let bdData = [];
+let bdLoaded = false;
+let bdEditingId = null;
+
+async function loadBdContacts(force=false) {
+  if(bdLoaded && !force) return;
+  const loading = document.getElementById('bd-loading');
+  const error = document.getElementById('bd-error');
+  const table = document.getElementById('bd-table');
+  loading.style.display = 'flex'; error.style.display = 'none'; table.style.display = 'none';
+  try {
+    const r = await sbFetch('bd_contacts?select=*&order=sort_order.asc,created_at.asc');
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    bdData = await r.json();
+    bdLoaded = true;
+    renderBdTable(bdData);
+  } catch(e) {
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.innerHTML = `<strong>Couldn't load BD contacts.</strong><br><br>Have you run <code>bd-contacts-setup.sql</code> in Supabase?<br><br>${e.message}`;
+  }
+}
+
+const BD_STATUS_CLASS = {
+  'In progress': 's-inprogress',
+  'Warm, in progress': 's-warm-progress',
+  'Warm but dormant': 's-warm-dormant',
+  'Not started yet': 's-not-started',
+  'Not yet met': 's-not-met',
+  'Reached out on LinkedIn to introduce myself': 's-linkedin',
+  'Research required': 's-research',
+  'Low engagement': 's-low',
+};
+
+function renderBdTable(rows) {
+  const loading = document.getElementById('bd-loading');
+  const table = document.getElementById('bd-table');
+  const tbody = document.getElementById('bd-tbody');
+  const count = document.getElementById('bd-count');
+  loading.style.display = 'none';
+  if(!rows.length) {
+    document.getElementById('bd-error').style.display = 'block';
+    document.getElementById('bd-error').innerHTML = 'No contacts yet. Click + Add Contact to get started.';
+    return;
+  }
+  const statusClass = s => BD_STATUS_CLASS[s] || 's-not-started';
+  tbody.innerHTML = rows.map(c => `
+    <tr>
+      <td>${esc(c.name||'')}</td>
+      <td>${esc(c.title||'')}</td>
+      <td>${esc(c.organisation||'')}</td>
+      <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.current_action||'')}</td>
+      <td><span class="bd-status-pill ${statusClass(c.status)}">${esc(c.status||'')}</span></td>
+      <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.next_action||'')}</td>
+      <td>
+        <div class="bd-row-actions">
+          <button class="bd-action-btn" title="Edit" onclick="openBdModal('${c.id}')">✎</button>
+          <button class="bd-action-btn del" title="Delete" onclick="deleteBdContact('${c.id}','${esc(c.name||'')}')">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+  table.style.display = 'table';
+  count.textContent = `${rows.length} contact${rows.length !== 1 ? 's' : ''}`;
+}
+
+function filterBdContacts() {
+  const q = document.getElementById('bd-search').value.toLowerCase().trim();
+  if(!q) { renderBdTable(bdData); return; }
+  const filtered = bdData.filter(c =>
+    ['name','title','organisation','status','current_action','next_action'].some(k => String(c[k]||'').toLowerCase().includes(q))
+  );
+  renderBdTable(filtered);
+  document.getElementById('bd-count').textContent = `${filtered.length} of ${bdData.length} contacts`;
+}
+
+function openBdModal(id=null) {
+  bdEditingId = id;
+  const overlay = document.getElementById('bd-modal-overlay');
+  document.getElementById('bd-modal-title').textContent = id ? 'Edit BD Contact' : 'Add BD Contact';
+  if(id) {
+    const c = bdData.find(x=>x.id===id);
+    if(c) {
+      document.getElementById('bd-name').value = c.name||'';
+      document.getElementById('bd-title').value = c.title||'';
+      document.getElementById('bd-org').value = c.organisation||'';
+      document.getElementById('bd-status').value = c.status||'Not started yet';
+      document.getElementById('bd-current').value = c.current_action||'';
+      document.getElementById('bd-next').value = c.next_action||'';
+    }
+  } else {
+    ['bd-name','bd-title','bd-org','bd-current','bd-next'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('bd-status').value = 'Not started yet';
+  }
+  overlay.classList.add('open');
+}
+
+function closeBdModal(e) { if(e.target===document.getElementById('bd-modal-overlay')) closeBdModalDirect(); }
+function closeBdModalDirect() { document.getElementById('bd-modal-overlay').classList.remove('open'); bdEditingId=null; }
+
+async function saveBdContact() {
+  const payload = {
+    name: document.getElementById('bd-name').value.trim(),
+    title: document.getElementById('bd-title').value.trim(),
+    organisation: document.getElementById('bd-org').value.trim(),
+    status: document.getElementById('bd-status').value,
+    current_action: document.getElementById('bd-current').value.trim(),
+    next_action: document.getElementById('bd-next').value.trim(),
+    updated_at: new Date().toISOString(),
+  };
+  if(!payload.name) { alert('Name is required.'); return; }
+  try {
+    if(bdEditingId) {
+      await sbFetch(`bd_contacts?id=eq.${bdEditingId}`, {
+        method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(payload)
+      });
+      const i = bdData.findIndex(x=>x.id===bdEditingId);
+      if(i>-1) bdData[i] = {...bdData[i], ...payload};
+    } else {
+      const r = await sbFetch('bd_contacts', {
+        method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(payload)
+      });
+      const d = await r.json();
+      bdData.push(d[0]||{...payload, id:'local-'+Date.now()});
+    }
+  } catch(e) { console.error(e); }
+  renderBdTable(bdData);
+  closeBdModalDirect();
+}
+
+async function deleteBdContact(id, name) {
+  if(!confirm(`Delete ${name}? This can't be undone.`)) return;
+  try {
+    await sbFetch(`bd_contacts?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
+  } catch(e) {}
+  bdData = bdData.filter(x=>x.id!==id);
+  renderBdTable(bdData);
 }
 
 // ── PROSPECTS ─────────────────────────────────────────────────────
