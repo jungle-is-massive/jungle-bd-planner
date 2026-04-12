@@ -1,0 +1,91 @@
+{
+  "name": "Jungle BD — Fetch Prospects from Google Sheet",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 1,
+        "maxResults": 1
+      },
+      "metadata": {
+        "designer": { "x": 0, "y": 0 },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "label": "Prospects Fetch Webhook",
+              "data": { "editable": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "google-sheets:getRange",
+      "version": 2,
+      "parameters": {
+        "connection": 1
+      },
+      "mapper": {
+        "spreadsheetId": "1vilmRDyxbhhbujpkT06qSVmWBVAW37YKQvPVDIE6eQs",
+        "sheetId": "Dripify",
+        "range": "A:Z",
+        "valueRenderOption": "FORMATTED_VALUE",
+        "dateTimeRenderOption": "FORMATTED_STRING"
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 },
+        "restore": {
+          "parameters": {
+            "connection": {
+              "label": "Google Sheets Connection",
+              "data": { "editable": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "gateway:WebhookRespond",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "status": "200",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ],
+        "body": "{{2.values}}"
+      },
+      "metadata": {
+        "designer": { "x": 600, "y": 0 }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu1.make.com"
+  }
+}
