@@ -174,7 +174,11 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
 .btn-cancel{background:var(--grey-light);border:none;border-radius:100px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--grey-mid);}
 .btn-save{background:var(--black);color:var(--green);border:none;border-radius:100px;padding:8px 18px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
 
-/* DELETE BTN */
+.person-action-btn { font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; border-radius: 100px; padding: 3px 10px; cursor: pointer; border: 1.5px solid; transition: all 0.15s; }
+.person-action-btn.edit-btn { background: none; border-color: var(--border-strong); color: var(--grey-mid); }
+.person-action-btn.edit-btn:hover { border-color: var(--black); color: var(--black); }
+.person-action-btn.delete-btn { background: none; border-color: rgba(192,57,43,0.3); color: #c0392b; }
+.person-action-btn.delete-btn:hover { background: #FFE4E1; border-color: #c0392b; }
 .del-btn{background:none;border:none;cursor:pointer;color:var(--grey);font-size:12px;opacity:0;transition:opacity 0.1s,color 0.1s;padding:2px 6px;border-radius:4px;}
 .card:hover .del-btn,.asset-row:hover .del-btn,.timeline-table tr:hover .del-btn,.comms-table tr:hover .del-btn{opacity:1;}
 .del-btn:hover{color:#c0392b;}
@@ -510,6 +514,7 @@ const DEFAULTS = {
 
 let editMode = false;
 let modalType = '';
+let editingId = null;
 let state = {};
 
 // ── STORAGE — SUPABASE ────────────────────────────────────────────
@@ -699,9 +704,12 @@ function renderAssets() {
 function renderPeople() {
   document.getElementById('people-grid').innerHTML = (state.people||[]).map(p => `
     <div class="person-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div class="person-initial">${esc(p.initials)}</div>
-        <button class="del-btn" style="opacity:0;margin-top:4px" onclick="delItem('people','${p.id}')">✕</button>
+        ${editMode ? `<div style="display:flex;gap:6px">
+          <button class="person-action-btn edit-btn" onclick="editPerson('${p.id}')">Edit</button>
+          <button class="person-action-btn delete-btn" onclick="confirmDelPerson('${p.id}','${esc(p.name)}')">Delete</button>
+        </div>` : ''}
       </div>
       <div class="person-name">${esc(p.name)}</div>
       <div class="person-role">${esc(p.role)}</div>
@@ -713,6 +721,33 @@ function delItem(arr, id) {
   if(!editMode) return;
   state[arr] = state[arr].filter(x=>x.id!==id);
   saveState(); render();
+}
+
+function confirmDelPerson(id, name) {
+  if(confirm(`Delete ${name}? This can't be undone.`)) {
+    state.people = state.people.filter(x=>x.id!==id);
+    saveState(); render();
+  }
+}
+
+function editPerson(id) {
+  if(!editMode) return;
+  const person = state.people.find(p=>p.id===id);
+  if(!person) return;
+  editingId = id;
+  modalType = 'person';
+  document.getElementById('modal-title').textContent = 'Edit Person';
+  const cfg = MODAL_CONFIGS['person'];
+  document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => {
+    const val = f.id === 'tasks' ? (person.tasks||[]).join('\n') : (person[f.id]||'');
+    return `<div class="m-field">
+      <label>${f.label}</label>
+      ${f.type==='textarea'
+        ? `<textarea id="mf-${f.id}" rows="3">${esc(val)}</textarea>`
+        : `<input type="text" id="mf-${f.id}" value="${esc(val)}">`}
+    </div>`;
+  }).join('');
+  document.getElementById('modal-overlay').classList.add('open');
 }
 
 // ── MODAL ─────────────────────────────────────────────────────────
@@ -764,6 +799,7 @@ const MODAL_CONFIGS = {
 
 function openModal(type) {
   if(!editMode) return;
+  editingId = null;
   modalType = type;
   const cfg = MODAL_CONFIGS[type];
   document.getElementById('modal-title').textContent = cfg.title;
@@ -778,20 +814,34 @@ function openModal(type) {
 }
 
 function closeModal(e) { if(e.target===document.getElementById('modal-overlay'))closeModalDirect(); }
-function closeModalDirect() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalDirect() { document.getElementById('modal-overlay').classList.remove('open'); editingId = null; }
 
 function saveModalItem() {
   const cfg = MODAL_CONFIGS[modalType];
-  const item = {id: modalType[0]+'-'+Date.now(), status:'todo'};
-  cfg.fields.forEach(f => {
-    const el = document.getElementById('mf-'+f.id);
-    if(el) item[f.id] = el.value.trim();
-  });
-  if(modalType === 'person') {
-    item.tasks = (item.tasks||'').split('\n').map(t=>t.trim()).filter(Boolean);
-  }
   const arrMap = {timeline:'timeline',speaker:'speakers',comms:'comms',asset:'assets',person:'people'};
-  state[arrMap[modalType]].push(item);
+  const arr = arrMap[modalType];
+
+  if(editingId) {
+    // Edit existing
+    const item = state[arr].find(x=>x.id===editingId);
+    if(item) {
+      cfg.fields.forEach(f => {
+        const el = document.getElementById('mf-'+f.id);
+        if(el) item[f.id] = el.value.trim();
+      });
+      if(modalType === 'person') item.tasks = (item.tasks||'').split('\n').map(t=>t.trim()).filter(Boolean);
+    }
+  } else {
+    // Add new
+    const item = {id: modalType[0]+'-'+Date.now(), status:'todo'};
+    cfg.fields.forEach(f => {
+      const el = document.getElementById('mf-'+f.id);
+      if(el) item[f.id] = el.value.trim();
+    });
+    if(modalType === 'person') item.tasks = (item.tasks||'').split('\n').map(t=>t.trim()).filter(Boolean);
+    state[arr].push(item);
+  }
+
   saveState(); render(); closeModalDirect();
 }
 
