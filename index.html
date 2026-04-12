@@ -511,7 +511,6 @@ const ASSETS = [
 ];
 
 let allEvents = [], currentModalEvent = null;
-const unlockedSessions = new Set();
 
 const SEED = [
   {id:'s1',name:'MAD Meets',category:'intermediary',start_date:'2026-05-14',end_date:'2026-05-14',location:'London',description:'Ingenuity+ quarterly event for brand marketers and senior agency contacts. Key opportunity for introductions and relationship building.',row_key:'intermediary-ingenuity'},
@@ -677,16 +676,10 @@ function closeModalDirect(){document.getElementById('modal-overlay').classList.r
 async function renderQALog(evt) {
   const ctx=`${evt.name} (${fmtR(evt.start_date,evt.end_date)})`;
   const logEl=document.getElementById('qa-log');
-  const unlocked=unlockedSessions.has(ctx);
-  const safeKey=ctx.replace(/[^a-z0-9]/gi,'_');
-  if(!unlocked){
-    logEl.innerHTML=`<div class="qa-log"><div class="qa-log-header"><div class="qa-log-title">Questions log</div></div><div class="qa-log-locked"><p>Enter PIN to view questions log</p><div><input class="qa-pin-input" type="password" maxlength="4" placeholder="——" id="pin_${safeKey}"><button class="qa-pin-btn" onclick="checkPin('${ctx}','${safeKey}')">Unlock</button></div><div class="qa-pin-error" id="pinerr_${safeKey}">Incorrect PIN</div></div></div>`;
-    return;
-  }
   const qs=await loadQuestions(ctx);
   const statusOpts=['yet-to-start','in-progress','actioned'];
   const statusLabels={'yet-to-start':'Yet to start','in-progress':'In progress','actioned':'Actioned'};
-  let html=`<div class="qa-log"><div class="qa-log-header"><div class="qa-log-title">Questions log</div><button class="qa-lock-btn" onclick="lockLog('${ctx}')">🔒 Lock</button></div>`;
+  let html=`<div class="qa-log"><div class="qa-log-header"><div class="qa-log-title">Questions log</div></div>`;
   if(!qs.length){html+=`<div class="qa-empty">No questions yet.</div>`;}
   else{
     html+=`<div class="qa-items">`;
@@ -701,12 +694,6 @@ async function renderQALog(evt) {
   logEl.innerHTML=html;
 }
 
-function checkPin(ctx,safeKey){
-  const val=document.getElementById('pin_'+safeKey)?.value;
-  if(val===QA_PIN){unlockedSessions.add(ctx);if(currentModalEvent)renderQALog(currentModalEvent);}
-  else{const err=document.getElementById('pinerr_'+safeKey);if(err){err.style.display='block';setTimeout(()=>err.style.display='none',2000);}}
-}
-function lockLog(ctx){unlockedSessions.delete(ctx);if(currentModalEvent)renderQALog(currentModalEvent);}
 async function cycleStatus(id,nextStatus,btn,ctx){
   const labels={'yet-to-start':'Yet to start','in-progress':'In progress','actioned':'Actioned'};
   const opts=['yet-to-start','in-progress','actioned'];
