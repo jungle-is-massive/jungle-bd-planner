@@ -372,6 +372,11 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .prospects-table td a { color: var(--black); text-decoration: none; border-bottom: 1px solid var(--grey); transition: border-color 0.15s; }
 .prospects-table td a:hover { border-color: var(--black); }
 .prospects-no-results { text-align: center; padding: 32px; color: var(--grey-mid); font-size: 13px; font-style: italic; }
+.prospect-status { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: 100px; display: inline-block; }
+.s-connected { background: #D4F4E2; color: #1A6B3C; }
+.s-replied { background: #FFF3CD; color: #856404; }
+.s-meeting { background: rgba(135,251,102,0.2); color: #2d6b00; }
+.s-default { background: var(--grey-light); color: var(--grey-mid); }
 </style>
 </head>
 <body>
@@ -796,8 +801,6 @@ function switchView(v, btn) {
 }
 
 // ── PROSPECTS ─────────────────────────────────────────────────────
-// Replace this URL with your Make webhook URL after creating the scenario
-const PROSPECTS_WEBHOOK = 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE';
 let prospectsData = [];
 let prospectsLoaded = false;
 
@@ -813,31 +816,16 @@ async function loadProspects(force=false) {
   table.style.display = 'none';
   refreshBtn.classList.add('loading');
 
-  if(PROSPECTS_WEBHOOK === 'PASTE_YOUR_MAKE_WEBHOOK_URL_HERE') {
-    loading.style.display = 'none';
-    error.style.display = 'block';
-    error.innerHTML = `<strong>Make webhook not yet configured.</strong><br><br>Once you've set up the Make scenario and have a webhook URL, paste it into the <code>PROSPECTS_WEBHOOK</code> constant in the page source.`;
-    refreshBtn.classList.remove('loading');
-    return;
-  }
-
   try {
-    const r = await fetch(PROSPECTS_WEBHOOK, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({action: 'fetch_prospects'})
-    });
+    const r = await sbFetch('prospects?select=*&order=created_at.desc');
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-
-    // Expect either { rows: [...] } or a direct array
-    prospectsData = Array.isArray(data) ? data : (data.rows || data.data || []);
+    prospectsData = await r.json();
     prospectsLoaded = true;
     renderProspectsTable(prospectsData);
   } catch(e) {
     loading.style.display = 'none';
     error.style.display = 'block';
-    error.innerHTML = `<strong>Couldn't load prospects.</strong><br><br>${e.message}<br><br>Check the Make scenario is active and the webhook URL is correct.`;
+    error.innerHTML = `<strong>Couldn't load prospects.</strong><br><br>${e.message}`;
   }
   refreshBtn.classList.remove('loading');
 }
@@ -854,22 +842,34 @@ function renderProspectsTable(rows) {
   if(!rows || rows.length === 0) {
     table.style.display = 'none';
     document.getElementById('prospects-error').style.display = 'block';
-    document.getElementById('prospects-error').innerHTML = 'No prospects found in the sheet.';
+    document.getElementById('prospects-error').innerHTML = 'No prospects yet — they\'ll appear here as Dripify connections come in.';
     return;
   }
 
-  // Auto-detect columns from first row keys
-  const cols = Object.keys(rows[0]);
+  const COLS = [
+    {key:'full_name', label:'Name'},
+    {key:'title', label:'Title'},
+    {key:'company', label:'Company'},
+    {key:'campaign', label:'Campaign'},
+    {key:'status', label:'Status'},
+    {key:'linkedin_url', label:'LinkedIn'},
+    {key:'connected_at', label:'Connected'},
+  ];
 
-  thead.innerHTML = `<tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>`;
+  thead.innerHTML = `<tr>${COLS.map(c=>`<th>${c.label}</th>`).join('')}</tr>`;
 
   tbody.innerHTML = rows.map(row => `
-    <tr>${cols.map(col => {
-      const val = row[col] || '';
-      // Auto-link anything that looks like a URL
-      if(typeof val === 'string' && val.startsWith('http')) {
-        const domain = val.includes('linkedin') ? 'LinkedIn ↗' : '↗';
-        return `<td><a href="${esc(val)}" target="_blank" rel="noopener">${domain}</a></td>`;
+    <tr>${COLS.map(c => {
+      const val = row[c.key] || '';
+      if(c.key === 'linkedin_url' && val) {
+        return `<td><a href="${esc(val)}" target="_blank" rel="noopener">View ↗</a></td>`;
+      }
+      if(c.key === 'connected_at' && val) {
+        return `<td>${new Date(val).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>`;
+      }
+      if(c.key === 'status') {
+        const cls = val==='connected'?'s-connected':val==='replied'?'s-replied':val==='meeting'?'s-meeting':'s-default';
+        return `<td><span class="prospect-status ${cls}">${esc(val)}</span></td>`;
       }
       return `<td title="${esc(String(val))}">${esc(String(val))}</td>`;
     }).join('')}</tr>`
@@ -883,7 +883,7 @@ function filterProspects() {
   const q = document.getElementById('prospects-search').value.toLowerCase().trim();
   if(!q) { renderProspectsTable(prospectsData); return; }
   const filtered = prospectsData.filter(row =>
-    Object.values(row).some(v => String(v).toLowerCase().includes(q))
+    ['full_name','title','company','campaign','status'].some(k => String(row[k]||'').toLowerCase().includes(q))
   );
   renderProspectsTable(filtered);
   document.getElementById('prospects-count').textContent = `${filtered.length} of ${prospectsData.length} prospects`;
