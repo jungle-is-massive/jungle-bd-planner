@@ -136,7 +136,10 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
 <!-- NAV -->
 <nav>
   <div class="nav-wm">JUNGLE<span>.</span></div>
-  <a class="nav-back" href="index.html">← Back to Planner</a>
+  <div style="display:flex;align-items:center;gap:12px">
+    <button onclick="openEditModal()" style="background:rgba(255,255,255,0.1);color:var(--cream);border:1px solid rgba(255,255,255,0.15);border-radius:100px;padding:6px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">✎ Edit Profile</button>
+    <a class="nav-back" href="index.html">← Back to Planner</a>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -183,6 +186,43 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
     </div>
     <div id="assets-loading" style="text-align:center;padding:32px;color:var(--grey-mid)">Loading assets…</div>
     <div class="asset-list" id="asset-list" style="display:none"></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="edit-overlay" onclick="closeEdit(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="edit-box" style="background:var(--cream);border-radius:16px;width:min(640px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+    <div class="upload-hdr">
+      <div class="upload-hdr-title">Edit Profile</div>
+      <button class="modal-close" onclick="closeEditDirect()">✕</button>
+    </div>
+    <div class="upload-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label>Name</label><input type="text" id="edit-name" placeholder="e.g. Masterclassing"></div>
+        <div class="field"><label>Status</label>
+          <select id="edit-status">
+            <option>In progress</option>
+            <option>Warm but dormant</option>
+            <option>Not started yet</option>
+            <option>Supplier</option>
+            <option>Active</option>
+            <option>On hold</option>
+          </select>
+        </div>
+        <div class="field"><label>Website URL</label><input type="url" id="edit-website" placeholder="https://www.aar.co.uk"></div>
+        <div class="field"><label>Pitch Target (number)</label><input type="number" id="edit-pitch" placeholder="e.g. 3" min="0"></div>
+        <div class="field"><label>Avg Pitch Value (£)</label><input type="number" id="edit-avg-value" placeholder="e.g. 250000" min="0"></div>
+        <div class="field"><label>Annual Cost Estimate (£)</label><input type="number" id="edit-annual-cost" placeholder="e.g. 72000" min="0"></div>
+      </div>
+      <div class="field"><label>Cost to Jungle (description)</label><input type="text" id="edit-cost" placeholder="e.g. £6k/month retainer + win fee"></div>
+      <div class="field"><label>Current Stage</label><textarea id="edit-stage" rows="2" placeholder="Where are things right now?"></textarea></div>
+      <div class="field"><label>Goal</label><textarea id="edit-goal" rows="2" placeholder="What does success look like?"></textarea></div>
+      <div class="field"><label>Commercial Model</label><textarea id="edit-model" rows="3" placeholder="How does the commercial relationship work?"></textarea></div>
+    </div>
+    <div class="upload-footer">
+      <button class="btn-cancel" onclick="closeEditDirect()">Cancel</button>
+      <button class="btn-save" id="edit-save-btn" onclick="saveEdit()">Save Changes</button>
+    </div>
   </div>
 </div>
 
@@ -285,14 +325,23 @@ function renderHero(d) {
   if(d.website_url) {
     const url = d.website_url.startsWith('http') ? d.website_url : 'https://' + d.website_url;
     document.getElementById('hero-website').innerHTML = `<a class="hero-website-btn" href="${esc(url)}" target="_blank" rel="noopener">Visit website ↗</a>`;
+  } else {
+    document.getElementById('hero-website').innerHTML = '';
   }
 
-  const val = (v, fallback='Not yet added') => v ? `<div class="info-card-value">${esc(v)}</div>` : `<div class="info-card-value empty">${fallback}</div>`;
-  document.getElementById('info-stage').outerHTML = val(d.stage) + `<div class="info-card-label" style="display:none"></div>`;
-  document.getElementById('info-goal').outerHTML = val(d.goal) + `<div class="info-card-label" style="display:none"></div>`;
-  document.getElementById('info-model').outerHTML = val(d.commercial_model) + `<div class="info-card-label" style="display:none"></div>`;
-  document.getElementById('info-cost').outerHTML = val(d.cost_to_jungle) + `<div class="info-card-label" style="display:none"></div>`;
-  document.getElementById('info-annual').outerHTML = (d.annual_cost_estimate ? `<div class="info-card-value">£${Number(d.annual_cost_estimate).toLocaleString('en-GB')} / year</div>` : `<div class="info-card-value empty">Not yet set</div>`) + `<div class="info-card-label" style="display:none"></div>`;
+  const setCard = (id, val, fallback='Not yet added') => {
+    const el = document.getElementById(id);
+    if(el) { el.textContent = val||''; el.className = 'info-card-value' + (val?'':' empty'); if(!val) el.textContent = fallback; }
+  };
+  setCard('info-stage', d.stage);
+  setCard('info-goal', d.goal);
+  setCard('info-model', d.commercial_model);
+  setCard('info-cost', d.cost_to_jungle);
+  const annualEl = document.getElementById('info-annual');
+  if(annualEl) {
+    annualEl.className = 'info-card-value' + (d.annual_cost_estimate!=null?'':' empty');
+    annualEl.textContent = d.annual_cost_estimate!=null ? `£${Number(d.annual_cost_estimate).toLocaleString('en-GB')} / year` : 'Not yet set';
+  }
 }
 
 // ── ASSETS ────────────────────────────────────────────────────────
@@ -448,6 +497,70 @@ dz.addEventListener('drop', e => {
       document.getElementById('upload-title').value = file.name.replace(/\.[^.]+$/,'');
   }
 });
+
+// ── EDIT PROFILE ──────────────────────────────────────────────────
+function openEditModal() {
+  if(!intermediaryData) return;
+  const d = intermediaryData;
+  document.getElementById('edit-name').value = d.name||'';
+  document.getElementById('edit-status').value = d.status||'Not started yet';
+  document.getElementById('edit-website').value = d.website_url||'';
+  document.getElementById('edit-pitch').value = d.pitch_target??'';
+  document.getElementById('edit-avg-value').value = d.avg_pitch_value??'';
+  document.getElementById('edit-annual-cost').value = d.annual_cost_estimate??'';
+  document.getElementById('edit-cost').value = d.cost_to_jungle||'';
+  document.getElementById('edit-stage').value = d.stage||'';
+  document.getElementById('edit-goal').value = d.goal||'';
+  document.getElementById('edit-model').value = d.commercial_model||'';
+  const overlay = document.getElementById('edit-overlay');
+  const box = document.getElementById('edit-box');
+  overlay.style.opacity='1'; overlay.style.pointerEvents='all';
+  box.style.transform='translateY(0)';
+}
+
+function closeEdit(e) { if(e.target===document.getElementById('edit-overlay')) closeEditDirect(); }
+function closeEditDirect() {
+  const overlay = document.getElementById('edit-overlay');
+  const box = document.getElementById('edit-box');
+  overlay.style.opacity='0'; overlay.style.pointerEvents='none';
+  box.style.transform='translateY(16px)';
+}
+
+async function saveEdit() {
+  const btn = document.getElementById('edit-save-btn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  const payload = {
+    name: document.getElementById('edit-name').value.trim(),
+    status: document.getElementById('edit-status').value,
+    website_url: document.getElementById('edit-website').value.trim(),
+    pitch_target: document.getElementById('edit-pitch').value !== '' ? parseFloat(document.getElementById('edit-pitch').value) : null,
+    avg_pitch_value: document.getElementById('edit-avg-value').value !== '' ? parseFloat(document.getElementById('edit-avg-value').value) : null,
+    annual_cost_estimate: document.getElementById('edit-annual-cost').value !== '' ? parseFloat(document.getElementById('edit-annual-cost').value) : null,
+    cost_to_jungle: document.getElementById('edit-cost').value.trim(),
+    stage: document.getElementById('edit-stage').value.trim(),
+    goal: document.getElementById('edit-goal').value.trim(),
+    commercial_model: document.getElementById('edit-model').value.trim(),
+    updated_at: new Date().toISOString(),
+  };
+
+  if(!payload.name) { alert('Name is required.'); btn.disabled=false; btn.textContent='Save Changes'; return; }
+
+  try {
+    const r = await sbFetch(`intermediaries?id=eq.${intermediaryId}`, {
+      method: 'PATCH',
+      headers: {'Prefer':'return=minimal'},
+      body: JSON.stringify(payload)
+    });
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    intermediaryData = {...intermediaryData, ...payload};
+    renderHero(intermediaryData);
+    closeEditDirect();
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+  }
+  btn.disabled=false; btn.textContent='Save Changes';
+}
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
