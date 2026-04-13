@@ -410,10 +410,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .int-s-inprogress { background: #D4F4E2; color: #1A6B3C; }
 .int-s-dormant { background: #FFF3CD; color: #856404; }
 .int-s-notstarted, .int-s-onhold { background: var(--grey-light); color: var(--grey-mid); }
+.int-cm-toggle { background: none; border: none; color: var(--grey-mid); font-size: 11px; font-weight: 600; cursor: pointer; padding: 4px 0 0; display: block; font-family: 'DM Sans', sans-serif; transition: color 0.12s; }
+.int-cm-toggle:hover { color: var(--black); }
 
 /* INT VIEW TOGGLE */
 .int-view-toggle { display: flex; background: var(--grey-light); border-radius: 8px; padding: 3px; gap: 2px; }
-.int-view-btn { background: none; border: none; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 14px; color: var(--grey-mid); transition: all 0.12s; display: flex; align-items: center; justify-content: center; }
+.int-view-btn { background: none; border: none; border-radius: 6px; height: 28px; padding: 0 12px; cursor: pointer; font-size: 11px; font-weight: 600; font-family: 'DM Sans', sans-serif; color: var(--grey-mid); transition: all 0.12s; display: flex; align-items: center; white-space: nowrap; }
 .int-view-btn.active { background: var(--white); color: var(--black); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 .int-view-btn:hover:not(.active) { color: var(--black); }
 
@@ -1274,6 +1276,34 @@ function intStatusClass(s) {
 function fmtGBP(n) { if(!n && n !== 0) return '—'; return '£' + Number(n).toLocaleString('en-GB'); }
 function fmtN(n) { if(!n && n !== 0) return '—'; return Number(n).toLocaleString('en-GB'); }
 
+function nl2br(s) { return (s||'').replace(/\n/g, '<br>'); }
+
+const COMMERCIAL_TRUNCATE = 180;
+function commercialModelHtml(text, id) {
+  const escaped = nl2br(esc(text));
+  if(text.length <= COMMERCIAL_TRUNCATE) {
+    return `<div class="int-field-value">${escaped}</div>`;
+  }
+  const shortEscaped = nl2br(esc(text.slice(0, COMMERCIAL_TRUNCATE).trimEnd()));
+  return `<div class="int-field-value int-cm-wrap" id="cm-${id}">
+    <span class="int-cm-short">${shortEscaped}<span class="int-cm-ellipsis">…</span></span>
+    <span class="int-cm-full" style="display:none">${escaped}</span>
+    <button class="int-cm-toggle" onclick="toggleCm('${id}')">Show more</button>
+  </div>`;
+}
+
+function toggleCm(id) {
+  const wrap = document.getElementById('cm-'+id);
+  if(!wrap) return;
+  const short = wrap.querySelector('.int-cm-short');
+  const full  = wrap.querySelector('.int-cm-full');
+  const btn   = wrap.querySelector('.int-cm-toggle');
+  const isOpen = full.style.display !== 'none';
+  short.style.display = isOpen ? '' : 'none';
+  full.style.display  = isOpen ? 'none' : '';
+  btn.textContent = isOpen ? 'Show more' : 'Show less';
+}
+
 function renderIntCards(rows) {
   const loading = document.getElementById('int-loading');
   const cards = document.getElementById('int-cards');
@@ -1302,9 +1332,9 @@ function renderIntCards(rows) {
         ${item.annual_cost_estimate != null ? `<span class="int-cost-badge">${fmtGBP(item.annual_cost_estimate)}/yr</span>` : item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
         ${item.avg_pitch_value != null ? `<span class="int-cost-badge">avg ${fmtGBP(item.avg_pitch_value)}</span>` : ''}
       </div>
-      ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${esc(item.stage)}</div></div>` : ''}
-      ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${esc(item.goal)}</div></div>` : ''}
-      ${item.commercial_model ? `<div class="int-field"><div class="int-field-label">Commercial Model</div><div class="int-field-value">${esc(item.commercial_model)}</div></div>` : ''}
+      ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${nl2br(esc(item.stage))}</div></div>` : ''}
+      ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${nl2br(esc(item.goal))}</div></div>` : ''}
+      ${item.commercial_model ? `<div class="int-field"><div class="int-field-label">Commercial Model</div>${commercialModelHtml(item.commercial_model, item.id)}</div>` : ''}
       <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-light)">
         <a href="intermediary-profile.html?id=${item.id}" style="flex:1;text-align:center;background:var(--black);color:var(--green);font-size:11px;font-weight:700;padding:8px 12px;border-radius:100px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:opacity 0.15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">View Profile →</a>
         ${item.website_url ? `<a href="${item.website_url.startsWith('http')?esc(item.website_url):'https://'+esc(item.website_url)}" target="_blank" rel="noopener" style="flex:1;text-align:center;background:var(--grey-light);color:var(--black);font-size:11px;font-weight:600;padding:8px 12px;border-radius:100px;text-decoration:none;font-family:'DM Sans',sans-serif">Website ↗</a>` : ''}
