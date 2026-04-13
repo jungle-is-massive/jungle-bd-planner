@@ -387,6 +387,29 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 /* PROSPECTS SUB-TABS */
 .prospects-tabs-header { border-bottom: 1px solid var(--grey-light); margin-bottom: 32px; }
 #prospects-view { max-width: 1200px; margin: 0 auto; padding: 48px 32px 120px; }
+
+/* INTERMEDIARIES VIEW */
+#intermediaries-view { max-width: 1100px; margin: 0 auto; padding: 48px 32px 120px; }
+.int-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+.int-card { background: var(--white); border: 1.5px solid var(--grey-light); border-radius: 14px; padding: 22px; transition: border-color 0.15s; }
+.int-card:hover { border-color: var(--border-strong); }
+.int-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; gap: 10px; }
+.int-card-name { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+.int-card-actions { display: flex; gap: 5px; opacity: 0; transition: opacity 0.12s; flex-shrink: 0; }
+.int-card:hover .int-card-actions { opacity: 1; }
+.int-field { margin-bottom: 12px; }
+.int-field:last-child { margin-bottom: 0; }
+.int-field-label { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 4px; }
+.int-field-value { font-size: 12px; line-height: 1.6; color: #3a3a3a; }
+.int-field-value.empty { color: var(--grey-mid); font-style: italic; }
+.int-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.int-pitch-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--black); color: var(--green); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 100px; }
+.int-cost-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey-mid); background: var(--grey-light); padding: 3px 9px; border-radius: 100px; }
+.int-status-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; display: inline-block; }
+.int-s-supplier, .int-s-active { background: rgba(135,251,102,0.2); color: #2d6b00; }
+.int-s-inprogress { background: #D4F4E2; color: #1A6B3C; }
+.int-s-dormant { background: #FFF3CD; color: #856404; }
+.int-s-notstarted, .int-s-onhold { background: var(--grey-light); color: var(--grey-mid); }
 .prospects-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
 .prospects-refresh-btn { background: var(--grey-light); border: none; border-radius: 100px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--grey-mid); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .prospects-refresh-btn:hover { background: var(--grey); color: var(--black); }
@@ -435,6 +458,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
     <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
+    <button class="nav-tab" onclick="switchView('intermediaries',this)">Intermediaries</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
     <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
@@ -622,7 +646,60 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     </div>
   </div>
 </div>
-<div id="modal-overlay" onclick="closeModal(event)">
+<!-- INTERMEDIARIES VIEW -->
+<div class="view" id="intermediaries-view-el">
+  <div id="intermediaries-view">
+    <div class="prospects-header">
+      <div>
+        <div class="assets-view-label">BD Infrastructure</div>
+        <h2 class="assets-view-title">Intermediaries</h2>
+        <p class="assets-view-sub">Pitch consultancies, agency networks and platforms. Track status, commercial model and pitch targets.</p>
+      </div>
+      <button class="add-asset-btn" onclick="openIntModal()">+ Add Intermediary</button>
+    </div>
+    <div class="prospects-controls">
+      <input type="text" class="prospects-search" id="int-search" placeholder="Search by name or status…" oninput="filterIntermediaries()">
+      <div class="prospects-count" id="int-count"></div>
+    </div>
+    <div id="int-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+    <div id="int-error" class="prospects-error" style="display:none"></div>
+    <div id="int-cards" style="display:none"></div>
+  </div>
+</div>
+
+<!-- INTERMEDIARY MODAL -->
+<div id="int-modal-overlay" onclick="closeIntModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="int-modal-box" style="background:var(--cream);border-radius:16px;width:min(620px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);">
+      <div id="int-modal-title" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Add Intermediary</div>
+      <button class="modal-close" onclick="closeIntModalDirect()">✕</button>
+    </div>
+    <div style="padding:18px 22px 8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label>Name</label><input type="text" id="int-name" placeholder="e.g. AAR"></div>
+        <div class="field"><label>Status</label>
+          <select id="int-status">
+            <option>In progress</option>
+            <option>Warm but dormant</option>
+            <option>Not started yet</option>
+            <option>Supplier</option>
+            <option>Active</option>
+            <option>On hold</option>
+          </select>
+        </div>
+        <div class="field"><label>Pitch Target (no. of pitches)</label><input type="text" id="int-pitch" placeholder="e.g. 3–4"></div>
+        <div class="field"><label>Cost to Jungle</label><input type="text" id="int-cost" placeholder="e.g. £6k/month or £0"></div>
+      </div>
+      <div class="field"><label>Current Stage</label><textarea id="int-stage" rows="2" placeholder="Where are things right now?"></textarea></div>
+      <div class="field"><label>Goal</label><textarea id="int-goal" rows="2" placeholder="What does success look like?"></textarea></div>
+      <div class="field"><label>Commercial Model</label><textarea id="int-model" rows="3" placeholder="How does the commercial relationship work?"></textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;">
+      <button class="btn-cancel" onclick="closeIntModalDirect()">Cancel</button>
+      <button class="btn-save" onclick="saveIntermediary()">Save</button>
+    </div>
+  </div>
+</div>
   <div id="modal">
     <div class="modal-header">
       <div>
@@ -905,7 +982,7 @@ async function updateStatus(id, status) {
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el'};
+  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el', intermediaries:'intermediaries-view-el'};
   document.getElementById(viewMap[v]).classList.add('active');
   btn.classList.add('active');
   const isCalendar = v==='calendar';
@@ -914,6 +991,7 @@ function switchView(v, btn) {
   document.getElementById('legend').style.display = isCalendar?'':'none';
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadBdContacts();
+  if(v==='intermediaries') loadIntermediaries();
 }
 
 // ── PROSPECTS SUB-TABS ────────────────────────────────────────────
@@ -1079,6 +1157,155 @@ async function deleteBdContact(id, name) {
   } catch(e) {}
   bdData = bdData.filter(x=>x.id!==id);
   renderBdTable(bdData);
+}
+
+// ── INTERMEDIARIES ────────────────────────────────────────────────
+let intData = [];
+let intLoaded = false;
+let intEditingId = null;
+
+async function loadIntermediaries(force=false) {
+  if(intLoaded && !force) return;
+  const loading = document.getElementById('int-loading');
+  const error = document.getElementById('int-error');
+  const cards = document.getElementById('int-cards');
+  loading.style.display = 'flex'; error.style.display = 'none'; cards.style.display = 'none';
+  try {
+    const r = await sbFetch('intermediaries?select=*&order=sort_order.asc,created_at.asc');
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    intData = await r.json();
+    intLoaded = true;
+    renderIntCards(intData);
+  } catch(e) {
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.innerHTML = `<strong>Couldn't load intermediaries.</strong><br><br>Have you run <code>intermediaries-setup.sql</code> in Supabase?<br><br>${e.message}`;
+  }
+}
+
+function intStatusClass(s) {
+  if(!s) return 'int-s-notstarted';
+  const sl = s.toLowerCase();
+  if(sl.includes('supplier')) return 'int-s-supplier';
+  if(sl.includes('active')) return 'int-s-active';
+  if(sl.includes('progress')) return 'int-s-inprogress';
+  if(sl.includes('dormant')) return 'int-s-dormant';
+  if(sl.includes('hold')) return 'int-s-onhold';
+  return 'int-s-notstarted';
+}
+
+function renderIntCards(rows) {
+  const loading = document.getElementById('int-loading');
+  const cards = document.getElementById('int-cards');
+  const count = document.getElementById('int-count');
+  loading.style.display = 'none';
+  if(!rows.length) {
+    document.getElementById('int-error').style.display = 'block';
+    document.getElementById('int-error').innerHTML = 'No intermediaries yet. Click + Add Intermediary to get started.';
+    return;
+  }
+  cards.style.display = 'block';
+  cards.innerHTML = `<div class="int-grid">${rows.map(item => `
+    <div class="int-card">
+      <div class="int-card-header">
+        <div>
+          <div class="int-card-name">${esc(item.name)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <span class="int-status-pill ${intStatusClass(item.status)}">${esc(item.status||'Not started yet')}</span>
+          <div class="int-card-actions">
+            <button class="bd-action-btn" onclick="openIntModal('${item.id}')" title="Edit">✎</button>
+            <button class="bd-action-btn del" onclick="deleteIntermediary('${item.id}','${esc(item.name)}')" title="Delete">✕</button>
+          </div>
+        </div>
+      </div>
+      <div class="int-badges">
+        ${item.pitch_target ? `<span class="int-pitch-badge">🎯 ${esc(item.pitch_target)} pitches</span>` : ''}
+        ${item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
+      </div>
+      ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${esc(item.stage)}</div></div>` : ''}
+      ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${esc(item.goal)}</div></div>` : ''}
+      ${item.commercial_model ? `<div class="int-field"><div class="int-field-label">Commercial Model</div><div class="int-field-value">${esc(item.commercial_model)}</div></div>` : ''}
+    </div>`).join('')}</div>`;
+  count.textContent = `${rows.length} intermediar${rows.length !== 1 ? 'ies' : 'y'}`;
+}
+
+function filterIntermediaries() {
+  const q = document.getElementById('int-search').value.toLowerCase().trim();
+  if(!q) { renderIntCards(intData); return; }
+  const filtered = intData.filter(i =>
+    ['name','status','stage','goal','commercial_model'].some(k => String(i[k]||'').toLowerCase().includes(q))
+  );
+  renderIntCards(filtered);
+  document.getElementById('int-count').textContent = `${filtered.length} of ${intData.length} intermediaries`;
+}
+
+function openIntModal(id=null) {
+  intEditingId = id;
+  const overlay = document.getElementById('int-modal-overlay');
+  const box = document.getElementById('int-modal-box');
+  document.getElementById('int-modal-title').textContent = id ? 'Edit Intermediary' : 'Add Intermediary';
+  if(id) {
+    const item = intData.find(x=>x.id===id);
+    if(item) {
+      document.getElementById('int-name').value = item.name||'';
+      document.getElementById('int-status').value = item.status||'Not started yet';
+      document.getElementById('int-pitch').value = item.pitch_target||'';
+      document.getElementById('int-cost').value = item.cost_to_jungle||'';
+      document.getElementById('int-stage').value = item.stage||'';
+      document.getElementById('int-goal').value = item.goal||'';
+      document.getElementById('int-model').value = item.commercial_model||'';
+    }
+  } else {
+    ['int-name','int-pitch','int-cost','int-stage','int-goal','int-model'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('int-status').value = 'Not started yet';
+  }
+  overlay.style.opacity='1'; overlay.style.pointerEvents='all';
+  box.style.transform='translateY(0)';
+}
+
+function closeIntModal(e) { if(e.target===document.getElementById('int-modal-overlay')) closeIntModalDirect(); }
+function closeIntModalDirect() {
+  const overlay = document.getElementById('int-modal-overlay');
+  const box = document.getElementById('int-modal-box');
+  overlay.style.opacity='0'; overlay.style.pointerEvents='none';
+  box.style.transform='translateY(16px)';
+  intEditingId=null;
+}
+
+async function saveIntermediary() {
+  const name = document.getElementById('int-name').value.trim();
+  if(!name) { alert('Name is required.'); return; }
+  const payload = {
+    name,
+    status: document.getElementById('int-status').value,
+    pitch_target: document.getElementById('int-pitch').value.trim(),
+    cost_to_jungle: document.getElementById('int-cost').value.trim(),
+    stage: document.getElementById('int-stage').value.trim(),
+    goal: document.getElementById('int-goal').value.trim(),
+    commercial_model: document.getElementById('int-model').value.trim(),
+    updated_at: new Date().toISOString(),
+  };
+  try {
+    if(intEditingId) {
+      await sbFetch(`intermediaries?id=eq.${intEditingId}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(payload)});
+      const i = intData.findIndex(x=>x.id===intEditingId);
+      if(i>-1) intData[i] = {...intData[i], ...payload};
+    } else {
+      const r = await sbFetch('intermediaries', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify({...payload, sort_order: intData.length + 1})});
+      const d = await r.json();
+      intData.push(d[0]||{...payload, id:'local-'+Date.now()});
+    }
+  } catch(e) { console.error(e); }
+  renderIntCards(intData);
+  closeIntModalDirect();
+}
+
+async function deleteIntermediary(id, name) {
+  if(!confirm(`Delete ${name}? This can't be undone.`)) return;
+  try { await sbFetch(`intermediaries?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  intData = intData.filter(x=>x.id!==id);
+  renderIntCards(intData);
 }
 
 // ── PROSPECTS ─────────────────────────────────────────────────────
