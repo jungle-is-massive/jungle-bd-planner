@@ -750,6 +750,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
         <div class="field"><label>Avg Pitch Value (£)</label><input type="number" id="int-avg-value" placeholder="e.g. 250000" min="0"></div>
         <div class="field"><label>Annual Cost Estimate (£)</label><input type="number" id="int-annual-cost" placeholder="e.g. 72000" min="0"></div>
         <div class="field"><label>Cost to Jungle (description)</label><input type="text" id="int-cost" placeholder="e.g. £6k/month retainer + win fee"></div>
+        <div class="field"><label>Website URL</label><input type="url" id="int-website" placeholder="https://www.aar.co.uk"></div>
       </div>
       <div class="field"><label>Current Stage</label><textarea id="int-stage" rows="2" placeholder="Where are things right now?"></textarea></div>
       <div class="field"><label>Goal</label><textarea id="int-goal" rows="2" placeholder="What does success look like?"></textarea></div>
@@ -1304,6 +1305,10 @@ function renderIntCards(rows) {
       ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${esc(item.stage)}</div></div>` : ''}
       ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${esc(item.goal)}</div></div>` : ''}
       ${item.commercial_model ? `<div class="int-field"><div class="int-field-label">Commercial Model</div><div class="int-field-value">${esc(item.commercial_model)}</div></div>` : ''}
+      <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--grey-light)">
+        <a href="intermediary-profile.html?id=${item.id}" style="flex:1;text-align:center;background:var(--black);color:var(--green);font-size:11px;font-weight:700;padding:8px 12px;border-radius:100px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:opacity 0.15s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">View Profile →</a>
+        ${item.website_url ? `<a href="${item.website_url.startsWith('http')?esc(item.website_url):'https://'+esc(item.website_url)}" target="_blank" rel="noopener" style="flex:1;text-align:center;background:var(--grey-light);color:var(--black);font-size:11px;font-weight:600;padding:8px 12px;border-radius:100px;text-decoration:none;font-family:'DM Sans',sans-serif">Website ↗</a>` : ''}
+      </div>
     </div>`).join('')}</div>`;
   count.textContent = `${rows.length} intermediar${rows.length !== 1 ? 'ies' : 'y'}`;
 }
@@ -1393,12 +1398,13 @@ function openIntModal(id=null) {
       document.getElementById('int-avg-value').value = item.avg_pitch_value??'';
       document.getElementById('int-annual-cost').value = item.annual_cost_estimate??'';
       document.getElementById('int-cost').value = item.cost_to_jungle||'';
+      document.getElementById('int-website').value = item.website_url||'';
       document.getElementById('int-stage').value = item.stage||'';
       document.getElementById('int-goal').value = item.goal||'';
       document.getElementById('int-model').value = item.commercial_model||'';
     }
   } else {
-    ['int-name','int-pitch','int-avg-value','int-annual-cost','int-cost','int-stage','int-goal','int-model'].forEach(i=>document.getElementById(i).value='');
+    ['int-name','int-pitch','int-avg-value','int-annual-cost','int-cost','int-website','int-stage','int-goal','int-model'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('int-status').value = 'Not started yet';
   }
   overlay.style.opacity='1'; overlay.style.pointerEvents='all';
@@ -1424,6 +1430,7 @@ async function saveIntermediary() {
     avg_pitch_value: document.getElementById('int-avg-value').value !== '' ? parseFloat(document.getElementById('int-avg-value').value) : null,
     annual_cost_estimate: document.getElementById('int-annual-cost').value !== '' ? parseFloat(document.getElementById('int-annual-cost').value) : null,
     cost_to_jungle: document.getElementById('int-cost').value.trim(),
+    website_url: document.getElementById('int-website').value.trim(),
     stage: document.getElementById('int-stage').value.trim(),
     goal: document.getElementById('int-goal').value.trim(),
     commercial_model: document.getElementById('int-model').value.trim(),
