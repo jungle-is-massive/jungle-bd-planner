@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jungle — Intermediary Profile</title>
+<link rel="icon" type="image/png" href="https://junglecreations.com/favicon-32x32.png?v=1b5e54ab68eeaed11a7dbfe7d0035e99">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E8; --black: #0E0E0E; --green: #87FB66; --green-dim: #65C247;
+  --grey: #C8C3B8; --grey-mid: #8A8880; --grey-light: #E8E3DA;
+  --white: #FFFFFF; --border: rgba(14,14,14,0.1); --border-strong: rgba(14,14,14,0.2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--cream);color:var(--black);font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+
+/* GATE */
+#gate{position:fixed;inset:0;z-index:9999;background:var(--black);display:flex;align-items:center;justify-content:center;transition:opacity 0.3s;}
+#gate.hidden{opacity:0;pointer-events:none;}
+.gate-box{text-align:center;padding:0 24px;}
+.gate-wm{font-size:22px;font-weight:700;letter-spacing:-0.03em;color:var(--cream);margin-bottom:32px;}
+.gate-wm span{color:var(--green);}
+.gate-lbl{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px;letter-spacing:0.06em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+.gate-inp{display:block;width:220px;margin:0 auto 14px;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;color:var(--cream);font-family:'DM Mono',monospace;font-size:18px;letter-spacing:0.15em;text-align:center;padding:12px 16px;outline:none;transition:border-color 0.15s;}
+.gate-inp:focus{border-color:var(--green);}
+.gate-inp.error{border-color:#FF6B4A;animation:shake 0.3s ease;}
+.gate-btn{background:var(--green);color:var(--black);border:none;border-radius:100px;padding:11px 32px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;width:220px;}
+.gate-err{font-size:12px;color:#FF6B4A;margin-top:12px;min-height:18px;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:56px;}
+.nav-wm{font-size:15px;font-weight:700;letter-spacing:-0.02em;color:var(--cream);}
+.nav-wm span{color:var(--green);}
+.nav-back{font-size:12px;color:rgba(255,255,255,0.45);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.15s;font-weight:500;}
+.nav-back:hover{color:var(--cream);}
+
+/* HERO */
+.hero{background:var(--black);padding:44px 0 36px;border-bottom:2px solid var(--black);}
+.hero-inner{max-width:960px;margin:0 auto;padding:0 32px;display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.hero-left{}
+.hero-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:10px;}
+.hero-name{font-size:clamp(32px,5vw,52px);font-weight:700;letter-spacing:-0.04em;color:var(--cream);line-height:1.0;margin-bottom:12px;}
+.hero-status-pill{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;padding:5px 12px;border-radius:100px;display:inline-block;margin-bottom:16px;}
+.hs-inprogress{background:#D4F4E2;color:#1A6B3C;}
+.hs-dormant{background:#FFF3CD;color:#856404;}
+.hs-notstarted,.hs-onhold{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
+.hs-supplier,.hs-active{background:rgba(135,251,102,0.2);color:var(--green);}
+.hero-meta{display:flex;gap:24px;flex-wrap:wrap;}
+.hero-meta-item{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.06em;text-transform:uppercase;}
+.hero-meta-item strong{color:var(--cream);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;display:block;margin-top:2px;}
+.hero-website-btn{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--cream);font-size:12px;font-weight:600;padding:8px 16px;border-radius:100px;text-decoration:none;transition:background 0.15s;white-space:nowrap;}
+.hero-website-btn:hover{background:rgba(255,255,255,0.16);}
+
+/* LAYOUT */
+.page{max-width:960px;margin:0 auto;padding:40px 32px 100px;display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+@media(max-width:700px){.page{grid-template-columns:1fr;}}
+
+/* INFO CARDS */
+.info-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:22px;}
+.info-card.full-width{grid-column:span 2;}
+@media(max-width:700px){.info-card.full-width{grid-column:span 1;}}
+.info-card-label{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--grey-mid);margin-bottom:8px;}
+.info-card-value{font-size:13px;line-height:1.7;color:#3a3a3a;}
+.info-card-value.empty{color:var(--grey-mid);font-style:italic;}
+
+/* ASSETS SECTION */
+.assets-section{grid-column:span 2;}
+@media(max-width:700px){.assets-section{grid-column:span 1;}}
+.assets-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.assets-title{font-size:18px;font-weight:700;letter-spacing:-0.02em;}
+.upload-btn{background:var(--black);color:var(--green);border:none;border-radius:100px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;}
+.upload-btn:hover{opacity:0.8;}
+
+/* ASSET LIST */
+.asset-list{display:flex;flex-direction:column;gap:10px;}
+.asset-item{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;align-items:flex-start;gap:14px;transition:border-color 0.15s;}
+.asset-item:hover{border-color:var(--border-strong);}
+.asset-icon{width:40px;height:40px;border-radius:8px;background:var(--grey-light);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.asset-info{flex:1;min-width:0;}
+.asset-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.asset-desc{font-size:12px;color:var(--grey-mid);line-height:1.5;}
+.asset-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);letter-spacing:0.06em;margin-top:6px;}
+.asset-actions{display:flex;gap:6px;flex-shrink:0;align-items:center;}
+.asset-open-btn{font-size:11px;font-weight:600;color:var(--black);background:var(--grey-light);border:none;border-radius:100px;padding:5px 12px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:background 0.12s;}
+.asset-open-btn:hover{background:var(--grey);}
+.asset-del-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--grey-mid);display:flex;align-items:center;justify-content:center;transition:all 0.12s;}
+.asset-del-btn:hover{background:#FFE0E0;color:#CC0000;border-color:#FFB0B0;}
+.assets-empty{text-align:center;padding:48px;color:var(--grey-mid);font-size:13px;background:var(--white);border:1.5px dashed var(--grey-light);border-radius:12px;}
+
+/* UPLOAD MODAL */
+#upload-overlay{position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+#upload-overlay.open{opacity:1;pointer-events:all;}
+#upload-box{background:var(--cream);border-radius:16px;width:min(500px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);}
+#upload-overlay.open #upload-box{transform:translateY(0);}
+.upload-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);}
+.upload-hdr-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;}
+.modal-close{background:var(--grey-light);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--grey-mid);}
+.modal-close:hover{background:var(--grey);}
+.upload-body{padding:18px 22px;}
+.field{margin-bottom:14px;}
+.field label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);display:block;margin-bottom:5px;}
+.field input,.field textarea{width:100%;border:1.5px solid var(--grey-light);border-radius:8px;background:var(--white);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;color:var(--black);transition:border-color 0.15s;}
+.field input:focus,.field textarea:focus{border-color:var(--black);}
+.drop-zone{border:2px dashed var(--grey-light);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--white);position:relative;}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--black);background:rgba(0,0,0,0.02);}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.drop-zone-icon{font-size:28px;margin-bottom:8px;}
+.drop-zone-text{font-size:13px;color:var(--grey-mid);}
+.drop-zone-text strong{color:var(--black);}
+.drop-zone-file{font-size:12px;color:var(--black);font-weight:600;margin-top:8px;}
+.upload-footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;}
+.btn-cancel{background:var(--grey-light);border:none;border-radius:100px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--grey-mid);}
+.btn-save{background:var(--black);color:var(--green);border:none;border-radius:100px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;}
+.btn-save:disabled{opacity:0.4;cursor:not-allowed;}
+.upload-progress{font-size:11px;color:var(--grey-mid);text-align:center;padding:4px 0;font-family:'DM Mono',monospace;}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-wm">JUNGLE<span>.</span></div>
+    <div class="gate-lbl">Enter password to continue</div>
+    <input class="gate-inp" type="password" id="gate-inp" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter')checkGate()">
+    <br>
+    <button class="gate-btn" onclick="checkGate()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-wm">JUNGLE<span>.</span></div>
+  <a class="nav-back" href="index.html">← Back to Planner</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-label">Intermediary Profile</div>
+      <h1 class="hero-name" id="hero-name">Loading…</h1>
+      <div id="hero-status"></div>
+      <div class="hero-meta" id="hero-meta"></div>
+    </div>
+    <div id="hero-website"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="page" id="page-content" style="display:none">
+  <div class="info-card">
+    <div class="info-card-label">Current Stage</div>
+    <div class="info-card-value" id="info-stage"></div>
+  </div>
+  <div class="info-card">
+    <div class="info-card-label">Goal</div>
+    <div class="info-card-value" id="info-goal"></div>
+  </div>
+  <div class="info-card full-width">
+    <div class="info-card-label">Commercial Model</div>
+    <div class="info-card-value" id="info-model"></div>
+  </div>
+  <div class="info-card">
+    <div class="info-card-label">Cost to Jungle</div>
+    <div class="info-card-value" id="info-cost"></div>
+  </div>
+  <div class="info-card">
+    <div class="info-card-label">Annual Cost Estimate</div>
+    <div class="info-card-value" id="info-annual"></div>
+  </div>
+
+  <!-- ASSETS -->
+  <div class="assets-section">
+    <div class="assets-hdr">
+      <div class="assets-title">Documents & Assets</div>
+      <button class="upload-btn" onclick="openUpload()">+ Upload Document</button>
+    </div>
+    <div id="assets-loading" style="text-align:center;padding:32px;color:var(--grey-mid)">Loading assets…</div>
+    <div class="asset-list" id="asset-list" style="display:none"></div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div id="upload-overlay" onclick="closeUpload(event)">
+  <div id="upload-box">
+    <div class="upload-hdr">
+      <div class="upload-hdr-title">Upload Document</div>
+      <button class="modal-close" onclick="closeUploadDirect()">✕</button>
+    </div>
+    <div class="upload-body">
+      <div class="field"><label>Title</label><input type="text" id="upload-title" placeholder="e.g. Masterclassing 2026 Event Pack"></div>
+      <div class="field"><label>Description (optional)</label><textarea id="upload-desc" rows="2" placeholder="Brief note about what this document contains…"></textarea></div>
+      <div class="field">
+        <label>File</label>
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="upload-file" onchange="handleFileSelect(this)">
+          <div class="drop-zone-icon">📎</div>
+          <div class="drop-zone-text"><strong>Click to choose</strong> or drag & drop</div>
+          <div class="drop-zone-text" style="font-size:11px;margin-top:4px">PDF, Excel, Word, PowerPoint, images</div>
+          <div class="drop-zone-file" id="selected-file"></div>
+        </div>
+      </div>
+      <div class="upload-progress" id="upload-progress"></div>
+    </div>
+    <div class="upload-footer">
+      <button class="btn-cancel" onclick="closeUploadDirect()">Cancel</button>
+      <button class="btn-save" id="upload-save-btn" onclick="uploadAsset()">Upload</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
+const GATE_PASSWORD = 'massive';
+const BUCKET = 'intermediary-assets';
+
+let intermediaryId = null;
+let intermediaryData = null;
+
+function sbFetch(path, opts={}) {
+  const h = {'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`,'Content-Type':'application/json',...(opts.headers||{})};
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`,{...opts,headers:h});
+}
+
+// ── GATE ──────────────────────────────────────────────────────────
+function checkGate() {
+  const val = document.getElementById('gate-inp').value;
+  if(val === GATE_PASSWORD) {
+    sessionStorage.setItem('jc_auth','1');
+    const g = document.getElementById('gate');
+    g.classList.add('hidden');
+    setTimeout(()=>g.remove(), 350);
+    init();
+  } else {
+    const inp = document.getElementById('gate-inp');
+    inp.classList.add('error');
+    document.getElementById('gate-err').textContent = 'Incorrect password';
+    setTimeout(()=>{ inp.classList.remove('error'); inp.value=''; document.getElementById('gate-err').textContent=''; }, 1000);
+  }
+}
+
+// ── LOAD INTERMEDIARY ─────────────────────────────────────────────
+async function init() {
+  const params = new URLSearchParams(window.location.search);
+  intermediaryId = params.get('id');
+  if(!intermediaryId) { document.getElementById('hero-name').textContent = 'Not found'; return; }
+
+  const r = await sbFetch(`intermediaries?id=eq.${intermediaryId}&select=*`);
+  const data = await r.json();
+  if(!data.length) { document.getElementById('hero-name').textContent = 'Not found'; return; }
+  intermediaryData = data[0];
+  renderHero(intermediaryData);
+  document.getElementById('page-content').style.display = 'grid';
+  loadAssets();
+}
+
+function statusClass(s) {
+  if(!s) return 'hs-notstarted';
+  const sl = s.toLowerCase();
+  if(sl.includes('supplier')) return 'hs-supplier';
+  if(sl.includes('active')) return 'hs-active';
+  if(sl.includes('progress')) return 'hs-inprogress';
+  if(sl.includes('dormant')) return 'hs-dormant';
+  return 'hs-notstarted';
+}
+
+function renderHero(d) {
+  document.title = `Jungle — ${d.name}`;
+  document.getElementById('hero-name').textContent = d.name;
+  document.getElementById('hero-status').innerHTML = `<span class="hero-status-pill ${statusClass(d.status)}">${esc(d.status||'Not started yet')}</span>`;
+
+  const meta = [];
+  if(d.pitch_target) meta.push(`<div class="hero-meta-item">Pitch Target<strong>${esc(String(d.pitch_target))} pitches</strong></div>`);
+  if(d.annual_cost_estimate) meta.push(`<div class="hero-meta-item">Annual Cost<strong>£${Number(d.annual_cost_estimate).toLocaleString('en-GB')}</strong></div>`);
+  if(d.avg_pitch_value) meta.push(`<div class="hero-meta-item">Avg Pitch Value<strong>£${Number(d.avg_pitch_value).toLocaleString('en-GB')}</strong></div>`);
+  document.getElementById('hero-meta').innerHTML = meta.join('');
+
+  if(d.website_url) {
+    const url = d.website_url.startsWith('http') ? d.website_url : 'https://' + d.website_url;
+    document.getElementById('hero-website').innerHTML = `<a class="hero-website-btn" href="${esc(url)}" target="_blank" rel="noopener">Visit website ↗</a>`;
+  }
+
+  const val = (v, fallback='Not yet added') => v ? `<div class="info-card-value">${esc(v)}</div>` : `<div class="info-card-value empty">${fallback}</div>`;
+  document.getElementById('info-stage').outerHTML = val(d.stage) + `<div class="info-card-label" style="display:none"></div>`;
+  document.getElementById('info-goal').outerHTML = val(d.goal) + `<div class="info-card-label" style="display:none"></div>`;
+  document.getElementById('info-model').outerHTML = val(d.commercial_model) + `<div class="info-card-label" style="display:none"></div>`;
+  document.getElementById('info-cost').outerHTML = val(d.cost_to_jungle) + `<div class="info-card-label" style="display:none"></div>`;
+  document.getElementById('info-annual').outerHTML = (d.annual_cost_estimate ? `<div class="info-card-value">£${Number(d.annual_cost_estimate).toLocaleString('en-GB')} / year</div>` : `<div class="info-card-value empty">Not yet set</div>`) + `<div class="info-card-label" style="display:none"></div>`;
+}
+
+// ── ASSETS ────────────────────────────────────────────────────────
+async function loadAssets() {
+  const loading = document.getElementById('assets-loading');
+  const list = document.getElementById('asset-list');
+  loading.style.display = 'block'; list.style.display = 'none';
+
+  const r = await sbFetch(`intermediary_assets?intermediary_id=eq.${intermediaryId}&order=created_at.desc`);
+  const assets = await r.json();
+  loading.style.display = 'none';
+
+  if(!assets.length) {
+    list.style.display = 'block';
+    list.innerHTML = `<div class="assets-empty">No documents uploaded yet.<br>Click <strong>+ Upload Document</strong> to add the first one.</div>`;
+    return;
+  }
+
+  list.style.display = 'block';
+  list.innerHTML = assets.map(a => {
+    const icon = fileIcon(a.file_type);
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${a.file_url}`;
+    return `<div class="asset-item" id="asset-${a.id}">
+      <div class="asset-icon">${icon}</div>
+      <div class="asset-info">
+        <div class="asset-title">${esc(a.title)}</div>
+        ${a.description ? `<div class="asset-desc">${esc(a.description)}</div>` : ''}
+        <div class="asset-meta">${esc(a.file_name||'')} · ${new Date(a.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+      </div>
+      <div class="asset-actions">
+        <a class="asset-open-btn" href="${publicUrl}" target="_blank" rel="noopener">Open ↗</a>
+        <button class="asset-del-btn" onclick="deleteAsset('${a.id}','${esc(a.file_url||'')}')" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function fileIcon(type) {
+  if(!type) return '📄';
+  if(type.includes('pdf')) return '📕';
+  if(type.includes('word') || type.includes('document')) return '📝';
+  if(type.includes('excel') || type.includes('spreadsheet') || type.includes('csv')) return '📊';
+  if(type.includes('presentation') || type.includes('powerpoint')) return '📽️';
+  if(type.includes('image')) return '🖼️';
+  return '📄';
+}
+
+async function deleteAsset(id, filePath) {
+  if(!confirm('Delete this document? This cannot be undone.')) return;
+  // Delete from storage
+  if(filePath) {
+    await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`, {
+      method:'DELETE',
+      headers:{'apikey':SUPABASE_ANON,'Authorization':`Bearer ${SUPABASE_ANON}`}
+    });
+  }
+  // Delete from DB
+  await sbFetch(`intermediary_assets?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
+  document.getElementById('asset-'+id)?.remove();
+  // If list is now empty, reload to show empty state
+  if(!document.querySelector('.asset-item')) loadAssets();
+}
+
+// ── UPLOAD ────────────────────────────────────────────────────────
+let selectedFile = null;
+
+function openUpload() {
+  document.getElementById('upload-title').value = '';
+  document.getElementById('upload-desc').value = '';
+  document.getElementById('upload-file').value = '';
+  document.getElementById('selected-file').textContent = '';
+  document.getElementById('upload-progress').textContent = '';
+  document.getElementById('upload-save-btn').disabled = false;
+  selectedFile = null;
+  document.getElementById('upload-overlay').classList.add('open');
+}
+
+function closeUpload(e) { if(e.target===document.getElementById('upload-overlay')) closeUploadDirect(); }
+function closeUploadDirect() { document.getElementById('upload-overlay').classList.remove('open'); }
+
+function handleFileSelect(input) {
+  selectedFile = input.files[0] || null;
+  document.getElementById('selected-file').textContent = selectedFile ? selectedFile.name : '';
+  // Auto-fill title if empty
+  if(selectedFile && !document.getElementById('upload-title').value) {
+    document.getElementById('upload-title').value = selectedFile.name.replace(/\.[^.]+$/, '');
+  }
+}
+
+async function uploadAsset() {
+  const title = document.getElementById('upload-title').value.trim();
+  if(!title) { alert('Please enter a title.'); return; }
+  if(!selectedFile) { alert('Please select a file.'); return; }
+
+  const btn = document.getElementById('upload-save-btn');
+  const progress = document.getElementById('upload-progress');
+  btn.disabled = true;
+  progress.textContent = 'Uploading…';
+
+  // Upload to Supabase Storage
+  const ext = selectedFile.name.split('.').pop();
+  const filePath = `${intermediaryId}/${Date.now()}-${selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+
+  const uploadRes = await fetch(`${SUPABASE_URL}/storage/v1/object/${BUCKET}/${filePath}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': selectedFile.type || 'application/octet-stream',
+      'x-upsert': 'true'
+    },
+    body: selectedFile
+  });
+
+  if(!uploadRes.ok) {
+    const err = await uploadRes.text();
+    progress.textContent = 'Upload failed: ' + err;
+    btn.disabled = false;
+    return;
+  }
+
+  progress.textContent = 'Saving…';
+
+  // Save metadata to DB
+  await sbFetch('intermediary_assets', {
+    method: 'POST',
+    headers: {'Prefer':'return=minimal'},
+    body: JSON.stringify({
+      intermediary_id: intermediaryId,
+      title,
+      description: document.getElementById('upload-desc').value.trim(),
+      file_url: filePath,
+      file_name: selectedFile.name,
+      file_type: selectedFile.type
+    })
+  });
+
+  closeUploadDirect();
+  loadAssets();
+}
+
+// Drag and drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if(file) {
+    selectedFile = file;
+    document.getElementById('selected-file').textContent = file.name;
+    if(!document.getElementById('upload-title').value)
+      document.getElementById('upload-title').value = file.name.replace(/\.[^.]+$/,'');
+  }
+});
+
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+if(sessionStorage.getItem('jc_auth')==='1') {
+  document.getElementById('gate').remove();
+  init();
+} else {
+  document.getElementById('gate-inp').focus();
+}
+</script>
+</body>
+</html>
