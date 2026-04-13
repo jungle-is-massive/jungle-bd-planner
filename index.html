@@ -410,6 +410,29 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .int-s-inprogress { background: #D4F4E2; color: #1A6B3C; }
 .int-s-dormant { background: #FFF3CD; color: #856404; }
 .int-s-notstarted, .int-s-onhold { background: var(--grey-light); color: var(--grey-mid); }
+
+/* INT VIEW TOGGLE */
+.int-view-toggle { display: flex; background: var(--grey-light); border-radius: 8px; padding: 3px; gap: 2px; }
+.int-view-btn { background: none; border: none; border-radius: 6px; width: 30px; height: 30px; cursor: pointer; font-size: 14px; color: var(--grey-mid); transition: all 0.12s; display: flex; align-items: center; justify-content: center; }
+.int-view-btn.active { background: var(--white); color: var(--black); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.int-view-btn:hover:not(.active) { color: var(--black); }
+
+/* INT PIPELINE TABLE */
+.int-pipeline-controls { display: flex; align-items: center; gap: 24px; padding: 14px 0 18px; }
+.int-conversion-label { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); display: flex; flex-direction: column; gap: 6px; }
+.int-conversion-label input { font-family: 'DM Mono', monospace; font-size: 14px; border: 1.5px solid var(--grey-light); border-radius: 8px; padding: 5px 8px; outline: none; color: var(--black); background: var(--white); text-align: center; transition: border-color 0.15s; }
+.int-conversion-label input:focus { border-color: var(--black); }
+.int-pipeline-note { font-size: 12px; color: var(--grey-mid); font-style: italic; }
+.int-pipeline-table { width: 100%; }
+.int-pipeline-table td { white-space: normal; }
+.int-pipeline-table td:nth-child(3), .int-pipeline-table td:nth-child(4), .int-pipeline-table td:nth-child(5), .int-pipeline-table td:nth-child(6) { text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+.int-pipeline-table tfoot td { font-weight: 700; background: var(--grey-light); border-top: 2px solid var(--black); font-family: 'DM Mono', monospace; font-size: 12px; }
+.int-pipeline-table tfoot td:nth-child(3), .int-pipeline-table tfoot td:nth-child(4), .int-pipeline-table tfoot td:nth-child(5), .int-pipeline-table tfoot td:nth-child(6) { text-align: right; }
+.int-projected-val { color: var(--green-dim); font-weight: 700; }
+.int-total-revenue { color: #1a6b3c; font-weight: 700; font-size: 13px; }
+.int-inline-input { background: none; border: none; border-bottom: 1.5px solid transparent; font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; width: 100%; outline: none; color: var(--black); padding: 2px 0; transition: border-color 0.15s; cursor: pointer; }
+.int-inline-input:hover { border-bottom-color: var(--grey-light); }
+.int-inline-input:focus { border-bottom-color: var(--black); background: rgba(0,0,0,0.02); }
 .prospects-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
 .prospects-refresh-btn { background: var(--grey-light); border: none; border-radius: 100px; padding: 8px 18px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--grey-mid); transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
 .prospects-refresh-btn:hover { background: var(--grey); color: var(--black); }
@@ -653,9 +676,15 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       <div>
         <div class="assets-view-label">BD Infrastructure</div>
         <h2 class="assets-view-title">Intermediaries</h2>
-        <p class="assets-view-sub">Pitch consultancies, agency networks and platforms. Track status, commercial model and pitch targets.</p>
+        <p class="assets-view-sub">Pitch consultancies, agency networks and platforms.</p>
       </div>
-      <button class="add-asset-btn" onclick="openIntModal()">+ Add Intermediary</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="int-view-toggle">
+          <button class="int-view-btn active" id="int-btn-cards" onclick="switchIntView('cards',this)" title="Card view">▦</button>
+          <button class="int-view-btn" id="int-btn-table" onclick="switchIntView('table',this)" title="Pipeline table">≡</button>
+        </div>
+        <button class="add-asset-btn" onclick="openIntModal()">+ Add Intermediary</button>
+      </div>
     </div>
     <div class="prospects-controls">
       <input type="text" class="prospects-search" id="int-search" placeholder="Search by name or status…" oninput="filterIntermediaries()">
@@ -663,13 +692,43 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     </div>
     <div id="int-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
     <div id="int-error" class="prospects-error" style="display:none"></div>
+
+    <!-- CARDS VIEW -->
     <div id="int-cards" style="display:none"></div>
+
+    <!-- TABLE / PIPELINE VIEW -->
+    <div id="int-table-wrap" style="display:none">
+      <div class="int-pipeline-controls">
+        <label class="int-conversion-label">Conversion rate
+          <div style="display:flex;align-items:center;gap:6px">
+            <input type="number" id="int-conversion" min="1" max="100" value="33" style="width:64px" oninput="renderIntTable()">
+            <span style="font-size:12px;color:var(--grey-mid)">%</span>
+          </div>
+        </label>
+        <p class="int-pipeline-note">Projected revenue = pitches × avg pitch value × conversion rate</p>
+      </div>
+      <table class="prospects-table int-pipeline-table" id="int-pipeline-table">
+        <thead>
+          <tr>
+            <th>Intermediary</th>
+            <th>Status</th>
+            <th style="text-align:right">Annual Cost (£)</th>
+            <th style="text-align:right">Pitches Expected</th>
+            <th style="text-align:right">Avg Pitch Value (£)</th>
+            <th style="text-align:right">Projected Revenue (£)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="int-pipeline-body"></tbody>
+        <tfoot id="int-pipeline-foot"></tfoot>
+      </table>
+    </div>
   </div>
 </div>
 
 <!-- INTERMEDIARY MODAL -->
 <div id="int-modal-overlay" onclick="closeIntModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
-  <div id="int-modal-box" style="background:var(--cream);border-radius:16px;width:min(620px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+  <div id="int-modal-box" style="background:var(--cream);border-radius:16px;width:min(640px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);">
       <div id="int-modal-title" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Add Intermediary</div>
       <button class="modal-close" onclick="closeIntModalDirect()">✕</button>
@@ -687,8 +746,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
             <option>On hold</option>
           </select>
         </div>
-        <div class="field"><label>Pitch Target (no. of pitches)</label><input type="text" id="int-pitch" placeholder="e.g. 3–4"></div>
-        <div class="field"><label>Cost to Jungle</label><input type="text" id="int-cost" placeholder="e.g. £6k/month or £0"></div>
+        <div class="field"><label>Pitch Target (number)</label><input type="number" id="int-pitch" placeholder="e.g. 3" min="0"></div>
+        <div class="field"><label>Avg Pitch Value (£)</label><input type="number" id="int-avg-value" placeholder="e.g. 250000" min="0"></div>
+        <div class="field"><label>Annual Cost Estimate (£)</label><input type="number" id="int-annual-cost" placeholder="e.g. 72000" min="0"></div>
+        <div class="field"><label>Cost to Jungle (description)</label><input type="text" id="int-cost" placeholder="e.g. £6k/month retainer + win fee"></div>
       </div>
       <div class="field"><label>Current Stage</label><textarea id="int-stage" rows="2" placeholder="Where are things right now?"></textarea></div>
       <div class="field"><label>Goal</label><textarea id="int-goal" rows="2" placeholder="What does success look like?"></textarea></div>
@@ -1166,23 +1227,35 @@ async function deleteBdContact(id, name) {
 let intData = [];
 let intLoaded = false;
 let intEditingId = null;
+let intView = 'cards'; // 'cards' or 'table'
+
+function switchIntView(v, btn) {
+  intView = v;
+  document.querySelectorAll('.int-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('int-cards').style.display = v === 'cards' ? 'block' : 'none';
+  document.getElementById('int-table-wrap').style.display = v === 'table' ? 'block' : 'none';
+  if(v === 'table') renderIntTable();
+}
 
 async function loadIntermediaries(force=false) {
   if(intLoaded && !force) return;
   const loading = document.getElementById('int-loading');
   const error = document.getElementById('int-error');
-  const cards = document.getElementById('int-cards');
-  loading.style.display = 'flex'; error.style.display = 'none'; cards.style.display = 'none';
+  loading.style.display = 'flex'; error.style.display = 'none';
+  document.getElementById('int-cards').style.display = 'none';
+  document.getElementById('int-table-wrap').style.display = 'none';
   try {
     const r = await sbFetch('intermediaries?select=*&order=sort_order.asc,created_at.asc');
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     intData = await r.json();
     intLoaded = true;
-    renderIntCards(intData);
+    if(intView === 'cards') renderIntCards(intData);
+    else renderIntTable();
   } catch(e) {
     loading.style.display = 'none';
     error.style.display = 'block';
-    error.innerHTML = `<strong>Couldn't load intermediaries.</strong><br><br>Have you run <code>intermediaries-setup.sql</code> in Supabase?<br><br>${e.message}`;
+    error.innerHTML = `<strong>Couldn't load intermediaries.</strong><br><br>${e.message}`;
   }
 }
 
@@ -1196,6 +1269,9 @@ function intStatusClass(s) {
   if(sl.includes('hold')) return 'int-s-onhold';
   return 'int-s-notstarted';
 }
+
+function fmt£(n) { if(!n && n !== 0) return '—'; return '£' + Number(n).toLocaleString('en-GB'); }
+function fmtN(n) { if(!n && n !== 0) return '—'; return Number(n).toLocaleString('en-GB'); }
 
 function renderIntCards(rows) {
   const loading = document.getElementById('int-loading');
@@ -1211,9 +1287,7 @@ function renderIntCards(rows) {
   cards.innerHTML = `<div class="int-grid">${rows.map(item => `
     <div class="int-card">
       <div class="int-card-header">
-        <div>
-          <div class="int-card-name">${esc(item.name)}</div>
-        </div>
+        <div class="int-card-name">${esc(item.name)}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
           <span class="int-status-pill ${intStatusClass(item.status)}">${esc(item.status||'Not started yet')}</span>
           <div class="int-card-actions">
@@ -1223,8 +1297,9 @@ function renderIntCards(rows) {
         </div>
       </div>
       <div class="int-badges">
-        ${item.pitch_target ? `<span class="int-pitch-badge">🎯 ${esc(item.pitch_target)} pitches</span>` : ''}
-        ${item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
+        ${item.pitch_target ? `<span class="int-pitch-badge">🎯 ${esc(String(item.pitch_target))} pitches</span>` : ''}
+        ${item.annual_cost_estimate != null ? `<span class="int-cost-badge">${fmt£(item.annual_cost_estimate)}/yr</span>` : item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
+        ${item.avg_pitch_value != null ? `<span class="int-cost-badge">avg ${fmt£(item.avg_pitch_value)}</span>` : ''}
       </div>
       ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${esc(item.stage)}</div></div>` : ''}
       ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${esc(item.goal)}</div></div>` : ''}
@@ -1233,13 +1308,74 @@ function renderIntCards(rows) {
   count.textContent = `${rows.length} intermediar${rows.length !== 1 ? 'ies' : 'y'}`;
 }
 
+function renderIntTable() {
+  const loading = document.getElementById('int-loading');
+  const wrap = document.getElementById('int-table-wrap');
+  const count = document.getElementById('int-count');
+  loading.style.display = 'none';
+  wrap.style.display = 'block';
+
+  const conversion = (parseFloat(document.getElementById('int-conversion')?.value) || 33) / 100;
+
+  let totalCost = 0, totalPitches = 0, totalRevenue = 0;
+
+  const rows = intData.map(item => {
+    const pitches = parseFloat(item.pitch_target) || 0;
+    const avgVal  = parseFloat(item.avg_pitch_value) || 0;
+    const cost    = parseFloat(item.annual_cost_estimate) || 0;
+    const projected = Math.round(pitches * avgVal * conversion);
+    if(cost) totalCost += cost;
+    if(pitches) totalPitches += pitches;
+    if(projected) totalRevenue += projected;
+    return `<tr>
+      <td style="font-weight:600">${esc(item.name)}</td>
+      <td><span class="int-status-pill ${intStatusClass(item.status)}">${esc(item.status||'')}</span></td>
+      <td><input class="int-inline-input" type="number" value="${item.annual_cost_estimate??''}" placeholder="—" onchange="patchInt('${item.id}','annual_cost_estimate',this.value)" title="${esc(item.cost_to_jungle||'')}"></td>
+      <td><input class="int-inline-input" type="number" value="${item.pitch_target??''}" placeholder="—" onchange="patchInt('${item.id}','pitch_target',this.value)" style="width:60px"></td>
+      <td><input class="int-inline-input" type="number" value="${item.avg_pitch_value??''}" placeholder="—" onchange="patchInt('${item.id}','avg_pitch_value',this.value)"></td>
+      <td class="${projected?'int-projected-val':''}">${projected ? fmt£(projected) : '—'}</td>
+      <td>
+        <div class="bd-row-actions" style="justify-content:flex-end">
+          <button class="bd-action-btn" onclick="openIntModal('${item.id}')" title="Edit">✎</button>
+          <button class="bd-action-btn del" onclick="deleteIntermediary('${item.id}','${esc(item.name)}')" title="Delete">✕</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('int-pipeline-body').innerHTML = rows;
+  document.getElementById('int-pipeline-foot').innerHTML = `<tr>
+    <td colspan="2" style="padding:12px 14px;font-size:11px;letter-spacing:0.04em;text-transform:uppercase">Totals</td>
+    <td style="padding:12px 14px;text-align:right">${totalCost ? fmt£(totalCost) : '—'}</td>
+    <td style="padding:12px 14px;text-align:right">${totalPitches || '—'}</td>
+    <td style="padding:12px 14px;text-align:right">—</td>
+    <td style="padding:12px 14px;text-align:right" class="${totalRevenue?'int-total-revenue':''}">${totalRevenue ? fmt£(totalRevenue) : '—'}</td>
+    <td></td>
+  </tr>`;
+  count.textContent = `${intData.length} intermediar${intData.length !== 1 ? 'ies' : 'y'}`;
+}
+
+async function patchInt(id, field, value) {
+  const parsed = value === '' ? null : parseFloat(value);
+  const item = intData.find(x=>x.id===id);
+  if(item) item[field] = parsed;
+  try {
+    await sbFetch(`intermediaries?id=eq.${id}`, {
+      method:'PATCH', headers:{'Prefer':'return=minimal'},
+      body: JSON.stringify({[field]: parsed, updated_at: new Date().toISOString()})
+    });
+  } catch(e) { console.error(e); }
+  // Re-render totals without full reload
+  renderIntTable();
+}
+
 function filterIntermediaries() {
   const q = document.getElementById('int-search').value.toLowerCase().trim();
-  if(!q) { renderIntCards(intData); return; }
-  const filtered = intData.filter(i =>
+  const filtered = q ? intData.filter(i =>
     ['name','status','stage','goal','commercial_model'].some(k => String(i[k]||'').toLowerCase().includes(q))
-  );
-  renderIntCards(filtered);
+  ) : intData;
+  if(intView === 'cards') renderIntCards(filtered);
+  else { intData = filtered; renderIntTable(); if(!q) loadIntermediaries(true); }
   document.getElementById('int-count').textContent = `${filtered.length} of ${intData.length} intermediaries`;
 }
 
@@ -1253,14 +1389,16 @@ function openIntModal(id=null) {
     if(item) {
       document.getElementById('int-name').value = item.name||'';
       document.getElementById('int-status').value = item.status||'Not started yet';
-      document.getElementById('int-pitch').value = item.pitch_target||'';
+      document.getElementById('int-pitch').value = item.pitch_target??'';
+      document.getElementById('int-avg-value').value = item.avg_pitch_value??'';
+      document.getElementById('int-annual-cost').value = item.annual_cost_estimate??'';
       document.getElementById('int-cost').value = item.cost_to_jungle||'';
       document.getElementById('int-stage').value = item.stage||'';
       document.getElementById('int-goal').value = item.goal||'';
       document.getElementById('int-model').value = item.commercial_model||'';
     }
   } else {
-    ['int-name','int-pitch','int-cost','int-stage','int-goal','int-model'].forEach(i=>document.getElementById(i).value='');
+    ['int-name','int-pitch','int-avg-value','int-annual-cost','int-cost','int-stage','int-goal','int-model'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('int-status').value = 'Not started yet';
   }
   overlay.style.opacity='1'; overlay.style.pointerEvents='all';
@@ -1282,7 +1420,9 @@ async function saveIntermediary() {
   const payload = {
     name,
     status: document.getElementById('int-status').value,
-    pitch_target: document.getElementById('int-pitch').value.trim(),
+    pitch_target: document.getElementById('int-pitch').value !== '' ? parseFloat(document.getElementById('int-pitch').value) : null,
+    avg_pitch_value: document.getElementById('int-avg-value').value !== '' ? parseFloat(document.getElementById('int-avg-value').value) : null,
+    annual_cost_estimate: document.getElementById('int-annual-cost').value !== '' ? parseFloat(document.getElementById('int-annual-cost').value) : null,
     cost_to_jungle: document.getElementById('int-cost').value.trim(),
     stage: document.getElementById('int-stage').value.trim(),
     goal: document.getElementById('int-goal').value.trim(),
@@ -1300,7 +1440,8 @@ async function saveIntermediary() {
       intData.push(d[0]||{...payload, id:'local-'+Date.now()});
     }
   } catch(e) { console.error(e); }
-  renderIntCards(intData);
+  if(intView === 'cards') renderIntCards(intData);
+  else renderIntTable();
   closeIntModalDirect();
 }
 
@@ -1308,7 +1449,8 @@ async function deleteIntermediary(id, name) {
   if(!confirm(`Delete ${name}? This can't be undone.`)) return;
   try { await sbFetch(`intermediaries?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
   intData = intData.filter(x=>x.id!==id);
-  renderIntCards(intData);
+  if(intView === 'cards') renderIntCards(intData);
+  else renderIntTable();
 }
 
 // ── PROSPECTS ─────────────────────────────────────────────────────
