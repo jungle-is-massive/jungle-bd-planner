@@ -680,8 +680,8 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       </div>
       <div style="display:flex;gap:8px;align-items:center">
         <div class="int-view-toggle">
-          <button class="int-view-btn active" id="int-btn-cards" onclick="switchIntView('cards',this)" title="Card view">▦</button>
-          <button class="int-view-btn" id="int-btn-table" onclick="switchIntView('table',this)" title="Pipeline table">≡</button>
+          <button class="int-view-btn active" id="int-btn-cards" onclick="switchIntView('cards',this)" title="Card view">Cards</button>
+          <button class="int-view-btn" id="int-btn-table" onclick="switchIntView('table',this)" title="Pipeline table">List</button>
         </div>
         <button class="add-asset-btn" onclick="openIntModal()">+ Add Intermediary</button>
       </div>
@@ -1270,7 +1270,7 @@ function intStatusClass(s) {
   return 'int-s-notstarted';
 }
 
-function fmt£(n) { if(!n && n !== 0) return '—'; return '£' + Number(n).toLocaleString('en-GB'); }
+function fmtGBP(n) { if(!n && n !== 0) return '—'; return '£' + Number(n).toLocaleString('en-GB'); }
 function fmtN(n) { if(!n && n !== 0) return '—'; return Number(n).toLocaleString('en-GB'); }
 
 function renderIntCards(rows) {
@@ -1298,8 +1298,8 @@ function renderIntCards(rows) {
       </div>
       <div class="int-badges">
         ${item.pitch_target ? `<span class="int-pitch-badge">🎯 ${esc(String(item.pitch_target))} pitches</span>` : ''}
-        ${item.annual_cost_estimate != null ? `<span class="int-cost-badge">${fmt£(item.annual_cost_estimate)}/yr</span>` : item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
-        ${item.avg_pitch_value != null ? `<span class="int-cost-badge">avg ${fmt£(item.avg_pitch_value)}</span>` : ''}
+        ${item.annual_cost_estimate != null ? `<span class="int-cost-badge">${fmtGBP(item.annual_cost_estimate)}/yr</span>` : item.cost_to_jungle ? `<span class="int-cost-badge">${esc(item.cost_to_jungle)}</span>` : ''}
+        ${item.avg_pitch_value != null ? `<span class="int-cost-badge">avg ${fmtGBP(item.avg_pitch_value)}</span>` : ''}
       </div>
       ${item.stage ? `<div class="int-field"><div class="int-field-label">Current Stage</div><div class="int-field-value">${esc(item.stage)}</div></div>` : ''}
       ${item.goal ? `<div class="int-field"><div class="int-field-label">Goal</div><div class="int-field-value">${esc(item.goal)}</div></div>` : ''}
@@ -1333,7 +1333,7 @@ function renderIntTable() {
       <td><input class="int-inline-input" type="number" value="${item.annual_cost_estimate??''}" placeholder="—" onchange="patchInt('${item.id}','annual_cost_estimate',this.value)" title="${esc(item.cost_to_jungle||'')}"></td>
       <td><input class="int-inline-input" type="number" value="${item.pitch_target??''}" placeholder="—" onchange="patchInt('${item.id}','pitch_target',this.value)" style="width:60px"></td>
       <td><input class="int-inline-input" type="number" value="${item.avg_pitch_value??''}" placeholder="—" onchange="patchInt('${item.id}','avg_pitch_value',this.value)"></td>
-      <td class="${projected?'int-projected-val':''}">${projected ? fmt£(projected) : '—'}</td>
+      <td class="${projected?'int-projected-val':''}">${projected ? fmtGBP(projected) : '—'}</td>
       <td>
         <div class="bd-row-actions" style="justify-content:flex-end">
           <button class="bd-action-btn" onclick="openIntModal('${item.id}')" title="Edit">✎</button>
@@ -1346,10 +1346,10 @@ function renderIntTable() {
   document.getElementById('int-pipeline-body').innerHTML = rows;
   document.getElementById('int-pipeline-foot').innerHTML = `<tr>
     <td colspan="2" style="padding:12px 14px;font-size:11px;letter-spacing:0.04em;text-transform:uppercase">Totals</td>
-    <td style="padding:12px 14px;text-align:right">${totalCost ? fmt£(totalCost) : '—'}</td>
+    <td style="padding:12px 14px;text-align:right">${totalCost ? fmtGBP(totalCost) : '—'}</td>
     <td style="padding:12px 14px;text-align:right">${totalPitches || '—'}</td>
     <td style="padding:12px 14px;text-align:right">—</td>
-    <td style="padding:12px 14px;text-align:right" class="${totalRevenue?'int-total-revenue':''}">${totalRevenue ? fmt£(totalRevenue) : '—'}</td>
+    <td style="padding:12px 14px;text-align:right" class="${totalRevenue?'int-total-revenue':''}">${totalRevenue ? fmtGBP(totalRevenue) : '—'}</td>
     <td></td>
   </tr>`;
   count.textContent = `${intData.length} intermediar${intData.length !== 1 ? 'ies' : 'y'}`;
