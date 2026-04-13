@@ -1328,7 +1328,7 @@ async function loadProspects(force=false) {
   refreshBtn.classList.add('loading');
 
   try {
-    const r = await sbFetch('prospects?select=*&order=created_at.desc');
+    const r = await sbFetch('prospects?select=*&order=created_at.desc,id.desc');
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
     prospectsData = await r.json();
     prospectsLoaded = true;
