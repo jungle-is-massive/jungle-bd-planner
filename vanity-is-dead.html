@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vanity Is Dead — 2026</title>
+<link rel="icon" type="image/png" href="https://junglecreations.com/favicon-32x32.png?v=1b5e54ab68eeaed11a7dbfe7d0035e99">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0A0A0A;
+  --off-white: #F2EDE6;
+  --red: #C8382B;
+  --red-dim: #9E2B20;
+  --gold: #C9A84C;
+  --grey: #6B6660;
+  --grey-light: #E0DAD2;
+  --white: #FFFFFF;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--off-white);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 60px;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logo {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.nav-logo span { color: var(--red); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--off-white); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 48px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background: 
+    radial-gradient(ellipse 60% 60% at 70% 40%, rgba(200,56,43,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    var(--black);
+}
+
+/* Diagonal rule lines */
+.hero-bg::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 60px,
+    rgba(255,255,255,0.015) 60px,
+    rgba(255,255,255,0.015) 61px
+  );
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 28px;
+  position: relative; z-index: 1;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(64px, 10vw, 140px);
+  font-weight: 900;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  position: relative; z-index: 1;
+  margin-bottom: 40px;
+}
+
+.hero-title .line-1 { display: block; color: var(--off-white); }
+.hero-title .line-2 {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--off-white);
+  font-style: italic;
+}
+
+.hero-sub {
+  font-size: 16px; line-height: 1.7;
+  color: rgba(242,237,230,0.6);
+  max-width: 520px;
+  position: relative; z-index: 1;
+  margin-bottom: 48px;
+}
+
+.hero-meta {
+  display: flex; gap: 48px; align-items: flex-end;
+  position: relative; z-index: 1;
+}
+
+.hero-meta-item {}
+.hero-meta-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 4px;
+}
+.hero-meta-value {
+  font-size: 15px; font-weight: 600;
+  color: var(--off-white);
+}
+
+.hero-scroll {
+  position: absolute; bottom: 36px; right: 48px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  display: flex; align-items: center; gap: 10px;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+.hero-scroll::after {
+  content: '';
+  display: block; width: 1px; height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent);
+}
+@keyframes scrollPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* ── SECTION WRAPPER ── */
+.section {
+  padding: 100px 48px;
+  position: relative;
+}
+.section-inner { max-width: 1100px; margin: 0 auto; }
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.section-label::before {
+  content: '';
+  display: block; width: 32px; height: 1px;
+  background: var(--red);
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 48px;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 0;
+}
+
+/* ── PREMISE ── */
+.premise-section { background: var(--black); }
+
+.premise-quote {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(22px, 3.5vw, 38px);
+  font-weight: 700; font-style: italic;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--off-white);
+  max-width: 820px;
+  margin-bottom: 48px;
+  padding-left: 32px;
+  border-left: 3px solid var(--red);
+}
+
+.premise-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+}
+@media(max-width:700px){ .premise-body { grid-template-columns: 1fr; } }
+
+.premise-block-title {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.premise-block-text {
+  font-size: 15px; line-height: 1.75;
+  color: rgba(242,237,230,0.7);
+}
+.premise-block-list {
+  list-style: none; padding: 0;
+}
+.premise-block-list li {
+  font-size: 14px; line-height: 1.7;
+  color: rgba(242,237,230,0.7);
+  padding: 6px 0;
+  padding-left: 20px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.premise-block-list li::before {
+  content: '—';
+  position: absolute; left: 0;
+  color: var(--red); font-size: 12px;
+}
+
+/* ── PHASES ── */
+.phases-section { background: #0F0E0D; }
+
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+@media(max-width:900px){ .phases-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:500px){ .phases-grid { grid-template-columns: 1fr; } }
+
+.phase-card {
+  padding: 36px 28px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.2s;
+}
+.phase-card:last-child { border-right: none; }
+.phase-card:hover { background: rgba(255,255,255,0.03); }
+
+.phase-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 8px;
+}
+.phase-tag {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; font-style: italic;
+  color: var(--off-white);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+.phase-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--grey);
+  letter-spacing: 0.08em;
+  margin-bottom: 20px;
+}
+.phase-desc {
+  font-size: 13px; line-height: 1.7;
+  color: rgba(242,237,230,0.55);
+}
+
+/* ── AGENDA ── */
+.agenda-section { background: var(--black); }
+
+.agenda-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.agenda-table tr {
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: background 0.15s;
+}
+.agenda-table tr:hover { background: rgba(255,255,255,0.03); }
+.agenda-table tr.highlight-row { background: rgba(200,56,43,0.08); }
+.agenda-table tr.highlight-row:hover { background: rgba(200,56,43,0.12); }
+
+.agenda-table td {
+  padding: 22px 16px;
+  vertical-align: top;
+}
+.agenda-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--red);
+  white-space: nowrap;
+  width: 90px;
+  padding-top: 24px;
+}
+.agenda-segment {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--off-white);
+  width: 200px;
+}
+.agenda-detail {
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(242,237,230,0.55);
+}
+.agenda-badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 9px; border-radius: 2px;
+  margin-bottom: 8px;
+}
+.badge-panel { background: rgba(200,56,43,0.2); color: var(--red); }
+.badge-keynote { background: rgba(201,168,76,0.15); color: var(--gold); }
+.badge-break { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35); }
+.badge-social { background: rgba(135,251,102,0.12); color: #87FB66; }
+.badge-networking { background: rgba(201,168,76,0.15); color: var(--gold); }
+
+/* ── BUDGET ── */
+.budget-section { background: #0F0E0D; }
+
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+@media(max-width:700px){ .budget-grid { grid-template-columns: 1fr; } }
+
+.budget-item {
+  background: #0F0E0D;
+  padding: 28px 24px;
+}
+.budget-item.total {
+  background: var(--red);
+  grid-column: span 3;
+  display: flex; align-items: center; justify-content: space-between;
+}
+@media(max-width:700px){ .budget-item.total { grid-column: span 1; flex-direction: column; align-items: flex-start; gap: 8px; } }
+.budget-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(242,237,230,0.45);
+  margin-bottom: 10px;
+}
+.budget-item.total .budget-label { color: rgba(255,255,255,0.7); margin-bottom: 0; }
+.budget-amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px; font-weight: 700;
+  color: var(--off-white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.budget-item.total .budget-amount { font-size: 36px; }
+.budget-note {
+  font-size: 11px;
+  color: rgba(242,237,230,0.35);
+}
+.budget-item.total .budget-note { color: rgba(255,255,255,0.65); }
+
+.budget-footnote {
+  font-size: 13px; line-height: 1.7;
+  color: rgba(242,237,230,0.45);
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  max-width: 640px;
+}
+
+/* ── SUCCESS ── */
+.success-section { background: var(--black); }
+
+.success-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+@media(max-width:700px){ .success-grid { grid-template-columns: 1fr; } }
+
+.success-card {
+  padding: 28px 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.success-card:hover { border-color: rgba(255,255,255,0.18); }
+.success-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.success-card:hover::before { transform: scaleX(1); }
+.success-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 48px; font-weight: 900;
+  color: var(--red); line-height: 1;
+  margin-bottom: 8px;
+}
+.success-num sup { font-size: 24px; }
+.success-desc {
+  font-size: 13px; line-height: 1.65;
+  color: rgba(242,237,230,0.55);
+}
+
+/* ── AUDIENCE ── */
+.audience-section { background: #0F0E0D; }
+
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 48px;
+}
+@media(max-width:700px){ .audience-grid { grid-template-columns: 1fr; } }
+
+.audience-col-title {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+.audience-list { list-style: none; }
+.audience-list li {
+  font-size: 14px; line-height: 1.65;
+  color: rgba(242,237,230,0.7);
+  padding: 10px 0;
+  padding-left: 20px;
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.audience-list li:last-child { border-bottom: none; }
+.audience-list li::before {
+  content: '→';
+  position: absolute; left: 0;
+  color: var(--red); font-size: 11px;
+  top: 12px;
+}
+
+/* ── VENUES ── */
+.venues-section { background: var(--black); }
+
+.venues-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media(max-width:700px){ .venues-grid { grid-template-columns: 1fr; } }
+
+.venue-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.venue-card:hover {
+  border-color: var(--red);
+  background: rgba(200,56,43,0.05);
+}
+.venue-card.featured {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.04);
+}
+.venue-featured-badge {
+  position: absolute; top: 14px; right: 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(201,168,76,0.12);
+  padding: 3px 8px; border-radius: 2px;
+}
+.venue-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700;
+  color: var(--off-white);
+  margin-bottom: 4px;
+}
+.venue-location {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--grey);
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.venue-capacity {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.45);
+  padding: 3px 9px; border-radius: 2px;
+  margin-bottom: 14px;
+}
+.venue-why {
+  font-size: 13px; line-height: 1.65;
+  color: rgba(242,237,230,0.5);
+}
+.venue-photos-hint {
+  margin-top: 16px;
+  font-size: 11px; font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+.venue-card.featured .venue-photos-hint::after {
+  content: ' — click to view photos ↗';
+}
+
+/* ── MANCHESTER ── */
+.manchester-section {
+  background: var(--red);
+  padding: 80px 48px;
+}
+.manchester-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 48px; flex-wrap: wrap;
+}
+.manchester-left { flex: 1; min-width: 280px; }
+.manchester-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 16px;
+}
+.manchester-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 900; line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 20px;
+}
+.manchester-body {
+  font-size: 15px; line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+  max-width: 480px;
+}
+.manchester-right {
+  display: flex; flex-direction: column; gap: 16px;
+  min-width: 220px;
+}
+.manchester-stat {
+  padding: 20px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 2px;
+}
+.manchester-stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px; font-weight: 700;
+  color: var(--white); line-height: 1;
+  margin-bottom: 4px;
+}
+.manchester-stat-label {
+  font-size: 12px; color: rgba(255,255,255,0.6);
+}
+
+/* ── AGREEMENTS ── */
+.agreements-section { background: #0F0E0D; }
+.agreements-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+@media(max-width:700px){ .agreements-grid { grid-template-columns: 1fr; } }
+.agreement-item {
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.agreement-check {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(200,56,43,0.15);
+  border: 1.5px solid var(--red);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px; color: var(--red);
+}
+.agreement-text {
+  font-size: 14px; line-height: 1.6;
+  color: rgba(242,237,230,0.75);
+}
+.agreement-text strong { color: var(--off-white); display: block; margin-bottom: 2px; }
+
+/* ── PHOTO MODAL ── */
+#photo-modal {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.95);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.25s;
+}
+#photo-modal.open { opacity: 1; pointer-events: all; }
+.photo-modal-inner {
+  max-width: 900px; width: 90%;
+  text-align: center;
+}
+.photo-modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-style: italic;
+  color: var(--off-white);
+  margin-bottom: 24px;
+}
+.photo-carousel {
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-placeholder {
+  padding: 60px;
+  text-align: center;
+}
+.photo-placeholder-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.4; }
+.photo-placeholder-text {
+  font-size: 14px; color: rgba(255,255,255,0.4);
+  line-height: 1.6;
+}
+.photo-caption {
+  margin-top: 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.35);
+}
+.photo-modal-note {
+  margin-top: 24px;
+  font-size: 13px; color: rgba(255,255,255,0.35);
+}
+.photo-modal-close {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(255,255,255,0.08); border: none;
+  width: 36px; height: 36px; border-radius: 50%;
+  color: rgba(255,255,255,0.6); font-size: 16px;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo-modal-close:hover { background: rgba(255,255,255,0.15); color: white; }
+
+/* ── AFTER GRID ── */
+.after-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+@media(max-width:900px){ .after-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:500px){ .after-grid { grid-template-columns: 1fr; } }
+
+.after-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 2px;
+  padding: 24px 20px;
+  display: flex; flex-direction: column;
+  transition: border-color 0.2s;
+}
+.after-card:hover { border-color: rgba(255,255,255,0.18); }
+.after-card.after-card-highlight {
+  border-color: rgba(200,56,43,0.4);
+  background: rgba(200,56,43,0.05);
+}
+.after-card-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 10px;
+}
+.after-card-title {
+  font-size: 14px; font-weight: 600;
+  color: var(--off-white);
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+.after-card-how {
+  font-size: 12px; line-height: 1.6;
+  color: rgba(242,237,230,0.5);
+  flex: 1;
+}
+.after-card-arrow {
+  font-size: 18px; color: var(--red);
+  margin: 14px 0;
+  opacity: 0.6;
+}
+.after-card-where {
+  font-size: 12px; line-height: 1.6;
+  color: rgba(242,237,230,0.7);
+  font-weight: 500;
+}
+.after-note {
+  font-size: 14px; line-height: 1.75;
+  color: rgba(242,237,230,0.4);
+  border-left: 2px solid rgba(255,255,255,0.1);
+  padding-left: 20px;
+  max-width: 640px;
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 48px;
+  background: var(--black);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-wm {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700; font-style: italic;
+  color: rgba(255,255,255,0.2);
+}
+.footer-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.2);
+}
+
+@media(max-width:700px) {
+  .section { padding: 64px 24px; }
+  nav { padding: 0 24px; }
+  .hero { padding: 0 24px 60px; }
+  .nav-links { display: none; }
+  footer { padding: 32px 24px; }
+  .manchester-section { padding: 60px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">JUNGLE<span>.</span> <span style="color:rgba(255,255,255,0.2);margin:0 8px">×</span> Vanity Is Dead</div>
+  <div class="nav-links">
+    <a href="#premise">Premise</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#budget">Budget</a>
+    <a href="#venues">Venues</a>
+    <a href="#agreements">Agreements</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-eyebrow reveal">Jungle Creations — Event Plan 2026</div>
+  <h1 class="hero-title">
+    <span class="line-1 reveal reveal-delay-1">Vanity</span>
+    <span class="line-2 reveal reveal-delay-2">Is Dead.</span>
+  </h1>
+  <p class="hero-sub reveal reveal-delay-3">
+    A half-day conference built around a single provocation. Likes, reach, impressions — we're calling time on all of it. What comes next is integrated, measurable, and board-ready.
+  </p>
+  <div class="hero-meta reveal reveal-delay-4">
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Date</div>
+      <div class="hero-meta-value">Early October 2026</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Format</div>
+      <div class="hero-meta-value">Half-day conference + Happy hour</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Budget</div>
+      <div class="hero-meta-value">~£13–15k</div>
+    </div>
+    <div class="hero-meta-item">
+      <div class="hero-meta-label">Author</div>
+      <div class="hero-meta-value">Ro Bocking-Wood, April 2026</div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<hr class="divider">
+
+<!-- PREMISE -->
+<section class="section premise-section" id="premise">
+  <div class="section-inner">
+    <div class="section-label reveal">The Premise</div>
+    <blockquote class="premise-quote reveal">
+      "This is not just an event. It is the content moment, the pipeline moment, and the credibility moment that anchors everything we do this year."
+    </blockquote>
+    <div class="premise-body">
+      <div>
+        <div class="premise-block-title reveal">What we are saying</div>
+        <p class="premise-block-text reveal">
+          Social is not a flashy add-on any more. It shows up in the boardroom. Every panel, every keynote, every conversation at this event will drive home one message: integrated social delivers commercial outcomes, and the brands that understand that are winning.
+        </p>
+        <br>
+        <p class="premise-block-text reveal">
+          We position Jungle Creations as the integrated marketing partner that connects brands to audiences and culture. Not a social agency. Not a content shop. A partner that sits at the strategic table.
+        </p>
+      </div>
+      <div>
+        <div class="premise-block-title reveal">Session themes</div>
+        <ul class="premise-block-list reveal">
+          <li>Panel one: from campaign to commercial. How a Jungle client turned social into a measurable growth driver. Real numbers on stage.</li>
+          <li>Keynote guest: why social sits in the boardroom now. A senior marketer from a brand we want to win speaking to peers, not to us.</li>
+          <li>Social maturity preview: what does good actually look like in 2026? A framework for brands that want to move beyond vanity.</li>
+          <li>Panel two: the integrated future. Platforms, brands, and partners on where social is going and who is built to take brands there.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PHASES -->
+<section class="section phases-section">
+  <div class="section-inner">
+    <div class="section-label reveal">The Growth Engine</div>
+    <h2 class="section-title reveal">Four phases.<br>One machine.</h2>
+    <div class="phases-grid reveal">
+      <div class="phase-card">
+        <div class="phase-num">Phase 01</div>
+        <div class="phase-tag">Build</div>
+        <div class="phase-period">Q2 – Q3 2026</div>
+        <div class="phase-desc">White paper in production. Talk tracks developed. Social maturity framework in build. LinkedIn cadence live. Venue locked. Pipeline events mapped.</div>
+      </div>
+      <div class="phase-card" style="background:rgba(200,56,43,0.06)">
+        <div class="phase-num">Phase 02</div>
+        <div class="phase-tag">The Event</div>
+        <div class="phase-period">Early October 2026</div>
+        <div class="phase-desc">Vanity Is Dead. Half-day conference. Happy hour. Targeted dinners after. 60+ senior marketers. 10+ priority brands in the room.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 03</div>
+        <div class="phase-tag">Harvest</div>
+        <div class="phase-period">Q4 2026 – Q1 2027</div>
+        <div class="phase-desc">Content machine runs for 8–12 weeks. White paper drives lead gen. Pipeline followed up within 48 hours. Social maturity framework launches publicly.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">Phase 04</div>
+        <div class="phase-tag">Expand</div>
+        <div class="phase-period">2027</div>
+        <div class="phase-desc">Manchester if demand is there. Same engine, lower cost to run. Prolific North coverage. Northern client base that doesn't travel to London.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PHASE 1 DETAIL -->
+<section class="section" style="background:var(--black)">
+  <div class="section-inner">
+    <div class="section-label reveal">Phase 01 — The Build</div>
+    <h2 class="section-title reveal">Everything before October<br>creates the conditions<br>for the event to land.</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px" class="reveal">
+      <div>
+        <div class="premise-block-title">Content foundation</div>
+        <ul class="premise-block-list" style="margin-top:14px">
+          <li>LinkedIn thought leadership cadence live now. One post per week from Jade and Ro. Themes: commercial impact, culture, what good social actually looks like.</li>
+          <li>White paper on the commercial impact of social in production. Skimmable, built for decision makers.</li>
+          <li>Talk tracks developed for all speakers and panellists. Nothing left to chance on the day.</li>
+          <li>Post-event nurture sequence drafted and ready to deploy within 48 hours of the event closing.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="premise-block-title">Social maturity framework</div>
+        <ul class="premise-block-list" style="margin-top:14px">
+          <li>The team build the framework in the background. Internal only until October.</li>
+          <li>Exclusive pre-access codes prepared for distribution to attendees on the day.</li>
+          <li>Attendee giveaways planned around the framework preview. Builds anticipation for the full launch.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="premise-block-title">Event build</div>
+        <ul class="premise-block-list" style="margin-top:14px">
+          <li>Venue sourced and locked.</li>
+          <li>Speakers: client for panel one, keynote guest from a brand we want to win, platform partner for panel two.</li>
+          <li>Sedge confirmed as moderator throughout.</li>
+          <li>Merch, AV, production briefed and in progress.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- AGENDA -->
+<section class="section audience-section" id="audience" style="background:var(--black)">
+  <div class="section-inner">
+    <div class="section-label reveal">The Room</div>
+    <h2 class="section-title reveal">Not volume.<br>Influence.</h2>
+    <div class="audience-grid reveal">
+      <div>
+        <div class="audience-col-title">Who is in the room</div>
+        <ul class="audience-list">
+          <li>Senior brand marketers responsible for growth</li>
+          <li>Heads of marketing, social, and digital</li>
+          <li>Brands we want to win</li>
+          <li>Platform partners</li>
+          <li>Strategic intermediaries</li>
+          <li>Select creators with commercial credibility</li>
+        </ul>
+      </div>
+      <div>
+        <div class="audience-col-title">How they get in the room</div>
+        <ul class="audience-list">
+          <li>Invitation only for priority brands</li>
+          <li>Personal outreach from Coris and the team</li>
+          <li>Platform and partner co-invites</li>
+          <li>LinkedIn targeted outreach to warm connections</li>
+          <li>Warm relationship leverage from existing client base</li>
+          <li>Limited open registration for select profiles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- AGENDA -->
+<section class="section agenda-section" id="agenda" style="background:#0F0E0D">
+  <div class="section-inner">
+    <div class="section-label reveal">Run of Show</div>
+    <h2 class="section-title reveal">The agenda.</h2>
+    <table class="agenda-table reveal">
+      <tbody>
+        <tr>
+          <td class="agenda-time">1:30pm</td>
+          <td class="agenda-segment">Doors Open</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-networking">Networking</span>
+            <div>Registration and networking. Light refreshments. Room set for conference.</div>
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="agenda-time">2:00pm</td>
+          <td class="agenda-segment">Opening Keynote</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-keynote">Keynote — Jade</span>
+            <div>Jade sets the provocation. Vanity metrics are dead. What matters now is commercial impact and cultural connection. 15 minutes.</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="agenda-time">2:20pm</td>
+          <td class="agenda-segment">Panel One</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-panel">Panel</span>
+            <div>Moderator, a Jungle client, and a creator. Real numbers, real outcomes. What did this campaign actually do for the business? 30 minutes.</div>
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="agenda-time">2:55pm</td>
+          <td class="agenda-segment">Keynote Guest</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-keynote">Keynote — Guest</span>
+            <div>A senior marketer from a brand we want to win. Not a client yet. We give them the platform. 15–20 minutes on why social now sits inside boardroom conversations.</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="agenda-time">3:20pm</td>
+          <td class="agenda-segment">Break</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-break">Break — 20 min</span>
+            <div>Teas, coffees, croissants. This is where the real networking happens.</div>
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="agenda-time">3:40pm</td>
+          <td class="agenda-segment">Social Maturity</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-social">Framework Preview</span>
+            <div>The team present an early preview of the social maturity framework. Attendees receive exclusive pre-access codes. Builds anticipation for the full 2027 launch.</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="agenda-time">4:10pm</td>
+          <td class="agenda-segment">Panel Two</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-panel">Panel</span>
+            <div>Moderator, a platform partner, a brand we want to win, and a Jungle partnerships client. Where is social going and who is getting it right? 30 minutes.</div>
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="agenda-time">4:45pm</td>
+          <td class="agenda-segment">Close</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-keynote">Keynote — Close</span>
+            <div>Jade or Mallory wraps. What we heard today, what we are building toward, what comes next. 10 minutes.</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="agenda-time">5:00pm</td>
+          <td class="agenda-segment">Happy Hour</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-networking">1hr Open Bar</span>
+            <div>One hour behind the bar. Music, merch, good drinks. This is where relationships are made.</div>
+          </td>
+        </tr>
+        <tr class="highlight-row">
+          <td class="agenda-time">6:00pm+</td>
+          <td class="agenda-segment">Targeted After</td>
+          <td class="agenda-detail">
+            <span class="agenda-badge badge-panel">Pipeline</span>
+            <div>Pre-planned dinners or drinks with priority brands. Coris and the team know who they are sitting with and why. This is where pipeline conversations happen.</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- BUDGET -->
+<section class="section budget-section" id="budget">
+  <div class="section-inner">
+    <div class="section-label reveal">The Numbers</div>
+    <h2 class="section-title reveal">Lean.<br>Smart. Proper.</h2>
+    <div class="budget-grid reveal">
+      <div class="budget-item">
+        <div class="budget-label">Venue hire</div>
+        <div class="budget-amount">~£3,000</div>
+        <div class="budget-note">TBC based on venue selection</div>
+      </div>
+      <div class="budget-item">
+        <div class="budget-label">Happy hour bar</div>
+        <div class="budget-amount">~£2,000</div>
+        <div class="budget-note">Hard cap. One hour, great drinks.</div>
+      </div>
+      <div class="budget-item">
+        <div class="budget-label">Merch</div>
+        <div class="budget-amount">~£2,000</div>
+        <div class="budget-note">Branded, useful, not cheap.</div>
+      </div>
+      <div class="budget-item">
+        <div class="budget-label">Production &amp; AV</div>
+        <div class="budget-amount">~£2,500</div>
+        <div class="budget-note">Microphones, screens, filming.</div>
+      </div>
+      <div class="budget-item">
+        <div class="budget-label">Catering (break)</div>
+        <div class="budget-amount">~£1,000</div>
+        <div class="budget-note">Teas, coffees, croissants.</div>
+      </div>
+      <div class="budget-item">
+        <div class="budget-label">Contingency</div>
+        <div class="budget-amount">~£2,500</div>
+        <div class="budget-note">Because something always moves.</div>
+      </div>
+      <div class="budget-item total">
+        <div>
+          <div class="budget-label">Total</div>
+          <div class="budget-note" style="color:rgba(255,255,255,0.7)">Sponsorship from year two onward</div>
+        </div>
+        <div class="budget-amount">~£13–15k</div>
+      </div>
+    </div>
+    <p class="budget-footnote reveal">
+      The sport event ran to £11k with open bar and food all night. This is a tighter, smarter spend. From year two onward we go after a sponsor. The Social Minds series secured £50k from Reddit. That is the ambition. For now we run lean and do it properly.
+    </p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SUCCESS -->
+<section class="section success-section" style="background:#0F0E0D">
+  <div class="section-inner">
+    <div class="section-label reveal">What Success Looks Like</div>
+    <h2 class="section-title reveal">The metrics<br>that matter.</h2>
+    <div class="success-grid reveal">
+      <div class="success-card">
+        <div class="success-num">60<sup>+</sup></div>
+        <div class="success-desc">Senior marketers attending</div>
+      </div>
+      <div class="success-card">
+        <div class="success-num">10<sup>+</sup></div>
+        <div class="success-desc">Priority brands represented in the room</div>
+      </div>
+      <div class="success-card">
+        <div class="success-num">15<sup>+</sup></div>
+        <div class="success-desc">Follow-up meetings booked within 48 hours</div>
+      </div>
+      <div class="success-card">
+        <div class="success-num">48h</div>
+        <div class="success-desc">Maximum time to first follow-up after event close — no exceptions</div>
+      </div>
+      <div class="success-card">
+        <div class="success-num">8–12</div>
+        <div class="success-desc">Weeks of content generated and deployed post-event</div>
+      </div>
+      <div class="success-card">
+        <div class="success-num">MCR</div>
+        <div class="success-desc">Demand validated for Manchester 2027 expansion</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- VENUES -->
+<section class="section venues-section" id="venues">
+  <div class="section-inner">
+    <div class="section-label reveal">Where We Do It</div>
+    <h2 class="section-title reveal">Four venues<br>in consideration.</h2>
+    <div class="venues-grid reveal">
+      <div class="venue-card featured" onclick="openPhotoModal()">
+        <div class="venue-featured-badge">Featured</div>
+        <div class="venue-name">Everyman Kings Cross</div>
+        <div class="venue-location">Kings Cross, London</div>
+        <div class="venue-capacity">Up to 108</div>
+        <div class="venue-why">Cinema screens, superb bar, luxurious seating, dedicated tech team. Memorable and different. Screen 1: 108 seats | Screen 2: 107 seats.</div>
+        <div class="venue-photos-hint">📸 Everyman Kings Cross</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-name">Shoreditch Treehouse</div>
+        <div class="venue-location">Shoreditch, London</div>
+        <div class="venue-capacity">Up to 60</div>
+        <div class="venue-why">Beautiful light-filled space with breakout areas and a Steinway grand piano. Intimate and characterful.</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-name">Protein Studios</div>
+        <div class="venue-location">Shoreditch, London</div>
+        <div class="venue-capacity">Up to 1,000</div>
+        <div class="venue-why">Five interconnected white box studios. 8.5m ceilings, warehouse aesthetic, outdoor courtyard.</div>
+      </div>
+      <div class="venue-card">
+        <div class="venue-name">Plexal</div>
+        <div class="venue-location">Here East, London</div>
+        <div class="venue-capacity">Up to 200</div>
+        <div class="venue-why">200-seat theatre with a 21sqm LED screen, indoor park for networking, bleachers for breakout.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AFTER / HARVEST -->
+<section class="section" style="background:#0F0E0D" id="after">
+  <div class="section-inner">
+    <div class="section-label reveal">Phase 03 — After</div>
+    <h2 class="section-title reveal">The event is not<br>a one-day moment.<br>It is a platform.</h2>
+    <div class="after-grid reveal">
+      <div class="after-card">
+        <div class="after-card-label">What we capture</div>
+        <div class="after-card-title">🎬 Event footage</div>
+        <div class="after-card-how">Keynote clips, voxpops, panel highlights, attendee reactions. Filmed on the day.</div>
+        <div class="after-card-arrow">↓</div>
+        <div class="after-card-where">LinkedIn and newsletters repurposed across 8–12 weeks. Content machine runs itself.</div>
+      </div>
+      <div class="after-card">
+        <div class="after-card-label">What we capture</div>
+        <div class="after-card-title">📄 White paper</div>
+        <div class="after-card-how">Launches as companion to the event. Distributed to all attendees.</div>
+        <div class="after-card-arrow">↓</div>
+        <div class="after-card-where">Gated download feeding HubSpot. LinkedIn nurture sequence driving leads for 6+ months.</div>
+      </div>
+      <div class="after-card">
+        <div class="after-card-label">What we capture</div>
+        <div class="after-card-title">📊 Social maturity tease</div>
+        <div class="after-card-how">Framework previewed at the event. Pre-access codes in attendees' hands.</div>
+        <div class="after-card-arrow">↓</div>
+        <div class="after-card-where">Full public launch after. Event attendees become the first advocates.</div>
+      </div>
+      <div class="after-card after-card-highlight">
+        <div class="after-card-label">What we capture</div>
+        <div class="after-card-title">🎯 Pipeline</div>
+        <div class="after-card-how">50+ minimum senior marketers in the room. Targeted dinners after with priority brands.</div>
+        <div class="after-card-arrow">↓</div>
+        <div class="after-card-where">Coris and the team follow up within 48 hours. Warm relationships, not cold outreach.</div>
+      </div>
+    </div>
+    <p class="after-note reveal"><em>The social maturity framework does not need to be finished by October. It needs to exist enough to be teased. The event creates the audience.</em></p>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SALES ALIGNMENT -->
+<section class="section" style="background:var(--black)">
+  <div class="section-inner">
+    <div class="section-label reveal">Sales Alignment</div>
+    <h2 class="section-title reveal">Pipeline is planned<br>before anyone<br>walks through the door.</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px" class="reveal">
+      <div>
+        <div class="premise-block-title" style="margin-bottom:16px">Before the event</div>
+        <ul class="premise-block-list">
+          <li>Sales team agree the target brand list</li>
+          <li>Priority attendees assigned to specific team members</li>
+          <li>Follow-up plan agreed in advance, not on the night</li>
+        </ul>
+      </div>
+      <div>
+        <div class="premise-block-title" style="margin-bottom:16px">After the event</div>
+        <ul class="premise-block-list">
+          <li>Follow-up within 48 hours — no exceptions</li>
+          <li>Pipeline tracked in HubSpot from day one</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+
+<section class="manchester-section">
+  <div class="manchester-inner">
+    <div class="manchester-left reveal">
+      <div class="manchester-eyebrow">Phase 04 — 2027</div>
+      <h2 class="manchester-title">If demand<br>is there:<br>Manchester.</h2>
+      <p class="manchester-body">
+        Same event. Same engine. Lower cost to run. Prolific North coverage. Northern client base that doesn't want to travel to London. Leftover merch moves north. It is a smart second move.
+      </p>
+    </div>
+    <div class="manchester-right reveal">
+      <div class="manchester-stat">
+        <div class="manchester-stat-val">2027</div>
+        <div class="manchester-stat-label">Target year for northern expansion</div>
+      </div>
+      <div class="manchester-stat">
+        <div class="manchester-stat-val">£50k</div>
+        <div class="manchester-stat-label">Reddit sponsor value secured by Social Minds. The ambition.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- AGREEMENTS -->
+<section class="section agreements-section" id="agreements">
+  <div class="section-inner">
+    <div class="section-label reveal">What We Are Agreeing</div>
+    <h2 class="section-title reveal">Four things.<br>Everything else<br>is in motion.</h2>
+    <div class="agreements-grid reveal">
+      <div class="agreement-item">
+        <div class="agreement-check">✓</div>
+        <div class="agreement-text">
+          <strong>October confirmed</strong>
+          October confirmed as the event window. Once locked, everything else moves.
+        </div>
+      </div>
+      <div class="agreement-item">
+        <div class="agreement-check">✓</div>
+        <div class="agreement-text">
+          <strong>Vanity Is Dead</strong>
+          Confirmed as the concept and name. The provocation that anchors the whole programme.
+        </div>
+      </div>
+      <div class="agreement-item">
+        <div class="agreement-check">✓</div>
+        <div class="agreement-text">
+          <strong>Budget approved</strong>
+          ~£13–15k budget envelope approved. Lean, smart, done properly.
+        </div>
+      </div>
+      <div class="agreement-item">
+        <div class="agreement-check">✓</div>
+        <div class="agreement-text">
+          <strong>Panel one client</strong>
+          Client confirmed for panel one so speaker conversations can begin. Once we have this, Ro and Livvy move.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-wm">Vanity Is Dead — 2026</div>
+  <div class="footer-meta">Jungle Creations · Internal document · April 2026</div>
+</footer>
+
+<!-- PHOTO MODAL -->
+<div id="photo-modal" onclick="closePhotoModal(event)">
+  <button class="photo-modal-close" onclick="closePhotoModal()">✕</button>
+  <div class="photo-modal-inner">
+    <div class="photo-modal-title">Everyman Kings Cross</div>
+    <div class="photo-carousel">
+      <div class="photo-placeholder">
+        <div class="photo-placeholder-icon">🎬</div>
+        <div class="photo-placeholder-text">
+          Photos of Everyman Kings Cross can be added here.<br><br>
+          Upload images to GitHub as <code>everyman-1.jpg</code>, <code>everyman-2.jpg</code>, <code>everyman-3.jpg</code> and I'll wire up the carousel.
+        </div>
+      </div>
+    </div>
+    <div class="photo-caption">Screen 1: 108 seats · Screen 2: 107 seats · Superb bar · Kings Cross, London</div>
+    <div class="photo-modal-note">Costs to be confirmed. Meeting with Livvy post this to discuss venues.</div>
+  </div>
+</div>
+
+<script>
+// ── SCROLL REVEAL ──────────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── PHOTO MODAL ────────────────────────────────────────────────────
+function openPhotoModal() {
+  document.getElementById('photo-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePhotoModal(e) {
+  if(!e || e.target === document.getElementById('photo-modal') || e.target.classList.contains('photo-modal-close')) {
+    document.getElementById('photo-modal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closePhotoModal({target: document.getElementById('photo-modal')}); });
+</script>
+</body>
+</html>
