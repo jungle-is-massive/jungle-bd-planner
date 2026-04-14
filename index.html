@@ -388,8 +388,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .bd-action-btn { background: none; border: 1px solid var(--grey-light); border-radius: 6px; width: 26px; height: 26px; cursor: pointer; font-size: 12px; color: var(--grey-mid); transition: all 0.12s; display: inline-flex; align-items: center; justify-content: center; }
 .bd-action-btn:hover { background: var(--grey-light); color: var(--black); }
 .bd-action-btn.del:hover { background: #FFE0E0; color: #CC0000; border-color: #FFB0B0; }
-.bd-row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.12s; }
+.bd-row-actions { display: flex; gap: 4px; opacity: 1; transition: opacity 0.12s; }
 .bd-table tr:hover .bd-row-actions { opacity: 1; }
+#award-entries-table tr:hover .bd-row-actions { opacity: 1; }
+#award-bodies-table tr:hover .bd-row-actions { opacity: 1; }
 
 /* MODAL OVERLAY for bd modal */
 #bd-modal-overlay { position: fixed; inset: 0; background: rgba(14,14,14,0.6); backdrop-filter: blur(4px); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
@@ -1265,7 +1267,7 @@ function switchView(v, btn) {
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadBdContacts();
   if(v==='intermediaries') loadIntermediaries();
-  if(v==='awards') switchAwardsView('bodies', document.getElementById('awards-btn-bodies'));
+  if(v==='awards') switchAwardsView('entries', document.getElementById('awards-btn-entries'));
 }
 
 // ── PROSPECTS SUB-TABS ────────────────────────────────────────────
