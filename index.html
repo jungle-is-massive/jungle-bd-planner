@@ -744,24 +744,58 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
 <!-- AWARDS VIEW -->
 <div class="view" id="awards-view-el">
-  <div id="awards-view">
+  <div style="max-width: 1400px; margin: 0 auto; padding: 32px 24px 120px;">
     <div class="prospects-header">
       <div>
         <div class="assets-view-label">Business Development</div>
         <h2 class="assets-view-title">Awards</h2>
         <p class="assets-view-sub">Track award entries and manage award bodies.</p>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <div class="awards-view-toggle">
-          <button class="awards-view-btn active" id="awards-btn-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
-          <button class="awards-view-btn" id="awards-btn-entries" onclick="switchAwardsView('entries',this)">Entries</button>
+    </div>
+
+    <!-- AWARD ENTRIES VIEW (DEFAULT) -->
+    <div id="awards-entries-container">
+      <div class="awards-view-toggle" style="display:flex;gap:8px;margin-bottom:20px">
+        <button class="awards-view-btn active" id="awards-btn-entries" onclick="switchAwardsView('entries',this)">Award Entries</button>
+        <button class="awards-view-btn" id="awards-btn-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
+        <div style="margin-left:auto">
+          <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardEntriesModal()">+ Add Entry</button>
         </div>
-        <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardBodiesModal()">+ Add Award Body</button>
       </div>
+
+      <div class="prospects-controls">
+        <input type="text" class="prospects-search" id="awards-search" placeholder="Search by award body, category or status…" oninput="filterAwardEntries()">
+        <div class="prospects-count" id="awards-count"></div>
+      </div>
+
+      <div id="award-entries-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+      <div id="award-entries-error" class="prospects-error" style="display:none"></div>
+      <table class="prospects-table" id="award-entries-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Award Body</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Jungle Fit</th>
+            <th>Status</th>
+            <th style="text-align:right">Fee</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="award-entries-body"></tbody>
+      </table>
     </div>
 
     <!-- AWARD BODIES VIEW -->
-    <div id="awards-bodies-container">
+    <div id="awards-bodies-container" style="display:none">
+      <div class="awards-view-toggle" style="display:flex;gap:8px;margin-bottom:20px">
+        <button class="awards-view-btn" id="awards-btn-entries-2" onclick="switchAwardsView('entries',this)">Award Entries</button>
+        <button class="awards-view-btn active" id="awards-btn-bodies-2" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
+        <div style="margin-left:auto">
+          <button class="add-asset-btn" onclick="openAwardBodiesModal()">+ Add Award Body</button>
+        </div>
+      </div>
+
       <div id="award-bodies-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
       <div id="award-bodies-error" class="prospects-error" style="display:none"></div>
       <table class="prospects-table" id="award-bodies-table" style="display:none">
@@ -774,34 +808,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
             <th>Location</th>
             <th style="text-align:center">Entry Fee</th>
             <th style="text-align:center">Attend</th>
-            <th></th>
+            <th style="width:60px"></th>
           </tr>
         </thead>
         <tbody id="award-bodies-body"></tbody>
-      </table>
-    </div>
-
-    <!-- AWARD ENTRIES VIEW -->
-    <div id="awards-entries-container" style="display:none">
-      <div class="prospects-controls">
-        <input type="text" class="prospects-search" id="awards-search" placeholder="Search by award body, category or status…" oninput="filterAwardEntries()">
-        <div class="prospects-count" id="awards-count"></div>
-      </div>
-      <div id="award-entries-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
-      <div id="award-entries-error" class="prospects-error" style="display:none"></div>
-      <table class="prospects-table" id="award-entries-table" style="display:none">
-        <thead>
-          <tr>
-            <th>Award Body</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Jungle Fit</th>
-            <th>Status</th>
-            <th style="text-align:right">Fee</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="award-entries-body"></tbody>
       </table>
     </div>
   </div>
@@ -2383,7 +2393,7 @@ async function loadAwardEntries(force=false) {
 function renderAwardBodies() {
   const body = document.getElementById('award-bodies-body');
   body.innerHTML = awardBodiesData.map(b => `
-    <tr onclick="openAwardBodiesModal(${b.id})">
+    <tr>
       <td><strong>${esc(b.name||'')}</strong></td>
       <td>${esc(b.status||'')}</td>
       <td>${b.final_deadline ? new Date(b.final_deadline).toLocaleDateString('en-GB') : ''}</td>
@@ -2391,7 +2401,7 @@ function renderAwardBodies() {
       <td>${esc(b.location||'')}</td>
       <td style="text-align:center">${esc(b.entry_fee||'')}</td>
       <td style="text-align:center">${b.should_attend||''}</td>
-      <td style="text-align:right"><button class="prospects-edit-btn" onclick="event.stopPropagation(); openAwardBodiesModal(${b.id})">Edit</button></td>
+      <td style="text-align:right"><div class="bd-row-actions"><button class="bd-action-btn" title="Edit" onclick="openAwardBodiesModal(${b.id})">✎</button><button class="bd-action-btn del" title="Delete" onclick="event.stopPropagation(); deleteAwardBody(${b.id})">✕</button></div></td>
     </tr>
   `).join('');
   document.getElementById('award-bodies-loading').style.display = 'none';
@@ -2401,14 +2411,14 @@ function renderAwardBodies() {
 function renderAwardEntries(entries) {
   const body = document.getElementById('award-entries-body');
   body.innerHTML = entries.map(e => `
-    <tr onclick="openAwardEntriesModal(${e.id})">
+    <tr>
       <td><strong>${esc(e.award_bodies?.name||'')}</strong></td>
       <td>${esc(e.category||'')}</td>
       <td>${esc(e.category_type||'')}</td>
       <td>${esc(e.jungle_fit||'')}</td>
       <td><span class="status-pill ${(e.status||'').toLowerCase().replace(/[\\s-]/g,'-')}">${esc(e.status||'')}</span></td>
       <td style="text-align:right">${esc(e.est_fee||'')}</td>
-      <td style="text-align:right"><button class="prospects-edit-btn" onclick="event.stopPropagation(); openAwardEntriesModal(${e.id})">Edit</button></td>
+      <td style="text-align:right"><div class="bd-row-actions"><button class="bd-action-btn" title="Edit" onclick="openAwardEntriesModal(${e.id})">✎</button><button class="bd-action-btn del" title="Delete" onclick="event.stopPropagation(); deleteAwardEntry(${e.id})">✕</button></div></td>
     </tr>
   `).join('');
 }
@@ -2431,14 +2441,14 @@ function switchAwardsView(view, btn) {
   if(view === 'bodies') {
     document.getElementById('awards-bodies-container').style.display = 'block';
     document.getElementById('awards-entries-container').style.display = 'none';
-    document.getElementById('awards-add-btn').textContent = '+ Add Award Body';
-    document.getElementById('awards-add-btn').onclick = () => openAwardBodiesModal();
+    document.getElementById('awards-btn-bodies').classList.add('active');
+    document.getElementById('awards-btn-bodies-2').classList.add('active');
     if(!awardBodiesLoaded) loadAwardBodies();
   } else {
     document.getElementById('awards-bodies-container').style.display = 'none';
     document.getElementById('awards-entries-container').style.display = 'block';
-    document.getElementById('awards-add-btn').textContent = '+ Add Entry';
-    document.getElementById('awards-add-btn').onclick = () => openAwardEntriesModal();
+    document.getElementById('awards-btn-entries').classList.add('active');
+    document.getElementById('awards-btn-entries-2').classList.add('active');
     if(!awardEntriesLoaded) loadAwardEntries();
   }
 }
@@ -2520,13 +2530,12 @@ async function saveAwardBody() {
   closeAwardBodiesModalDirect();
 }
 
-async function deleteAwardBody() {
-  if(!editingAwardBodyId || !confirm('Delete this award body? Associated entries will not be deleted.')) return;
-  try { await sbFetch(`award_bodies?id=eq.${editingAwardBodyId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
-  awardBodiesData = awardBodiesData.filter(x => x.id !== editingAwardBodyId);
+async function deleteAwardBody(id) {
+  if(!id || !confirm('Delete this award body? Associated entries will not be deleted.')) return;
+  try { await sbFetch(`award_bodies?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardBodiesData = awardBodiesData.filter(x => x.id !== id);
   renderAwardBodies();
   populateAwardBodiesDropdown();
-  closeAwardBodiesModalDirect();
 }
 
 function openAddAwardBodyQuick() {
@@ -2607,12 +2616,11 @@ async function saveAwardEntry() {
   closeAwardEntriesModalDirect();
 }
 
-async function deleteAwardEntry() {
-  if(!editingAwardEntryId || !confirm('Delete this award entry?')) return;
-  try { await sbFetch(`award_entries?id=eq.${editingAwardEntryId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
-  awardEntriesData = awardEntriesData.filter(x => x.id !== editingAwardEntryId);
+async function deleteAwardEntry(id) {
+  if(!id || !confirm('Delete this award entry?')) return;
+  try { await sbFetch(`award_entries?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardEntriesData = awardEntriesData.filter(x => x.id !== id);
   renderAwardEntries(awardEntriesData);
-  closeAwardEntriesModalDirect();
 }
 
 async function init(){
