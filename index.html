@@ -384,7 +384,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .bd-table td:nth-child(5) { white-space: nowrap; }
 .bd-table td:nth-child(6) { font-size: 11px; color: #555; white-space: normal; line-height: 1.4; }
 .bd-table td:nth-child(7) { white-space: nowrap; }
-.bd-table td:nth-child(8) { white-space: nowrap; }
+.bd-table td:nth-child(8) { white-space: nowrap; overflow: visible; padding: 6px 6px; vertical-align: middle; }
 .bd-status-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 100px; display: inline-block; white-space: nowrap; }
 .bd-status-pill.s-inprogress { background: rgba(135,251,102,0.2); color: #2d6b00; }
 .bd-status-pill.s-warm-progress { background: rgba(135,251,102,0.15); color: #3a7a00; }
@@ -399,6 +399,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .bd-action-btn.del:hover { background: #FFE0E0; color: #CC0000; border-color: #FFB0B0; }
 .bd-row-actions { display: flex; gap: 4px; opacity: 1; transition: opacity 0.12s; }
 .bd-table tr:hover .bd-row-actions { opacity: 1; }
+/* Dripify table */
+#prospects-table { table-layout: fixed; width: 100%; }
+#prospects-table th { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#prospects-table td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 10px 10px; font-size: 12px; }
 #award-entries-table tr:hover .bd-row-actions { opacity: 1; }
 #award-bodies-table tr:hover .bd-row-actions { opacity: 1; }
 
@@ -622,11 +626,11 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
             <col style="width:11%"><!-- Name -->
             <col style="width:13%"><!-- Title -->
             <col style="width:11%"><!-- Organisation -->
-            <col style="width:24%"><!-- Current Action -->
+            <col style="width:23%"><!-- Current Action -->
             <col style="width:10%"><!-- Status -->
-            <col style="width:24%"><!-- Next Action -->
-            <col style="width:5%"> <!-- LinkedIn -->
-            <col style="width:2%"> <!-- Actions -->
+            <col style="width:23%"><!-- Next Action -->
+            <col style="width:4%"> <!-- LinkedIn -->
+            <col style="width:5%"> <!-- Actions -->
           </colgroup>
           <thead>
             <tr>
@@ -1786,6 +1790,13 @@ function renderProspectsTable(rows) {
 
   thead.innerHTML = `<tr>${COLS.map(c=>`<th>${c.label}</th>`).join('')}</tr>`;
 
+  // Inject colgroup for fixed column widths
+  let cg = table.querySelector('colgroup');
+  if(!cg) { cg = document.createElement('colgroup'); table.prepend(cg); }
+  // first_name, last_name, company, title, linkedin, email, website, campaign
+  const colWidths = ['9%','9%','13%','14%','5%','16%','14%','20%'];
+  cg.innerHTML = colWidths.map(w=>`<col style="width:${w}">`).join('');
+
   tbody.innerHTML = rows.map(row => `
     <tr>${COLS.map(c => {
       const val = row[c.key] || '';
@@ -1793,7 +1804,9 @@ function renderProspectsTable(rows) {
         return `<td><a href="${esc(val)}" target="_blank" rel="noopener">View ↗</a></td>`;
       }
       if(c.key === 'company_website' && val) {
-        return `<td><a href="${val.startsWith('http')?esc(val):'https://'+esc(val)}" target="_blank" rel="noopener">${esc(val.replace(/^https?:\/\//,''))}</a></td>`;
+        const display = val.replace(/^https?:\/\//,'').replace(/\/$/,'');
+        const href = val.startsWith('http') ? esc(val) : 'https://'+esc(val);
+        return `<td title="${esc(display)}"><a href="${href}" target="_blank" rel="noopener">${esc(display)}</a></td>`;
       }
       if(c.key === 'status') {
         const cls = val==='connected'?'s-connected':val==='replied'?'s-replied':val==='meeting'?'s-meeting':'s-default';
