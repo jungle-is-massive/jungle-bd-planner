@@ -755,16 +755,17 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       </div>
     </div>
 
+    <!-- SINGLE TOGGLE BUTTONS (SHARED) -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center">
+      <button class="awards-view-btn active" id="awards-toggle-entries" onclick="switchAwardsView('entries',this)">Award Entries</button>
+      <button class="awards-view-btn" id="awards-toggle-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
+      <div style="margin-left:auto" id="awards-btn-container">
+        <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardEntriesModal()">+ Add Entry</button>
+      </div>
+    </div>
+
     <!-- AWARD ENTRIES VIEW (DEFAULT) -->
     <div id="awards-entries-container">
-      <div class="awards-view-toggle" style="display:flex;gap:8px;margin-bottom:20px">
-        <button class="awards-view-btn active" id="awards-btn-entries" onclick="switchAwardsView('entries',this)">Award Entries</button>
-        <button class="awards-view-btn" id="awards-btn-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
-        <div style="margin-left:auto">
-          <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardEntriesModal()">+ Add Entry</button>
-        </div>
-      </div>
-
       <div class="prospects-controls">
         <input type="text" class="prospects-search" id="awards-search" placeholder="Search by award body, category or status…" oninput="filterAwardEntries()">
         <div class="prospects-count" id="awards-count"></div>
@@ -790,14 +791,6 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
     <!-- AWARD BODIES VIEW -->
     <div id="awards-bodies-container" style="display:none">
-      <div class="awards-view-toggle" style="display:flex;gap:8px;margin-bottom:20px">
-        <button class="awards-view-btn" id="awards-btn-entries-2" onclick="switchAwardsView('entries',this)">Award Entries</button>
-        <button class="awards-view-btn active" id="awards-btn-bodies-2" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
-        <div style="margin-left:auto">
-          <button class="add-asset-btn" onclick="openAwardBodiesModal()">+ Add Award Body</button>
-        </div>
-      </div>
-
       <div id="award-bodies-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
       <div id="award-bodies-error" class="prospects-error" style="display:none"></div>
       <table class="prospects-table" id="award-bodies-table" style="display:none">
@@ -2448,12 +2441,16 @@ function switchAwardsView(view, btn) {
   document.getElementById('awards-bodies-container').style.display = 'none';
   document.getElementById('awards-entries-container').style.display = 'none';
   
-  // Show the appropriate container and load data
+  // Show the appropriate container and update add button
   if(view === 'bodies') {
     document.getElementById('awards-bodies-container').style.display = 'block';
+    document.getElementById('awards-add-btn').textContent = '+ Add Award Body';
+    document.getElementById('awards-add-btn').onclick = () => openAwardBodiesModal();
     if(!awardBodiesLoaded) loadAwardBodies();
   } else {
     document.getElementById('awards-entries-container').style.display = 'block';
+    document.getElementById('awards-add-btn').textContent = '+ Add Entry';
+    document.getElementById('awards-add-btn').onclick = () => openAwardEntriesModal();
     if(!awardEntriesLoaded) loadAwardEntries();
   }
 }
