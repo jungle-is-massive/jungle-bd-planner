@@ -402,6 +402,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 /* PROSPECTS SUB-TABS */
 .prospects-tabs-header { border-bottom: 1px solid var(--grey-light); margin-bottom: 32px; }
 #prospects-view { max-width: 1200px; margin: 0 auto; padding: 48px 32px 120px; }
+#awards-view { max-width: 1200px; margin: 0 auto; padding: 48px 32px 120px; }
 
 /* INTERMEDIARIES VIEW */
 #intermediaries-view { max-width: 1100px; margin: 0 auto; padding: 48px 32px 120px; }
@@ -1281,7 +1282,7 @@ let activeProspectsTab = 'bd';
 
 function switchProspectsTab(tab, btn) {
   activeProspectsTab = tab;
-  document.querySelectorAll('.prospects-sub-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#prospects-view-el .prospects-sub-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('prospects-bd-panel').style.display = tab === 'bd' ? '' : 'none';
   document.getElementById('prospects-dripify-panel').style.display = tab === 'dripify' ? '' : 'none';
@@ -2448,7 +2449,7 @@ let activeAwardsTab = 'entries';
 
 function switchAwardsTab(tab, btn) {
   activeAwardsTab = tab;
-  document.querySelectorAll('.prospects-sub-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#awards-view-el .prospects-sub-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('awards-entries-panel').style.display = tab === 'entries' ? '' : 'none';
   document.getElementById('awards-bodies-panel').style.display = tab === 'bodies' ? '' : 'none';
