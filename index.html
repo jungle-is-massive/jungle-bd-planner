@@ -195,6 +195,19 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .status-pill.yet-to-start { background: var(--grey-light); color: var(--grey-mid); }
 .status-pill.in-progress { background: #FFF3CD; color: #856404; }
 .status-pill.actioned { background: #D4F4E2; color: #1A6B3C; }
+.status-pill.assessing { background: #E3F2FD; color: #1565C0; }
+.status-pill.not-started { background: var(--grey-light); color: var(--grey-mid); }
+.status-pill.with-client { background: #FCE4EC; color: #C2185B; }
+.status-pill.submitted { background: #FFF3E0; color: #E65100; }
+.status-pill.shortlisted { background: #F3E5F5; color: #6A1B9A; }
+.status-pill.commended { background: #E0F2F1; color: #004D40; }
+.status-pill.win---gold { background: #FFF9C4; color: #F57F17; }
+.status-pill.win---silver { background: #F5F5F5; color: #424242; }
+.status-pill.win---bronze { background: #FBE9E7; color: #D84315; }
+.status-pill.loss { background: #FFEBEE; color: #C62828; }
+.awards-view-btn { padding: 7px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--grey); letter-spacing: 0.02em; transition: background 0.15s, color 0.15s; }
+.awards-view-btn.active { background: var(--green); color: var(--black); }
+.awards-view-btn:hover:not(.active) { color: var(--cream); }
 .qa-empty { font-size: 12px; color: var(--grey-mid); font-style: italic; text-align: center; padding: 12px 0; }
 
 /* PROGRAMME VIEW */
@@ -484,6 +497,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
     <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
     <button class="nav-tab" onclick="switchView('intermediaries',this)">Intermediaries</button>
+    <button class="nav-tab" onclick="switchView('awards',this)">Awards</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
     <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
@@ -728,6 +742,71 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   </div>
 </div>
 
+<!-- AWARDS VIEW -->
+<div class="view" id="awards-view-el">
+  <div id="awards-view">
+    <div class="prospects-header">
+      <div>
+        <div class="assets-view-label">Business Development</div>
+        <h2 class="assets-view-title">Awards</h2>
+        <p class="assets-view-sub">Track award entries and manage award bodies.</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="awards-view-toggle">
+          <button class="awards-view-btn active" id="awards-btn-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
+          <button class="awards-view-btn" id="awards-btn-entries" onclick="switchAwardsView('entries',this)">Entries</button>
+        </div>
+        <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardBodiesModal()">+ Add Award Body</button>
+      </div>
+    </div>
+
+    <!-- AWARD BODIES VIEW -->
+    <div id="awards-bodies-container">
+      <div id="award-bodies-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+      <div id="award-bodies-error" class="prospects-error" style="display:none"></div>
+      <table class="prospects-table" id="award-bodies-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Award Body</th>
+            <th>Status</th>
+            <th>Final Deadline</th>
+            <th>Ceremony</th>
+            <th>Location</th>
+            <th style="text-align:center">Entry Fee</th>
+            <th style="text-align:center">Attend</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="award-bodies-body"></tbody>
+      </table>
+    </div>
+
+    <!-- AWARD ENTRIES VIEW -->
+    <div id="awards-entries-container" style="display:none">
+      <div class="prospects-controls">
+        <input type="text" class="prospects-search" id="awards-search" placeholder="Search by award body, category or status…" oninput="filterAwardEntries()">
+        <div class="prospects-count" id="awards-count"></div>
+      </div>
+      <div id="award-entries-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+      <div id="award-entries-error" class="prospects-error" style="display:none"></div>
+      <table class="prospects-table" id="award-entries-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Award Body</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Jungle Fit</th>
+            <th>Status</th>
+            <th style="text-align:right">Fee</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="award-entries-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- INTERMEDIARY MODAL -->
 <div id="int-modal-overlay" onclick="closeIntModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
   <div id="int-modal-box" style="background:var(--cream);border-radius:16px;width:min(640px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
@@ -761,6 +840,123 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;">
       <button class="btn-cancel" onclick="closeIntModalDirect()">Cancel</button>
       <button class="btn-save" onclick="saveIntermediary()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- AWARD BODIES MODAL -->
+<div id="award-bodies-modal-overlay" onclick="closeAwardBodiesModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="award-bodies-modal-box" style="background:var(--cream);border-radius:16px;width:min(700px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);">
+      <div id="award-bodies-modal-title" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Add Award Body</div>
+      <button class="modal-close" onclick="closeAwardBodiesModalDirect()">✕</button>
+    </div>
+    <div style="padding:18px 22px 8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label>Award Body Name</label><input type="text" id="award-bodies-name" placeholder="e.g. GIMA"></div>
+        <div class="field"><label>Status</label>
+          <select id="award-bodies-status">
+            <option></option>
+            <option>Open</option>
+            <option>Closed</option>
+          </select>
+        </div>
+        <div class="field"><label>Final Deadline</label><input type="date" id="award-bodies-deadline"></div>
+        <div class="field"><label>Shortlist Date</label><input type="date" id="award-bodies-shortlist"></div>
+        <div class="field"><label>Ceremony Date</label><input type="date" id="award-bodies-ceremony"></div>
+        <div class="field"><label>Location</label><input type="text" id="award-bodies-location" placeholder="e.g. London"></div>
+        <div class="field"><label>Entry Fee (£)</label><input type="text" id="award-bodies-fee" placeholder="e.g. £495"></div>
+        <div class="field"><label>Should Attend?</label>
+          <select id="award-bodies-attend">
+            <option></option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field"><label>Cost per Seat (£)</label><input type="number" id="award-bodies-cost-seat" placeholder="e.g. 150" min="0" step="0.01"></div>
+        <div class="field"><label>Number of Seats</label><input type="number" id="award-bodies-no-seats" placeholder="e.g. 4" min="0"></div>
+      </div>
+      <div class="field"><label>Award Notes</label><textarea id="award-bodies-notes" rows="2" placeholder="Any additional notes…"></textarea></div>
+      <div class="field"><label>Attendance Notes</label><textarea id="award-bodies-attend-notes" rows="3" placeholder="Notes about attendance…" style="min-height:60px;line-height:1.5"></textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;">
+      <button class="btn-cancel" onclick="closeAwardBodiesModalDirect()">Cancel</button>
+      <button class="btn-delete" id="award-bodies-delete-btn" onclick="deleteAwardBody()" style="display:none;margin-right:auto">Delete</button>
+      <button class="btn-save" onclick="saveAwardBody()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- AWARD ENTRIES MODAL -->
+<div id="award-entries-modal-overlay" onclick="closeAwardEntriesModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="award-entries-modal-box" style="background:var(--cream);border-radius:16px;width:min(700px,94vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);">
+      <div id="award-entries-modal-title" style="font-size:16px;font-weight:700;letter-spacing:-0.02em;">Add Award Entry</div>
+      <button class="modal-close" onclick="closeAwardEntriesModalDirect()">✕</button>
+    </div>
+    <div style="padding:18px 22px 8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label>Award Body</label>
+          <div style="display:flex;gap:6px">
+            <select id="award-entries-body" style="flex:1">
+              <option value="">Select award body…</option>
+            </select>
+            <button class="add-asset-btn" onclick="openAddAwardBodyQuick()" style="padding:6px 12px;font-size:11px">+ New</button>
+          </div>
+        </div>
+        <div class="field"><label>Category</label><input type="text" id="award-entries-category" placeholder="e.g. Best Brand Awareness Campaign"></div>
+        <div class="field"><label>Category Type</label>
+          <select id="award-entries-type">
+            <option></option>
+            <option>Campaign</option>
+            <option>Format</option>
+            <option>Vertical</option>
+            <option>People & Teams</option>
+            <option>Agency</option>
+            <option>Individual</option>
+            <option>Team</option>
+          </select>
+        </div>
+        <div class="field"><label>Jungle Fit</label>
+          <select id="award-entries-fit">
+            <option></option>
+            <option>Strong</option>
+            <option>Good</option>
+            <option>Possible</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field"><label>Should Enter?</label>
+          <select id="award-entries-enter">
+            <option></option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
+        <div class="field"><label>Est. Fee (£)</label><input type="text" id="award-entries-fee" placeholder="e.g. £495"></div>
+        <div class="field"><label>Status</label>
+          <select id="award-entries-status">
+            <option></option>
+            <option>Assessing</option>
+            <option>Not Started</option>
+            <option>In Progress</option>
+            <option>With Client</option>
+            <option>Submitted</option>
+            <option>Shortlisted</option>
+            <option>Commended</option>
+            <option>Win - Gold</option>
+            <option>Win - Silver</option>
+            <option>Win - Bronze</option>
+            <option>Loss</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Entry Reason</label><textarea id="award-entries-reason" rows="2" placeholder="Why are we entering this?"></textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;padding:12px 22px 20px;">
+      <button class="btn-cancel" onclick="closeAwardEntriesModalDirect()">Cancel</button>
+      <button class="btn-delete" id="award-entries-delete-btn" onclick="deleteAwardEntry()" style="display:none;margin-right:auto">Delete</button>
+      <button class="btn-save" onclick="saveAwardEntry()">Save</button>
     </div>
   </div>
 </div>
@@ -1049,7 +1245,7 @@ async function updateStatus(id, status) {
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el', intermediaries:'intermediaries-view-el'};
+  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el', intermediaries:'intermediaries-view-el', awards:'awards-view-el'};
   document.getElementById(viewMap[v]).classList.add('active');
   btn.classList.add('active');
   const isCalendar = v==='calendar';
@@ -2126,6 +2322,296 @@ function checkGate() {
     err.textContent = 'Incorrect password';
     setTimeout(() => { input.classList.remove('error'); input.value = ''; err.textContent = ''; }, 1000);
   }
+}
+
+// ── AWARDS ─────────────────────────────────────────────────────────
+let awardBodiesData = [];
+let awardEntriesData = [];
+let awardBodiesLoaded = false;
+let awardEntriesLoaded = false;
+let editingAwardBodyId = null;
+let editingAwardEntryId = null;
+
+async function loadAwardBodies(force=false) {
+  if(awardBodiesLoaded && !force) return;
+  const loading = document.getElementById('award-bodies-loading');
+  const error = document.getElementById('award-bodies-error');
+  const table = document.getElementById('award-bodies-table');
+  loading.style.display = 'flex';
+  error.style.display = 'none';
+  table.style.display = 'none';
+  try {
+    const r = await sbFetch('award_bodies?order=name.asc');
+    if(r.ok){
+      awardBodiesData = await r.json();
+      awardBodiesLoaded = true;
+      renderAwardBodies();
+      populateAwardBodiesDropdown();
+      loading.style.display = 'none';
+      return;
+    }
+  } catch(e){}
+  error.style.display = 'block';
+  error.textContent = 'Failed to load award bodies.';
+}
+
+async function loadAwardEntries(force=false) {
+  if(awardEntriesLoaded && !force) return;
+  const loading = document.getElementById('award-entries-loading');
+  const error = document.getElementById('award-entries-error');
+  const table = document.getElementById('award-entries-table');
+  loading.style.display = 'flex';
+  error.style.display = 'none';
+  table.style.display = 'none';
+  try {
+    const r = await sbFetch('award_entries?select=*,award_bodies(name)&order=award_body_id.asc,category.asc');
+    if(r.ok){
+      awardEntriesData = await r.json();
+      awardEntriesLoaded = true;
+      renderAwardEntries(awardEntriesData);
+      document.getElementById('award-entries-loading').style.display = 'none';
+      document.getElementById('award-entries-table').style.display = 'table';
+      document.getElementById('awards-count').textContent = `${awardEntriesData.length} entries`;
+      return;
+    }
+  } catch(e){}
+  error.style.display = 'block';
+  error.textContent = 'Failed to load award entries.';
+}
+
+function renderAwardBodies() {
+  const body = document.getElementById('award-bodies-body');
+  body.innerHTML = awardBodiesData.map(b => `
+    <tr onclick="openAwardBodiesModal(${b.id})">
+      <td><strong>${esc(b.name||'')}</strong></td>
+      <td>${esc(b.status||'')}</td>
+      <td>${b.final_deadline ? new Date(b.final_deadline).toLocaleDateString('en-GB') : ''}</td>
+      <td>${b.ceremony ? new Date(b.ceremony).toLocaleDateString('en-GB') : ''}</td>
+      <td>${esc(b.location||'')}</td>
+      <td style="text-align:center">${esc(b.entry_fee||'')}</td>
+      <td style="text-align:center">${b.should_attend||''}</td>
+      <td style="text-align:right"><button class="prospects-edit-btn" onclick="event.stopPropagation(); openAwardBodiesModal(${b.id})">Edit</button></td>
+    </tr>
+  `).join('');
+  document.getElementById('award-bodies-loading').style.display = 'none';
+  document.getElementById('award-bodies-table').style.display = 'table';
+}
+
+function renderAwardEntries(entries) {
+  const body = document.getElementById('award-entries-body');
+  body.innerHTML = entries.map(e => `
+    <tr onclick="openAwardEntriesModal(${e.id})">
+      <td><strong>${esc(e.award_bodies?.name||'')}</strong></td>
+      <td>${esc(e.category||'')}</td>
+      <td>${esc(e.category_type||'')}</td>
+      <td>${esc(e.jungle_fit||'')}</td>
+      <td><span class="status-pill ${(e.status||'').toLowerCase().replace(/[\\s-]/g,'-')}">${esc(e.status||'')}</span></td>
+      <td style="text-align:right">${esc(e.est_fee||'')}</td>
+      <td style="text-align:right"><button class="prospects-edit-btn" onclick="event.stopPropagation(); openAwardEntriesModal(${e.id})">Edit</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterAwardEntries() {
+  const q = document.getElementById('awards-search').value.toLowerCase().trim();
+  const filtered = q ? awardEntriesData.filter(e =>
+    ['award_bodies', 'category', 'category_type', 'status'].some(k => {
+      const val = k === 'award_bodies' ? (e.award_bodies?.name || '') : (e[k] || '');
+      return String(val).toLowerCase().includes(q);
+    })
+  ) : awardEntriesData;
+  renderAwardEntries(filtered);
+  document.getElementById('awards-count').textContent = `${filtered.length} of ${awardEntriesData.length} entries`;
+}
+
+function switchAwardsView(view, btn) {
+  document.querySelectorAll('.awards-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(view === 'bodies') {
+    document.getElementById('awards-bodies-container').style.display = 'block';
+    document.getElementById('awards-entries-container').style.display = 'none';
+    document.getElementById('awards-add-btn').textContent = '+ Add Award Body';
+    document.getElementById('awards-add-btn').onclick = () => openAwardBodiesModal();
+    if(!awardBodiesLoaded) loadAwardBodies();
+  } else {
+    document.getElementById('awards-bodies-container').style.display = 'none';
+    document.getElementById('awards-entries-container').style.display = 'block';
+    document.getElementById('awards-add-btn').textContent = '+ Add Entry';
+    document.getElementById('awards-add-btn').onclick = () => openAwardEntriesModal();
+    if(!awardEntriesLoaded) loadAwardEntries();
+  }
+}
+
+function populateAwardBodiesDropdown() {
+  const sel = document.getElementById('award-entries-body');
+  sel.innerHTML = '<option value="">Select award body…</option>' + awardBodiesData.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
+}
+
+function openAwardBodiesModal(id=null) {
+  editingAwardBodyId = id;
+  const overlay = document.getElementById('award-bodies-modal-overlay');
+  const box = document.getElementById('award-bodies-modal-box');
+  document.getElementById('award-bodies-modal-title').textContent = id ? 'Edit Award Body' : 'Add Award Body';
+  document.getElementById('award-bodies-delete-btn').style.display = id ? 'block' : 'none';
+  if(id) {
+    const item = awardBodiesData.find(x => x.id === id);
+    if(item) {
+      document.getElementById('award-bodies-name').value = item.name || '';
+      document.getElementById('award-bodies-status').value = item.status || '';
+      document.getElementById('award-bodies-deadline').value = item.final_deadline || '';
+      document.getElementById('award-bodies-shortlist').value = item.shortlist || '';
+      document.getElementById('award-bodies-ceremony').value = item.ceremony || '';
+      document.getElementById('award-bodies-location').value = item.location || '';
+      document.getElementById('award-bodies-fee').value = item.entry_fee || '';
+      document.getElementById('award-bodies-attend').value = item.should_attend || '';
+      document.getElementById('award-bodies-cost-seat').value = item.cost_per_seat || '';
+      document.getElementById('award-bodies-no-seats').value = item.no_of_seats || '';
+      document.getElementById('award-bodies-notes').value = item.award_notes || '';
+      document.getElementById('award-bodies-attend-notes').value = item.attendance_notes || '';
+    }
+  } else {
+    ['award-bodies-name', 'award-bodies-status', 'award-bodies-deadline', 'award-bodies-shortlist', 'award-bodies-ceremony', 'award-bodies-location', 'award-bodies-fee', 'award-bodies-attend', 'award-bodies-cost-seat', 'award-bodies-no-seats', 'award-bodies-notes', 'award-bodies-attend-notes'].forEach(id => document.getElementById(id).value = '');
+  }
+  overlay.style.opacity = '1'; overlay.style.pointerEvents = 'all';
+  box.style.transform = 'translateY(0)';
+}
+
+function closeAwardBodiesModal(e) { if(e.target === document.getElementById('award-bodies-modal-overlay')) closeAwardBodiesModalDirect(); }
+function closeAwardBodiesModalDirect() {
+  const overlay = document.getElementById('award-bodies-modal-overlay');
+  const box = document.getElementById('award-bodies-modal-box');
+  overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+  box.style.transform = 'translateY(16px)';
+  editingAwardBodyId = null;
+}
+
+async function saveAwardBody() {
+  const name = document.getElementById('award-bodies-name').value.trim();
+  if(!name) { alert('Award body name is required.'); return; }
+  const payload = {
+    name,
+    status: document.getElementById('award-bodies-status').value,
+    final_deadline: document.getElementById('award-bodies-deadline').value || null,
+    shortlist: document.getElementById('award-bodies-shortlist').value || null,
+    ceremony: document.getElementById('award-bodies-ceremony').value || null,
+    location: document.getElementById('award-bodies-location').value.trim(),
+    entry_fee: document.getElementById('award-bodies-fee').value.trim(),
+    should_attend: document.getElementById('award-bodies-attend').value,
+    cost_per_seat: document.getElementById('award-bodies-cost-seat').value ? parseFloat(document.getElementById('award-bodies-cost-seat').value) : null,
+    no_of_seats: document.getElementById('award-bodies-no-seats').value ? parseInt(document.getElementById('award-bodies-no-seats').value) : null,
+    award_notes: document.getElementById('award-bodies-notes').value.trim(),
+    attendance_notes: document.getElementById('award-bodies-attend-notes').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  try {
+    if(editingAwardBodyId) {
+      await sbFetch(`award_bodies?id=eq.${editingAwardBodyId}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(payload)});
+      const i = awardBodiesData.findIndex(x => x.id === editingAwardBodyId);
+      if(i > -1) awardBodiesData[i] = {...awardBodiesData[i], ...payload};
+    } else {
+      const r = await sbFetch('award_bodies', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(payload)});
+      const d = await r.json();
+      awardBodiesData.push(d[0] || {...payload, id:'local-'+Date.now()});
+    }
+  } catch(e) { console.error(e); }
+  renderAwardBodies();
+  populateAwardBodiesDropdown();
+  closeAwardBodiesModalDirect();
+}
+
+async function deleteAwardBody() {
+  if(!editingAwardBodyId || !confirm('Delete this award body? Associated entries will not be deleted.')) return;
+  try { await sbFetch(`award_bodies?id=eq.${editingAwardBodyId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardBodiesData = awardBodiesData.filter(x => x.id !== editingAwardBodyId);
+  renderAwardBodies();
+  populateAwardBodiesDropdown();
+  closeAwardBodiesModalDirect();
+}
+
+function openAddAwardBodyQuick() {
+  const name = prompt('Award Body Name:');
+  if(!name || !name.trim()) return;
+  const payload = {name: name.trim(), updated_at: new Date().toISOString()};
+  sbFetch('award_bodies', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(payload)})
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(d => {
+      awardBodiesData.push(d[0]);
+      populateAwardBodiesDropdown();
+      document.getElementById('award-entries-body').value = d[0].id;
+    })
+    .catch(e => { console.error(e); alert('Failed to create award body.'); });
+}
+
+function openAwardEntriesModal(id=null) {
+  editingAwardEntryId = id;
+  const overlay = document.getElementById('award-entries-modal-overlay');
+  const box = document.getElementById('award-entries-modal-box');
+  document.getElementById('award-entries-modal-title').textContent = id ? 'Edit Award Entry' : 'Add Award Entry';
+  document.getElementById('award-entries-delete-btn').style.display = id ? 'block' : 'none';
+  if(id) {
+    const item = awardEntriesData.find(x => x.id === id);
+    if(item) {
+      document.getElementById('award-entries-body').value = item.award_body_id || '';
+      document.getElementById('award-entries-category').value = item.category || '';
+      document.getElementById('award-entries-type').value = item.category_type || '';
+      document.getElementById('award-entries-fit').value = item.jungle_fit || '';
+      document.getElementById('award-entries-enter').value = item.should_enter || '';
+      document.getElementById('award-entries-fee').value = item.est_fee || '';
+      document.getElementById('award-entries-status').value = item.status || '';
+      document.getElementById('award-entries-reason').value = item.entry_reason || '';
+    }
+  } else {
+    ['award-entries-body', 'award-entries-category', 'award-entries-type', 'award-entries-fit', 'award-entries-enter', 'award-entries-fee', 'award-entries-status', 'award-entries-reason'].forEach(id => document.getElementById(id).value = '');
+  }
+  overlay.style.opacity = '1'; overlay.style.pointerEvents = 'all';
+  box.style.transform = 'translateY(0)';
+}
+
+function closeAwardEntriesModal(e) { if(e.target === document.getElementById('award-entries-modal-overlay')) closeAwardEntriesModalDirect(); }
+function closeAwardEntriesModalDirect() {
+  const overlay = document.getElementById('award-entries-modal-overlay');
+  const box = document.getElementById('award-entries-modal-box');
+  overlay.style.opacity = '0'; overlay.style.pointerEvents = 'none';
+  box.style.transform = 'translateY(16px)';
+  editingAwardEntryId = null;
+}
+
+async function saveAwardEntry() {
+  const bodyId = document.getElementById('award-entries-body').value;
+  const category = document.getElementById('award-entries-category').value.trim();
+  if(!bodyId || !category) { alert('Award body and category are required.'); return; }
+  const payload = {
+    award_body_id: parseInt(bodyId),
+    category,
+    category_type: document.getElementById('award-entries-type').value,
+    jungle_fit: document.getElementById('award-entries-fit').value,
+    should_enter: document.getElementById('award-entries-enter').value,
+    est_fee: document.getElementById('award-entries-fee').value.trim(),
+    status: document.getElementById('award-entries-status').value,
+    entry_reason: document.getElementById('award-entries-reason').value.trim(),
+    updated_at: new Date().toISOString()
+  };
+  try {
+    if(editingAwardEntryId) {
+      await sbFetch(`award_entries?id=eq.${editingAwardEntryId}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify(payload)});
+      const i = awardEntriesData.findIndex(x => x.id === editingAwardEntryId);
+      if(i > -1) Object.assign(awardEntriesData[i], payload);
+    } else {
+      const r = await sbFetch('award_entries', {method:'POST', headers:{'Prefer':'return=representation'}, body:JSON.stringify(payload)});
+      const d = await r.json();
+      awardEntriesData.push(d[0] || {...payload, id:'local-'+Date.now()});
+    }
+  } catch(e) { console.error(e); }
+  loadAwardEntries(true);
+  closeAwardEntriesModalDirect();
+}
+
+async function deleteAwardEntry() {
+  if(!editingAwardEntryId || !confirm('Delete this award entry?')) return;
+  try { await sbFetch(`award_entries?id=eq.${editingAwardEntryId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardEntriesData = awardEntriesData.filter(x => x.id !== editingAwardEntryId);
+  renderAwardEntries(awardEntriesData);
+  closeAwardEntriesModalDirect();
 }
 
 async function init(){
