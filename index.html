@@ -460,9 +460,9 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .int-pipeline-note { font-size: 12px; color: var(--grey-mid); font-style: italic; }
 .int-pipeline-table { width: 100%; }
 .int-pipeline-table td { white-space: normal; }
-.int-pipeline-table td:nth-child(3), .int-pipeline-table td:nth-child(4), .int-pipeline-table td:nth-child(5), .int-pipeline-table td:nth-child(6) { text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+.int-pipeline-table td:nth-child(3), .int-pipeline-table td:nth-child(4), .int-pipeline-table td:nth-child(5), .int-pipeline-table td:nth-child(6), .int-pipeline-table td:nth-child(7) { text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
 .int-pipeline-table tfoot td { font-weight: 700; background: var(--grey-light); border-top: 2px solid var(--black); font-family: 'DM Mono', monospace; font-size: 12px; }
-.int-pipeline-table tfoot td:nth-child(3), .int-pipeline-table tfoot td:nth-child(4), .int-pipeline-table tfoot td:nth-child(5), .int-pipeline-table tfoot td:nth-child(6) { text-align: right; }
+.int-pipeline-table tfoot td:nth-child(3), .int-pipeline-table tfoot td:nth-child(4), .int-pipeline-table tfoot td:nth-child(5), .int-pipeline-table tfoot td:nth-child(6), .int-pipeline-table tfoot td:nth-child(7) { text-align: right; }
 .int-projected-val { color: var(--green-dim); font-weight: 700; }
 .int-total-revenue { color: #1a6b3c; font-weight: 700; font-size: 13px; }
 .int-inline-input { background: none; border: none; border-bottom: 1.5px solid transparent; font-family: 'DM Mono', monospace; font-size: 12px; text-align: right; width: 100%; outline: none; color: var(--black); padding: 2px 0; transition: border-color 0.15s; cursor: pointer; }
@@ -762,6 +762,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
             <th style="text-align:right">Annual Cost (£)</th>
             <th style="text-align:right">Pitches Expected</th>
             <th style="text-align:right">Avg Pitch Value (£)</th>
+            <th style="text-align:right">Pitch Cost (£)</th>
             <th style="text-align:right">Projected Revenue (£)</th>
             <th></th>
           </tr>
@@ -1597,15 +1598,17 @@ function renderIntTable() {
 
   const conversion = (parseFloat(document.getElementById('int-conversion')?.value) || 33) / 100;
 
-  let totalCost = 0, totalPitches = 0, totalRevenue = 0;
+  let totalCost = 0, totalPitches = 0, totalPitchCost = 0, totalRevenue = 0;
 
   const rows = intData.map(item => {
-    const pitches = parseFloat(item.pitch_target) || 0;
-    const avgVal  = parseFloat(item.avg_pitch_value) || 0;
-    const cost    = parseFloat(item.annual_cost_estimate) || 0;
-    const projected = Math.round(pitches * avgVal * conversion);
+    const pitches    = parseFloat(item.pitch_target) || 0;
+    const avgVal     = parseFloat(item.avg_pitch_value) || 0;
+    const cost       = parseFloat(item.annual_cost_estimate) || 0;
+    const pitchCost  = parseFloat(item.pitch_cost) || 0;
+    const projected  = Math.round(pitches * avgVal * conversion);
     if(cost) totalCost += cost;
     if(pitches) totalPitches += pitches;
+    if(pitchCost) totalPitchCost += pitchCost;
     if(projected) totalRevenue += projected;
     return `<tr>
       <td style="font-weight:600">${esc(item.name)}</td>
@@ -1613,6 +1616,7 @@ function renderIntTable() {
       <td><input class="int-inline-input" type="number" value="${item.annual_cost_estimate??''}" placeholder="—" onchange="patchInt('${item.id}','annual_cost_estimate',this.value)" title="${esc(item.cost_to_jungle||'')}"></td>
       <td><input class="int-inline-input" type="number" value="${item.pitch_target??''}" placeholder="—" onchange="patchInt('${item.id}','pitch_target',this.value)" style="width:60px"></td>
       <td><input class="int-inline-input" type="number" value="${item.avg_pitch_value??''}" placeholder="—" onchange="patchInt('${item.id}','avg_pitch_value',this.value)"></td>
+      <td><input class="int-inline-input" type="number" value="${item.pitch_cost??''}" placeholder="—" onchange="patchInt('${item.id}','pitch_cost',this.value)"></td>
       <td class="${projected?'int-projected-val':''}">${projected ? fmtGBP(projected) : '—'}</td>
       <td>
         <div class="bd-row-actions" style="justify-content:flex-end">
@@ -1629,6 +1633,7 @@ function renderIntTable() {
     <td style="padding:12px 14px;text-align:right">${totalCost ? fmtGBP(totalCost) : '—'}</td>
     <td style="padding:12px 14px;text-align:right">${totalPitches || '—'}</td>
     <td style="padding:12px 14px;text-align:right">—</td>
+    <td style="padding:12px 14px;text-align:right">${totalPitchCost ? fmtGBP(totalPitchCost) : '—'}</td>
     <td style="padding:12px 14px;text-align:right" class="${totalRevenue?'int-total-revenue':''}">${totalRevenue ? fmtGBP(totalRevenue) : '—'}</td>
     <td></td>
   </tr>`;
