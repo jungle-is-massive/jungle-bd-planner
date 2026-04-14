@@ -917,7 +917,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
         <div class="field"><label>Award Body</label>
           <div style="display:flex;gap:6px">
-            <select id="award-entries-body" style="flex:1">
+            <select id="award-entries-body-select" style="flex:1">
               <option value="">Select award body…</option>
             </select>
             <button class="add-asset-btn" onclick="openAddAwardBodyQuick()" style="padding:6px 12px;font-size:11px">+ New</button>
@@ -2458,7 +2458,7 @@ function switchAwardsTab(tab, btn) {
 }
 
 function populateAwardBodiesDropdown() {
-  const sel = document.getElementById('award-entries-body');
+  const sel = document.getElementById('award-entries-body-select');
   sel.innerHTML = '<option value="">Select award body…</option>' + awardBodiesData.map(b => `<option value="${b.id}">${esc(b.name)}</option>`).join('');
 }
 
@@ -2551,7 +2551,7 @@ function openAddAwardBodyQuick() {
     .then(d => {
       awardBodiesData.push(d[0]);
       populateAwardBodiesDropdown();
-      document.getElementById('award-entries-body').value = d[0].id;
+      document.getElementById('award-entries-body-select').value = d[0].id;
     })
     .catch(e => { console.error(e); alert('Failed to create award body.'); });
 }
@@ -2565,7 +2565,7 @@ function openAwardEntriesModal(id=null) {
   if(id) {
     const item = awardEntriesData.find(x => x.id === id);
     if(item) {
-      document.getElementById('award-entries-body').value = item.award_body_id || '';
+      document.getElementById('award-entries-body-select').value = item.award_body_id || '';
       document.getElementById('award-entries-category').value = item.category || '';
       document.getElementById('award-entries-type').value = item.category_type || '';
       document.getElementById('award-entries-fit').value = item.jungle_fit || '';
@@ -2575,7 +2575,7 @@ function openAwardEntriesModal(id=null) {
       document.getElementById('award-entries-reason').value = item.entry_reason || '';
     }
   } else {
-    ['award-entries-body', 'award-entries-category', 'award-entries-type', 'award-entries-fit', 'award-entries-enter', 'award-entries-fee', 'award-entries-status', 'award-entries-reason'].forEach(id => document.getElementById(id).value = '');
+    ['award-entries-body-select', 'award-entries-category', 'award-entries-type', 'award-entries-fit', 'award-entries-enter', 'award-entries-fee', 'award-entries-status', 'award-entries-reason'].forEach(id => document.getElementById(id).value = '');
   }
   overlay.style.opacity = '1'; overlay.style.pointerEvents = 'all';
   box.style.transform = 'translateY(0)';
@@ -2591,7 +2591,7 @@ function closeAwardEntriesModalDirect() {
 }
 
 async function saveAwardEntry() {
-  const bodyId = document.getElementById('award-entries-body').value;
+  const bodyId = document.getElementById('award-entries-body-select').value;
   const category = document.getElementById('award-entries-category').value.trim();
   if(!bodyId || !category) { alert('Award body and category are required.'); return; }
   const payload = {
