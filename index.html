@@ -746,68 +746,81 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
 <!-- AWARDS VIEW -->
 <div class="view" id="awards-view-el">
-  <div style="max-width: 1400px; margin: 0 auto; padding: 32px 24px 120px;">
-    <div class="prospects-header">
-      <div>
-        <div class="assets-view-label">Business Development</div>
-        <h2 class="assets-view-title">Awards</h2>
-        <p class="assets-view-sub">Track award entries and manage award bodies.</p>
+  <div id="awards-view">
+    <!-- Tab Headers -->
+    <div class="prospects-tabs-header">
+      <div class="prospects-sub-tabs">
+        <button class="prospects-sub-tab active" id="awards-tab-entries" onclick="switchAwardsTab('entries',this)">Award Entries</button>
+        <button class="prospects-sub-tab" id="awards-tab-bodies" onclick="switchAwardsTab('bodies',this)">Award Bodies</button>
       </div>
     </div>
 
-    <!-- SINGLE TOGGLE BUTTONS (SHARED) -->
-    <div style="display:flex;gap:8px;margin-bottom:20px;align-items:center">
-      <button class="awards-view-btn active" id="awards-toggle-entries" onclick="switchAwardsView('entries',this)">Award Entries</button>
-      <button class="awards-view-btn" id="awards-toggle-bodies" onclick="switchAwardsView('bodies',this)">Award Bodies</button>
-      <div style="margin-left:auto" id="awards-btn-container">
-        <button class="add-asset-btn" id="awards-add-btn" onclick="openAwardEntriesModal()">+ Add Entry</button>
+    <!-- AWARD ENTRIES PANEL -->
+    <div id="awards-entries-panel">
+      <div class="prospects-header">
+        <div>
+          <div class="assets-view-label">Business Development</div>
+          <h2 class="assets-view-title">Awards</h2>
+          <p class="assets-view-sub">Track award entries and manage award bodies.</p>
+        </div>
+        <button class="add-asset-btn" onclick="openAwardEntriesModal()">+ Add Entry</button>
       </div>
-    </div>
 
-    <!-- AWARD ENTRIES VIEW (DEFAULT) -->
-    <div id="awards-entries-container">
       <div class="prospects-controls">
         <input type="text" class="prospects-search" id="awards-search" placeholder="Search by award body, category or status…" oninput="filterAwardEntries()">
         <div class="prospects-count" id="awards-count"></div>
       </div>
 
-      <div id="award-entries-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
-      <div id="award-entries-error" class="prospects-error" style="display:none"></div>
-      <table class="prospects-table" id="award-entries-table" style="display:none">
-        <thead>
-          <tr>
-            <th>Award Body</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Jungle Fit</th>
-            <th>Status</th>
-            <th style="text-align:right">Fee</th>
-            <th style="width:60px"></th>
-          </tr>
-        </thead>
-        <tbody id="award-entries-body"></tbody>
-      </table>
+      <div id="award-entries-wrap">
+        <div id="award-entries-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+        <div id="award-entries-error" class="prospects-error" style="display:none"></div>
+        <table class="prospects-table" id="award-entries-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Award Body</th>
+              <th>Category</th>
+              <th>Type</th>
+              <th>Jungle Fit</th>
+              <th>Status</th>
+              <th style="text-align:right">Fee</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="award-entries-body"></tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- AWARD BODIES VIEW -->
-    <div id="awards-bodies-container" style="display:none">
-      <div id="award-bodies-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
-      <div id="award-bodies-error" class="prospects-error" style="display:none"></div>
-      <table class="prospects-table" id="award-bodies-table" style="display:none">
-        <thead>
-          <tr>
-            <th>Award Body</th>
-            <th>Status</th>
-            <th>Final Deadline</th>
-            <th>Ceremony</th>
-            <th>Location</th>
-            <th style="text-align:center">Entry Fee</th>
-            <th style="text-align:center">Attend</th>
-            <th style="width:60px"></th>
-          </tr>
-        </thead>
-        <tbody id="award-bodies-body"></tbody>
-      </table>
+    <!-- AWARD BODIES PANEL -->
+    <div id="awards-bodies-panel" style="display:none">
+      <div class="prospects-header">
+        <div>
+          <div class="assets-view-label">Business Development</div>
+          <h2 class="assets-view-title">Awards</h2>
+          <p class="assets-view-sub">Track award entries and manage award bodies.</p>
+        </div>
+        <button class="add-asset-btn" onclick="openAwardBodiesModal()">+ Add Award Body</button>
+      </div>
+
+      <div id="award-bodies-wrap">
+        <div id="award-bodies-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+        <div id="award-bodies-error" class="prospects-error" style="display:none"></div>
+        <table class="prospects-table" id="award-bodies-table" style="display:none">
+          <thead>
+            <tr>
+              <th>Award Body</th>
+              <th>Status</th>
+              <th>Final Deadline</th>
+              <th>Ceremony</th>
+              <th>Location</th>
+              <th style="text-align:center">Entry Fee</th>
+              <th style="text-align:center">Attend</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="award-bodies-body"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
@@ -1260,7 +1273,7 @@ function switchView(v, btn) {
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadBdContacts();
   if(v==='intermediaries') loadIntermediaries();
-  if(v==='awards') switchAwardsView('entries', document.getElementById('awards-toggle-entries'));
+  if(v==='awards') switchAwardsTab('entries', document.getElementById('awards-tab-entries'));
 }
 
 // ── PROSPECTS SUB-TABS ────────────────────────────────────────────
@@ -2430,29 +2443,17 @@ function filterAwardEntries() {
   document.getElementById('awards-count').textContent = `${filtered.length} of ${awardEntriesData.length} entries`;
 }
 
-function switchAwardsView(view, btn) {
-  // Remove active from all award buttons
-  document.querySelectorAll('.awards-view-btn').forEach(b => b.classList.remove('active'));
-  
-  // Add active to the clicked button
+// ── AWARDS TAB SWITCHING ────────────────────────────────────────────
+let activeAwardsTab = 'entries';
+
+function switchAwardsTab(tab, btn) {
+  activeAwardsTab = tab;
+  document.querySelectorAll('.prospects-sub-tab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  
-  // Hide both containers first
-  document.getElementById('awards-bodies-container').style.display = 'none';
-  document.getElementById('awards-entries-container').style.display = 'none';
-  
-  // Show the appropriate container and update add button
-  if(view === 'bodies') {
-    document.getElementById('awards-bodies-container').style.display = 'block';
-    document.getElementById('awards-add-btn').textContent = '+ Add Award Body';
-    document.getElementById('awards-add-btn').onclick = () => openAwardBodiesModal();
-    if(!awardBodiesLoaded) loadAwardBodies();
-  } else {
-    document.getElementById('awards-entries-container').style.display = 'block';
-    document.getElementById('awards-add-btn').textContent = '+ Add Entry';
-    document.getElementById('awards-add-btn').onclick = () => openAwardEntriesModal();
-    if(!awardEntriesLoaded) loadAwardEntries();
-  }
+  document.getElementById('awards-entries-panel').style.display = tab === 'entries' ? '' : 'none';
+  document.getElementById('awards-bodies-panel').style.display = tab === 'bodies' ? '' : 'none';
+  if(tab === 'entries' && !awardEntriesLoaded) loadAwardEntries();
+  if(tab === 'bodies' && !awardBodiesLoaded) loadAwardBodies();
 }
 
 function populateAwardBodiesDropdown() {
