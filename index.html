@@ -1255,6 +1255,7 @@ function switchView(v, btn) {
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadBdContacts();
   if(v==='intermediaries') loadIntermediaries();
+  if(v==='awards') switchAwardsView('bodies', document.getElementById('awards-btn-bodies'));
 }
 
 // ── PROSPECTS SUB-TABS ────────────────────────────────────────────
