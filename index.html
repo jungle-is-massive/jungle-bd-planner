@@ -331,11 +331,15 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .add-asset-btn:hover { opacity: 0.8; }
 
 #assets-table-wrap { background: var(--white); border-radius: 14px; border: 1.5px solid var(--grey-light); overflow: hidden; }
-.assets-table-header { display: grid; grid-template-columns: 200px 1fr 120px 180px 60px; gap: 0; padding: 10px 20px; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); }
+.assets-table-header { display: grid; grid-template-columns: 24px 200px 1fr 120px 180px 60px; gap: 0; padding: 10px 20px; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); }
 .assets-table-header div { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); }
-.asset-row { display: grid; grid-template-columns: 200px 1fr 120px 180px 60px; gap: 0; padding: 16px 20px; border-bottom: 1px solid var(--grey-light); align-items: center; transition: background 0.1s; }
+.asset-row { display: grid; grid-template-columns: 24px 200px 1fr 120px 180px 60px; gap: 0; padding: 16px 20px; border-bottom: 1px solid var(--grey-light); align-items: center; transition: background 0.1s; cursor: default; }
 .asset-row:last-child { border-bottom: none; }
 .asset-row:hover { background: #fafaf8; }
+.asset-drag-handle { display: flex; align-items: center; justify-content: center; cursor: grab; color: var(--grey); opacity: 0; transition: opacity 0.15s; padding-right: 4px; font-size: 14px; user-select: none; }
+.asset-row:hover .asset-drag-handle { opacity: 1; }
+.asset-row.drag-over { background: rgba(139,255,87,0.08); border-top: 2px solid var(--green); }
+.asset-row.dragging { opacity: 0.4; }
 .asset-row-name { font-size: 13px; font-weight: 600; color: var(--black); display: flex; align-items: center; gap: 10px; }
 .asset-row-icon { font-size: 18px; flex-shrink: 0; }
 .asset-row-desc { font-size: 12px; color: var(--grey-mid); line-height: 1.5; padding-right: 24px; }
@@ -581,6 +585,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     </div>
     <div id="assets-table-wrap">
       <div class="assets-table-header">
+        <div></div>
         <div>Asset</div>
         <div>Description</div>
         <div>Status</div>
@@ -2119,7 +2124,7 @@ let allAssets = [];
 
 async function loadAssets() {
   try {
-    const r = await sbFetch('assets?select=*&order=created_at.asc');
+    const r = await sbFetch('assets?select=*&order=sort_order.asc,created_at.asc');
     if(r.ok){ const d=await r.json(); if(d.length>0){ localStorage.removeItem('jc_assets'); return d; } }
   } catch(e){}
   const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
@@ -2137,7 +2142,8 @@ async function renderAssetsView() {
     const docHtml = a.doc_url
       ? `<a class="asset-doc-link has-link" href="${esc(a.doc_url)}" target="_blank" rel="noopener"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open doc</a>`
       : `<span class="asset-doc-link">No link yet</span>`;
-    return `<div class="asset-row" data-id="${a.id}">
+    return `<div class="asset-row" data-id="${a.id}" draggable="true">
+      <div class="asset-drag-handle" title="Drag to reorder">⠿</div>
       <div class="asset-row-name"><span class="asset-row-icon">${a.icon||'📄'}</span>${esc(a.name)}</div>
       <div class="asset-row-desc">${esc(a.description||'')}</div>
       <div><select class="asset-status-select ${statusClass}" onchange="updateAssetStatus('${a.id}',this)">
@@ -2157,6 +2163,43 @@ async function renderAssetsView() {
   body.querySelectorAll('.asset-status-select').forEach(sel => {
     sel.addEventListener('change', function(){ this.className=`asset-status-select ${this.value}`; });
   });
+
+  // Drag-and-drop reordering
+  let dragSrc = null;
+  body.querySelectorAll('.asset-row').forEach(row => {
+    row.addEventListener('dragstart', e => {
+      dragSrc = row;
+      row.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      body.querySelectorAll('.asset-row').forEach(r => r.classList.remove('drag-over'));
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if(row !== dragSrc) {
+        body.querySelectorAll('.asset-row').forEach(r => r.classList.remove('drag-over'));
+        row.classList.add('drag-over');
+      }
+    });
+    row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+    row.addEventListener('drop', async e => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      if(!dragSrc || dragSrc === row) return;
+      // Reorder in DOM
+      const rows = [...body.querySelectorAll('.asset-row')];
+      const srcIdx = rows.indexOf(dragSrc);
+      const tgtIdx = rows.indexOf(row);
+      if(srcIdx < tgtIdx) row.after(dragSrc); else row.before(dragSrc);
+      // Persist new order
+      const newOrder = [...body.querySelectorAll('.asset-row')].map(r => r.dataset.id);
+      allAssets.sort((a,b) => newOrder.indexOf(String(a.id)) - newOrder.indexOf(String(b.id)));
+      await saveAssetOrder(newOrder);
+    });
+  });
 }
 
 async function updateAssetStatus(id, sel) {
@@ -2170,6 +2213,18 @@ async function patchAsset(id, data) {
   const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
   const i = local.findIndex(a=>a.id===id);
   if(i>-1){ Object.assign(local[i], data); localStorage.setItem('jc_assets', JSON.stringify(local)); }
+}
+
+async function saveAssetOrder(orderedIds) {
+  // Patch each asset with its new sort_order index
+  await Promise.all(orderedIds.map((id, idx) =>
+    sbFetch(`assets?id=eq.${id}`, {method:'PATCH', headers:{'Prefer':'return=minimal'}, body:JSON.stringify({sort_order: idx})})
+      .catch(()=>{})
+  ));
+  // Also persist order in localStorage fallback
+  const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
+  orderedIds.forEach((id, idx) => { const a = local.find(a=>String(a.id)===String(id)); if(a) a.sort_order = idx; });
+  if(local.length) localStorage.setItem('jc_assets', JSON.stringify(local));
 }
 
 function openAddAssetModal() { document.getElementById('add-asset-overlay').classList.add('open'); ['asset-name','asset-desc','asset-link'].forEach(id=>document.getElementById(id).value=''); document.getElementById('asset-status').value='needed'; }
