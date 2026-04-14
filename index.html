@@ -2438,19 +2438,22 @@ function filterAwardEntries() {
 }
 
 function switchAwardsView(view, btn) {
+  // Remove active from all award buttons
   document.querySelectorAll('.awards-view-btn').forEach(b => b.classList.remove('active'));
+  
+  // Add active to the clicked button
   btn.classList.add('active');
+  
+  // Hide both containers first
+  document.getElementById('awards-bodies-container').style.display = 'none';
+  document.getElementById('awards-entries-container').style.display = 'none';
+  
+  // Show the appropriate container and load data
   if(view === 'bodies') {
     document.getElementById('awards-bodies-container').style.display = 'block';
-    document.getElementById('awards-entries-container').style.display = 'none';
-    document.getElementById('awards-btn-bodies').classList.add('active');
-    document.getElementById('awards-btn-bodies-2').classList.add('active');
     if(!awardBodiesLoaded) loadAwardBodies();
   } else {
-    document.getElementById('awards-bodies-container').style.display = 'none';
     document.getElementById('awards-entries-container').style.display = 'block';
-    document.getElementById('awards-btn-entries').classList.add('active');
-    document.getElementById('awards-btn-entries-2').classList.add('active');
     if(!awardEntriesLoaded) loadAwardEntries();
   }
 }
