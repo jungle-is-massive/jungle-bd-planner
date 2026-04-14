@@ -374,10 +374,17 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .prospects-sub-tab.active { color: var(--black); border-bottom-color: var(--black); }
 
 /* BD TABLE */
-.bd-table td { white-space: normal; max-width: 280px; }
-.bd-table td:nth-child(1) { font-weight: 600; white-space: nowrap; max-width: 160px; }
-.bd-table td:nth-child(2) { color: var(--grey-mid); font-size: 11px; white-space: nowrap; }
-.bd-table td:nth-child(3) { white-space: nowrap; font-weight: 500; }
+.bd-table { table-layout: fixed; width: 100%; }
+.bd-table th { padding: 10px 10px; font-size: 9px; }
+.bd-table td { padding: 10px 10px; white-space: normal; overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+.bd-table td:nth-child(1) { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-table td:nth-child(2) { color: var(--grey-mid); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bd-table td:nth-child(3) { white-space: nowrap; font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.bd-table td:nth-child(4) { font-size: 11px; color: #555; white-space: normal; line-height: 1.4; }
+.bd-table td:nth-child(5) { white-space: nowrap; }
+.bd-table td:nth-child(6) { font-size: 11px; color: #555; white-space: normal; line-height: 1.4; }
+.bd-table td:nth-child(7) { white-space: nowrap; }
+.bd-table td:nth-child(8) { white-space: nowrap; }
 .bd-status-pill { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 100px; display: inline-block; white-space: nowrap; }
 .bd-status-pill.s-inprogress { background: rgba(135,251,102,0.2); color: #2d6b00; }
 .bd-status-pill.s-warm-progress { background: rgba(135,251,102,0.15); color: #3a7a00; }
@@ -611,6 +618,16 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
         <div class="prospects-loading" id="bd-loading"><div class="prospects-spinner"></div>Loading…</div>
         <div class="prospects-error" id="bd-error" style="display:none"></div>
         <table class="prospects-table bd-table" id="bd-table" style="display:none">
+          <colgroup>
+            <col style="width:11%"><!-- Name -->
+            <col style="width:13%"><!-- Title -->
+            <col style="width:11%"><!-- Organisation -->
+            <col style="width:24%"><!-- Current Action -->
+            <col style="width:10%"><!-- Status -->
+            <col style="width:24%"><!-- Next Action -->
+            <col style="width:5%"> <!-- LinkedIn -->
+            <col style="width:2%"> <!-- Actions -->
+          </colgroup>
           <thead>
             <tr>
               <th>Name</th>
@@ -1344,9 +1361,9 @@ function renderBdTable(rows) {
       <td>${esc(c.name||'')}</td>
       <td>${esc(c.title||'')}</td>
       <td>${esc(c.organisation||'')}</td>
-      <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.current_action||'')}</td>
+      <td>${esc(c.current_action||'')}</td>
       <td><span class="bd-status-pill ${statusClass(c.status)}">${esc(c.status||'')}</span></td>
-      <td style="font-size:11px;color:#555;max-width:220px;white-space:normal">${esc(c.next_action||'')}</td>
+      <td>${esc(c.next_action||'')}</td>
       <td>${c.linkedin_url ? `<a href="${esc(c.linkedin_url)}" target="_blank" rel="noopener" style="font-size:11px;color:var(--black);border-bottom:1px solid var(--grey)">View ↗</a>` : ''}</td>
       <td>
         <div class="bd-row-actions">
