@@ -281,6 +281,8 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .add-modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 0 22px 22px; }
 .btn-cancel { background: var(--grey-light); border: none; border-radius: 100px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; color: var(--grey-mid); }
 .btn-cancel:hover { background: var(--grey); color: var(--black); }
+.btn-delete { background: transparent; border: 1.5px solid #e05c5c; border-radius: 100px; padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; color: #e05c5c; transition: background 0.15s, color 0.15s; }
+.btn-delete:hover { background: #e05c5c; color: white; }
 .btn-save { background: var(--black); color: var(--green); border: none; border-radius: 100px; padding: 9px 20px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; cursor: pointer; }
 .btn-save:hover { opacity: 0.8; }
 
@@ -2384,9 +2386,13 @@ async function loadAwardEntries(force=false) {
   error.style.display = 'none';
   table.style.display = 'none';
   try {
-    const r = await sbFetch('award_entries?select=*,award_bodies(name)&order=award_body_id.asc,category.asc');
-    if(r.ok){
-      awardEntriesData = await r.json();
+    // Load award bodies in parallel so the dropdown is always populated
+    const [entriesR] = await Promise.all([
+      sbFetch('award_entries?select=*,award_bodies(name)&order=award_body_id.asc,category.asc'),
+      awardBodiesLoaded ? Promise.resolve() : loadAwardBodies()
+    ]);
+    if(entriesR.ok){
+      awardEntriesData = await entriesR.json();
       awardEntriesLoaded = true;
       renderAwardEntries(awardEntriesData);
       document.getElementById('award-entries-loading').style.display = 'none';
