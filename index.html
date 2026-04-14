@@ -1436,7 +1436,8 @@ async function saveBdContact() {
 }
 
 async function deleteBdContact(id, name) {
-  if(!confirm(`Delete ${name}? This can't be undone.`)) return;
+  const confirmed = await showConfirm({ title: 'Delete Contact', message: `Delete ${name}? This can't be undone.`, confirmLabel: 'Delete', confirmClass: 'danger' });
+  if(!confirmed) return;
   try {
     await sbFetch(`bd_contacts?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
   } catch(e) {}
@@ -1701,7 +1702,8 @@ async function saveIntermediary() {
 }
 
 async function deleteIntermediary(id, name) {
-  if(!confirm(`Delete ${name}? This can't be undone.`)) return;
+  const confirmed = await showConfirm({ title: 'Delete Intermediary', message: `Delete ${name}? This can't be undone.`, confirmLabel: 'Delete', confirmClass: 'danger' });
+  if(!confirmed) return;
   try { await sbFetch(`intermediaries?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
   intData = intData.filter(x=>x.id!==id);
   if(intView === 'cards') renderIntCards(intData);
@@ -2016,7 +2018,8 @@ function openEditEvent() {
 async function deleteEvent(id) {
   const evt = allEvents.find(e => e.id === id);
   if(!evt) return;
-  if(!confirm(`Delete "${evt.name}"? This can't be undone.`)) return;
+  const confirmed = await showConfirm({ title: 'Delete Event', message: `Delete "${evt.name}"? This can't be undone.`, confirmLabel: 'Delete', confirmClass: 'danger' });
+  if(!confirmed) return;
   closeModalDirect();
   try {
     await sbFetch(`events?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}});
@@ -2191,7 +2194,8 @@ async function updateAsset() {
 }
 
 async function deleteAsset(id) {
-  if(!confirm('Delete this asset?')) return;
+  const confirmed = await showConfirm({ title: 'Delete Asset', message: "Delete this asset? This can't be undone.", confirmLabel: 'Delete', confirmClass: 'danger' });
+  if(!confirmed) return;
   try { await sbFetch(`assets?id=eq.${id}`, {method:'DELETE'}); } catch(e){}
   const local = JSON.parse(localStorage.getItem('jc_assets')||'[]');
   localStorage.setItem('jc_assets', JSON.stringify(local.filter(a=>a.id!==id)));
@@ -2541,9 +2545,19 @@ async function saveAwardBody() {
 }
 
 async function deleteAwardBody(id) {
-  if(!id || !confirm('Delete this award body? Associated entries will not be deleted.')) return;
-  try { await sbFetch(`award_bodies?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
-  awardBodiesData = awardBodiesData.filter(x => x.id !== id);
+  const targetId = id ?? editingAwardBodyId;
+  if(!targetId) return;
+  const body = awardBodiesData.find(x => x.id === targetId);
+  const confirmed = await showConfirm({
+    title: 'Delete Award Body',
+    message: `Delete "${body?.name || 'this award body'}"? Associated entries will not be deleted.`,
+    confirmLabel: 'Delete',
+    confirmClass: 'danger'
+  });
+  if(!confirmed) return;
+  if(id === undefined) closeAwardBodiesModalDirect();
+  try { await sbFetch(`award_bodies?id=eq.${targetId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardBodiesData = awardBodiesData.filter(x => x.id !== targetId);
   renderAwardBodies();
   populateAwardBodiesDropdown();
 }
@@ -2627,10 +2641,21 @@ async function saveAwardEntry() {
 }
 
 async function deleteAwardEntry(id) {
-  if(!id || !confirm('Delete this award entry?')) return;
-  try { await sbFetch(`award_entries?id=eq.${id}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
-  awardEntriesData = awardEntriesData.filter(x => x.id !== id);
+  const targetId = id ?? editingAwardEntryId;
+  if(!targetId) return;
+  const entry = awardEntriesData.find(x => x.id === targetId);
+  const confirmed = await showConfirm({
+    title: 'Delete Award Entry',
+    message: `Delete "${entry?.award_bodies?.name || 'this entry'} — ${entry?.category || ''}"? This can't be undone.`,
+    confirmLabel: 'Delete',
+    confirmClass: 'danger'
+  });
+  if(!confirmed) return;
+  if(id === undefined) closeAwardEntriesModalDirect();
+  try { await sbFetch(`award_entries?id=eq.${targetId}`, {method:'DELETE', headers:{'Prefer':'return=minimal'}}); } catch(e){}
+  awardEntriesData = awardEntriesData.filter(x => x.id !== targetId);
   renderAwardEntries(awardEntriesData);
+  document.getElementById('awards-count').textContent = `${awardEntriesData.length} entries`;
 }
 
 async function init(){
@@ -2659,6 +2684,52 @@ if (sessionStorage.getItem('jc_auth') === '1') {
   // Gate stays up — init fires after correct password
   document.getElementById('gate-input').focus();
 }
+
+// ── Custom confirm dialog ──────────────────────────────────────────────────
+let _confirmResolve = null;
+
+function showConfirm({ title = 'Are you sure?', message = '', confirmLabel = 'Delete', confirmClass = 'danger' }) {
+  return new Promise(resolve => {
+    _confirmResolve = resolve;
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    const btn = document.getElementById('confirm-ok-btn');
+    btn.textContent = confirmLabel;
+    btn.className = 'confirm-btn confirm-btn--' + confirmClass;
+    const overlay = document.getElementById('confirm-overlay');
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('confirm-visible'));
+  });
+}
+
+function _confirmClose(result) {
+  const overlay = document.getElementById('confirm-overlay');
+  overlay.classList.remove('confirm-visible');
+  setTimeout(() => { overlay.style.display = 'none'; }, 200);
+  if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+}
 </script>
+
+<!-- Custom Confirm Dialog -->
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(14,14,14,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
+  <div id="confirm-box" style="background:var(--cream);border-radius:18px;width:min(420px,92vw);box-shadow:0 32px 80px rgba(0,0,0,0.28);padding:32px 28px 24px;font-family:'DM Sans',sans-serif;transform:translateY(12px);transition:transform 0.2s;">
+    <div id="confirm-title" style="font-size:17px;font-weight:800;letter-spacing:-0.02em;color:var(--black);margin-bottom:10px;"></div>
+    <div id="confirm-message" style="font-size:13px;color:#555;line-height:1.55;margin-bottom:28px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="_confirmClose(false)" style="background:var(--grey-light);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--grey-mid);transition:background 0.15s;" onmouseover="this.style.background='var(--grey)';this.style.color='var(--black)'" onmouseout="this.style.background='var(--grey-light)';this.style.color='var(--grey-mid)'">Cancel</button>
+      <button id="confirm-ok-btn" onclick="_confirmClose(true)" style="border:none;border-radius:100px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;"></button>
+    </div>
+  </div>
+</div>
+
+<style>
+.confirm-visible { opacity: 1 !important; }
+.confirm-visible #confirm-box { transform: translateY(0) !important; }
+.confirm-btn--danger { background: #e05c5c; color: white; }
+.confirm-btn--danger:hover { opacity: 0.85; }
+.confirm-btn--primary { background: var(--black); color: var(--green); }
+.confirm-btn--primary:hover { opacity: 0.85; }
+</style>
+
 </body>
 </html>
