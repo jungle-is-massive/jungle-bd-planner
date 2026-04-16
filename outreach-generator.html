@@ -19,48 +19,22 @@
     --border: #E8E5DE;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    color: var(--black);
-    min-height: 100vh;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--black); min-height: 100vh; }
 
-  /* NAV */
-  .nav {
-    position: sticky; top: 0; z-index: 100;
-    background: var(--black);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 32px; height: 56px;
-  }
+  .nav { position: sticky; top: 0; z-index: 100; background: var(--black); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; height: 56px; }
   .nav-logo { color: var(--white); font-size: 18px; font-weight: 700; letter-spacing: -0.04em; }
   .nav-logo span { color: var(--green); }
-  .nav-back {
-    color: var(--grey); font-size: 12px; text-decoration: none;
-    font-family: 'DM Mono', monospace; letter-spacing: 0.05em;
-    transition: color 0.15s;
-  }
+  .nav-back { color: var(--grey); font-size: 12px; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; transition: color 0.15s; }
   .nav-back:hover { color: var(--white); }
 
-  /* MAIN LAYOUT */
   .main { max-width: 1100px; margin: 0 auto; padding: 48px 32px 120px; }
-
   .page-header { margin-bottom: 40px; }
   .page-title { font-size: 32px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 8px; }
   .page-title span { color: var(--green); background: var(--black); padding: 0 6px; border-radius: 4px; }
-  .page-sub { font-size: 14px; color: var(--grey-mid); max-width: 560px; line-height: 1.6; }
+  .page-sub { font-size: 14px; color: var(--grey-mid); max-width: 600px; line-height: 1.6; }
 
-  /* STATUS BAR */
-  .status-bar {
-    display: flex; gap: 16px; margin-bottom: 36px; flex-wrap: wrap;
-  }
-  .status-pill {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--white); border: 1px solid var(--border);
-    border-radius: 100px; padding: 8px 16px;
-    font-size: 12px; color: var(--grey-mid);
-    font-family: 'DM Mono', monospace;
-  }
+  .status-bar { display: flex; gap: 16px; margin-bottom: 36px; flex-wrap: wrap; }
+  .status-pill { display: flex; align-items: center; gap: 8px; background: var(--white); border: 1px solid var(--border); border-radius: 100px; padding: 8px 16px; font-size: 12px; color: var(--grey-mid); font-family: 'DM Mono', monospace; }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--grey-light); flex-shrink: 0; }
   .status-dot.loaded { background: var(--green); }
   .status-dot.loading { background: #FFD600; animation: pulse 1s infinite; }
@@ -68,16 +42,8 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
   .status-count { font-weight: 600; color: var(--black); }
 
-  /* CONTROLS */
-  .controls {
-    display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; align-items: center;
-  }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    border: none; border-radius: 100px; padding: 11px 22px;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.15s; letter-spacing: -0.01em;
-  }
+  .controls { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; align-items: flex-start; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: none; border-radius: 100px; padding: 11px 22px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; letter-spacing: -0.01em; }
   .btn-primary { background: var(--black); color: var(--white); }
   .btn-primary:hover { background: #333; }
   .btn-primary:disabled { opacity: 0.4; pointer-events: none; }
@@ -87,127 +53,69 @@
   .btn-green:hover { background: #7aef47; }
   .btn-green:disabled { opacity: 0.4; pointer-events: none; }
 
-  .progress-bar-wrap {
-    flex: 1; min-width: 200px;
-    background: var(--grey-light); border-radius: 100px; height: 6px; overflow: hidden;
-    display: none;
-  }
-  .progress-bar-wrap.visible { display: block; }
+  .progress-wrap { flex: 1; min-width: 220px; }
+  .progress-bar-track { background: var(--grey-light); border-radius: 100px; height: 6px; overflow: hidden; display: none; }
+  .progress-bar-track.visible { display: block; }
   .progress-bar { height: 100%; background: var(--green); border-radius: 100px; transition: width 0.4s ease; width: 0%; }
-  .progress-label { font-size: 11px; color: var(--grey); font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .progress-label { font-size: 11px; color: var(--grey); font-family: 'DM Mono', monospace; margin-top: 6px; }
 
-  /* FILTER */
-  .filter-row {
-    display: flex; gap: 10px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;
-  }
-  .filter-select {
-    border: 1.5px solid var(--border); border-radius: 100px; padding: 8px 16px;
-    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--black);
-    background: var(--white); cursor: pointer; outline: none;
-    transition: border-color 0.15s;
-  }
+  .filter-row { display: flex; gap: 10px; margin-bottom: 24px; align-items: center; flex-wrap: wrap; }
+  .filter-select { border: 1.5px solid var(--border); border-radius: 100px; padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--black); background: var(--white); cursor: pointer; outline: none; transition: border-color 0.15s; }
   .filter-select:focus { border-color: var(--black); }
-  .filter-label { font-size: 12px; color: var(--grey); font-family: 'DM Mono', monospace; }
+  .filter-label { font-size: 11px; color: var(--grey); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
 
-  /* RESULTS GRID */
-  .results-grid {
-    display: flex; flex-direction: column; gap: 16px;
-  }
-
-  .result-card {
-    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
-    overflow: hidden; transition: border-color 0.15s;
-  }
+  .results-grid { display: flex; flex-direction: column; gap: 16px; }
+  .result-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: border-color 0.15s; }
   .result-card:hover { border-color: #ccc; }
   .result-card.match { border-left: 3px solid var(--green); }
   .result-card.no-match { border-left: 3px solid var(--grey-light); }
-  .result-card.generating { border-left: 3px solid #FFD600; }
 
-  .card-header {
-    display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px 16px;
-    cursor: pointer;
-  }
-  .card-avatar {
-    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
-    background: var(--black); color: var(--white);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 700; letter-spacing: -0.02em;
-  }
+  .card-header { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px 16px; cursor: pointer; }
+  .card-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
   .card-info { flex: 1; min-width: 0; }
   .card-name { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
   .card-meta { font-size: 12px; color: var(--grey-mid); margin-bottom: 8px; }
   .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .tag {
-    font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em;
-    border-radius: 4px; padding: 3px 8px; font-weight: 500;
-  }
-  .tag-sector { background: #EEF8FF; color: #0066CC; }
-  .tag-match { background: #EDFCE0; color: #2D7A00; }
+  .tag { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em; border-radius: 4px; padding: 3px 8px; font-weight: 500; white-space: nowrap; }
+  .tag-cat { background: #EEF5FF; color: #0055CC; }
+  .tag-channel { background: #FFF3E0; color: #E65100; }
   .tag-campaign { background: #F5F0FF; color: #6B00CC; }
   .tag-nomatch { background: var(--grey-light); color: var(--grey); }
 
   .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
-  .match-badge {
-    font-size: 10px; font-weight: 600; font-family: 'DM Mono', monospace;
-    padding: 4px 10px; border-radius: 100px; letter-spacing: 0.05em;
-  }
+  .match-badge { font-size: 10px; font-weight: 600; font-family: 'DM Mono', monospace; padding: 4px 10px; border-radius: 100px; letter-spacing: 0.05em; }
   .match-badge.yes { background: var(--green); color: var(--black); }
   .match-badge.no { background: var(--grey-light); color: var(--grey); }
-  .match-badge.tbd { background: #FFF8DC; color: #997700; }
 
   .card-body { padding: 0 24px 20px; display: none; }
   .card-body.open { display: block; }
 
-  .matched-clients {
-    background: #EDFCE0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px;
-    font-size: 12px; color: #2D7A00; line-height: 1.6;
-  }
-  .matched-clients strong { display: block; font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; margin-bottom: 4px; color: #1a5500; }
+  .match-context { background: #EDFCE0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #2D7A00; line-height: 1.7; }
+  .match-context strong { display: block; font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; margin-bottom: 6px; color: #1a5500; }
+  .match-row { display: flex; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; align-items: baseline; }
+  .match-row:last-child { margin-bottom: 0; }
+  .match-cat-label { font-weight: 700; color: #1a5500; min-width: 110px; font-size: 11px; }
 
-  .message-label {
-    font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em;
-    color: var(--grey); text-transform: uppercase; margin-bottom: 8px;
-  }
-  .message-box {
-    background: var(--cream); border: 1px solid var(--border); border-radius: 10px;
-    padding: 16px; font-size: 13px; line-height: 1.7; color: var(--black);
-    white-space: pre-wrap; margin-bottom: 12px; min-height: 60px;
-    font-family: 'DM Sans', sans-serif;
-  }
+  .message-label { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; color: var(--grey); text-transform: uppercase; margin-bottom: 8px; }
+  .message-box { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.75; color: var(--black); white-space: pre-wrap; margin-bottom: 12px; min-height: 60px; }
   .message-box.generating { color: var(--grey); font-style: italic; }
-  .message-box.error { color: #CC2200; }
+  .message-box.error-state { color: #CC2200; }
 
-  .copy-btn {
-    font-size: 12px; font-family: 'DM Mono', monospace; background: var(--black);
-    color: var(--white); border: none; border-radius: 8px; padding: 7px 14px;
-    cursor: pointer; transition: background 0.15s; letter-spacing: 0.03em;
-  }
+  .card-actions { display: flex; gap: 8px; align-items: center; }
+  .copy-btn { font-size: 12px; font-family: 'DM Mono', monospace; background: var(--black); color: var(--white); border: none; border-radius: 8px; padding: 7px 14px; cursor: pointer; transition: background 0.15s; }
   .copy-btn:hover { background: #333; }
   .copy-btn.copied { background: #2D7A00; }
+  .regen-btn { font-size: 12px; font-family: 'DM Mono', monospace; background: none; color: var(--grey); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; cursor: pointer; transition: all 0.15s; }
+  .regen-btn:hover { border-color: var(--black); color: var(--black); }
 
-  /* EMPTY / LOADING STATES */
-  .state-block {
-    text-align: center; padding: 80px 32px;
-    color: var(--grey); font-size: 13px; line-height: 1.8;
-  }
+  .state-block { text-align: center; padding: 80px 32px; color: var(--grey); font-size: 13px; line-height: 1.8; }
   .state-block .icon { font-size: 36px; margin-bottom: 16px; }
   .state-block h3 { font-size: 16px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
 
-  /* EXPORT */
-  .export-bar {
-    display: none; align-items: center; gap: 12px; margin-top: 32px;
-    padding: 16px 20px; background: var(--white); border: 1px solid var(--border);
-    border-radius: 12px;
-  }
+  .export-bar { display: none; align-items: center; gap: 12px; margin-top: 32px; padding: 16px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; }
   .export-bar.visible { display: flex; }
   .export-bar-label { font-size: 12px; color: var(--grey-mid); flex: 1; }
   .export-bar-label strong { color: var(--black); }
-
-  @media (max-width: 600px) {
-    .main { padding: 32px 16px 80px; }
-    .page-title { font-size: 24px; }
-    .controls { flex-direction: column; }
-  }
 </style>
 </head>
 <body>
@@ -220,34 +128,20 @@
 <div class="main">
   <div class="page-header">
     <h1 class="page-title">Outreach <span>Generator</span></h1>
-    <p class="page-sub">Cross-references your Dripify prospects against Jungle's live Synergist client list. Generates personalised LinkedIn messages for each contact — referencing shared sector experience where it exists.</p>
+    <p class="page-sub">Matches each Dripify prospect against Jungle's full client portfolio — sports, food, beauty, entertainment, retail and more. Generates personalised LinkedIn messages referencing relevant work, owned channels, and sector experience.</p>
   </div>
 
   <div class="status-bar">
-    <div class="status-pill">
-      <div class="status-dot" id="dot-dripify"></div>
-      <span>Dripify</span>
-      <span class="status-count" id="count-dripify">—</span>
-    </div>
-    <div class="status-pill">
-      <div class="status-dot" id="dot-synergist"></div>
-      <span>Synergist Clients</span>
-      <span class="status-count" id="count-synergist">—</span>
-    </div>
-    <div class="status-pill">
-      <div class="status-dot" id="dot-matches"></div>
-      <span>Sector Matches</span>
-      <span class="status-count" id="count-matches">—</span>
-    </div>
+    <div class="status-pill"><div class="status-dot" id="dot-dripify"></div><span>Dripify</span><span class="status-count" id="count-dripify">—</span></div>
+    <div class="status-pill"><div class="status-dot" id="dot-synergist"></div><span>Synergist Clients</span><span class="status-count" id="count-synergist">—</span></div>
+    <div class="status-pill"><div class="status-dot" id="dot-matches"></div><span>Portfolio Matches</span><span class="status-count" id="count-matches">—</span></div>
   </div>
 
   <div class="controls">
-    <button class="btn btn-secondary" onclick="loadData()" id="btn-load">⟳ Load Data</button>
+    <button class="btn btn-primary" onclick="loadData()" id="btn-load">⟳ Load Data</button>
     <button class="btn btn-green" onclick="generateAll()" id="btn-generate" disabled>✦ Generate All Messages</button>
-    <div style="flex:1; min-width:200px;">
-      <div class="progress-bar-wrap" id="progress-wrap">
-        <div class="progress-bar" id="progress-bar"></div>
-      </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-track" id="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
       <div class="progress-label" id="progress-label"></div>
     </div>
   </div>
@@ -256,12 +150,15 @@
     <span class="filter-label">FILTER:</span>
     <select class="filter-select" id="filter-match" onchange="renderCards()">
       <option value="all">All contacts</option>
-      <option value="match">Sector match only</option>
+      <option value="match">Portfolio match</option>
       <option value="nomatch">No match</option>
-      <option value="generated">Messages generated</option>
+      <option value="generated">Generated only</option>
     </select>
     <select class="filter-select" id="filter-campaign" onchange="renderCards()">
       <option value="all">All campaigns</option>
+    </select>
+    <select class="filter-select" id="filter-cat" onchange="renderCards()">
+      <option value="all">All categories</option>
     </select>
   </div>
 
@@ -269,7 +166,7 @@
     <div class="state-block">
       <div class="icon">⟳</div>
       <h3>Ready to load</h3>
-      <p>Click "Load Data" to pull your Dripify prospects and<br>Synergist client list, then generate personalised messages.</p>
+      <p>Click "Load Data" to pull your Dripify prospects,<br>then generate personalised outreach messages.</p>
     </div>
   </div>
 
@@ -280,36 +177,91 @@
 </div>
 
 <script>
-// ─── CONFIG ────────────────────────────────────────────────────────────────
+// ─── JUNGLE PORTFOLIO KNOWLEDGE BASE ─────────────────────────────────────────
+const JUNGLE_PORTFOLIO = [
+  {
+    category: 'Sports & Sporting Events',
+    keywords: ['sport','sports','football','cricket','rugby','golf','tennis','athletics','olympic','stadium','league','cup','championship','racing','cycling','swimming','esport','esports','gaming','fan','fixture','tournament','team','club','athlete','branded content','ryder','mlb','nba','nfl','premier','wsl','superbowl','wimbledon','formula','f1','sporting','motorsport','skiing','triathlon','marathon','fitness','health club','leisure','recreation','arena','betting','odds','fantasy'],
+    clients: ['MLB (Major League Baseball Europe)', 'Team GB / The Olympics', 'Sky Sports — Women\'s Super League'],
+    channels: ['SPORF (12M+ sports fans across social)'],
+    angle: 'We\'ve worked with major sporting organisations — from MLB\'s European push to Olympic content — and our SPORF channel puts us in direct conversation with 12M+ sports fans on social every week. We understand how to build audiences in sport, not just activate them.'
+  },
+  {
+    category: 'Food & Beverage',
+    keywords: ['food','drink','beverage','fmcg','snack','beer','wine','spirits','gin','vodka','cider','lager','ale','soft drink','restaurant','recipe','grocery','supermarket','confectionery','chocolate','biscuit','crisp','pub','hospitality','chef','culinary','consumer goods','cpg','taco','pizza','burger','pasta','sauce','pukka','heinz','pepsi','galaxy','mars','ferrero','lindt','waitrose','tesco','iceland','kraft','unilever','diageo','pernod','suntory','campari','beam','bacardi','constellation','drinks brand','food brand','fmcg brand'],
+    clients: ['Heinz','Pepsi MAX','Galaxy (Mars)','M&Ms','Hendrick\'s Gin','Hi-Spirits','Wasa','Taco Bell','Fruit-ella','Pukka Pies','Brew City','Bullseye','Symprove','Inch\'s Cider'],
+    channels: ['Twisted (49M+ food fans globally — one of the world\'s biggest food social channels)'],
+    angle: 'Food & drink is our heartland. We built Twisted from scratch into a 49M community — we don\'t just run campaigns, we understand what food audiences actually want. Brands from Heinz and Pepsi MAX to Taco Bell and Pukka Pies have used that to drive real results, not just impressions.'
+  },
+  {
+    category: 'Beauty, Wellness & Health',
+    keywords: ['beauty','skincare','cosmetic','wellness','health','fitness','supplement','pharmaceutical','personal care','haircare','fragrance','makeup','spa','gym','nutrition','vitamin','gut','medical','dental','optical','pharmacy','drug','biotech','femtech','period','menopause','mental health','therapy','nhs','body care','grooming','shaving','deodorant','suncare','dermatology','aesthetics','wellbeing','sleep','mindfulness','yoga','pilates','weight loss','diet'],
+    clients: ['Clarins','Symprove','Superdrug Studio London'],
+    channels: ['Four Nine (5M+ women\'s lifestyle community)'],
+    angle: 'We\'ve helped beauty and wellness brands reach younger, more engaged social audiences — from heritage names like Clarins to challenger brands like Symprove. Our Four Nine community (5M+ women) gives us genuine insight into how this audience engages with health and beauty content beyond the obvious.'
+  },
+  {
+    category: 'Entertainment, Media & Publishing',
+    keywords: ['entertainment','media','publishing','streaming','tv','television','film','movie','music','record','label','artist','content','production','studio','broadcast','radio','podcast','gaming','disney','netflix','amazon','youtube','tiktok','influencer','creator','talent','talent management','pr','comms','communications','branded entertainment','events','live events','theatre','concerts','ticketing','theme park','attractions','vod','svod','avod','content studio','video','animation'],
+    clients: ['Disney Store','Tom Daley','Sony Music','Air Rylan (YouTube production)'],
+    channels: ['Four Nine','Twisted','SPORF — owned publisher network (150M+ followers combined)'],
+    angle: 'We sit at the intersection of entertainment and social — we\'re a publisher as much as an agency. From Disney and Sony Music to talent like Tom Daley, we produce social-first content that earns attention. Our owned channels (150M+ combined followers) mean we know from the inside what makes people stop, watch, and share.'
+  },
+  {
+    category: 'Fashion & Retail',
+    keywords: ['fashion','retail','clothing','apparel','luxury','brand','ecommerce','e-commerce','online retail','high street','department store','sportswear','footwear','accessories','jewellery','watch','bags','lifestyle brand','h&m','zara','asos','next','marks','primark','john lewis','dfs','ikea','homeware','interiors','furnishings','garden','diy','hardware','consumer electronics','white goods','electrical','appliances'],
+    clients: ['H&M'],
+    channels: ['Four Nine (fashion-forward women\'s lifestyle audience)'],
+    angle: 'Fashion brands are fighting for attention in one of the most competitive spaces on social. We helped H&M bridge street culture and digital content — and our Four Nine channel gives us real insight into what fashion audiences respond to beyond the obvious trend pieces.'
+  },
+  {
+    category: 'Technology & Apps',
+    keywords: ['tech','technology','app','software','saas','platform','startup','fintech','ai','machine learning','data','digital','cyber','security','cloud','mobile','developer','product','marketplace','verification','identity','navigation','maps','gps','wearable','iot','hardware','telecoms','telecom','telco','broadband','mobile network','insurance','insurtech','proptech','edtech','legaltech','hrtech','martech','adtech'],
+    clients: ['Waze','Yoti'],
+    channels: [],
+    angle: 'Tech brands often struggle to make social content feel genuinely human rather than functional. We\'ve helped brands like Waze turn a product feature into a moment people actually talked about — moving beyond product demos into content that earns organic attention on platform.'
+  },
+  {
+    category: 'Government, Charity & Public Sector',
+    keywords: ['charity','ngo','non-profit','nonprofit','government','public sector','nhs','council','lottery','foundation','trust','cause','social good','mental health','suicide','poverty','housing','education','university','military','defence','veteran','raf','army','navy','police','fire','ambulance','civil service','local authority','campaign','awareness','public health','voting','election','environment','sustainability','climate','social impact'],
+    clients: ['RAF','CALM (mental health charity — Level Headed campaign)','National Lottery Good Causes','Yoti'],
+    channels: [],
+    angle: 'We\'ve helped organisations with genuine purpose — from the RAF to mental health awareness campaigns — use social to reach audiences who\'ve traditionally been hard to engage. When budgets are tight, earned attention through compelling content beats paid reach every time.'
+  },
+  {
+    category: 'Grocers & Food Retail',
+    keywords: ['grocer','supermarket','grocery','food retail','iceland','tesco','sainsbury','waitrose','asda','morrisons','aldi','lidl','co-op','convenience','wholesale','distribution','food service','catering','canteen','vending','meal kit','delivery','just eat','deliveroo','uber eats'],
+    clients: ['Iceland (Twisted x Iceland — taking 49M fans from feed to freezer)'],
+    channels: ['Twisted (49M+ food community)'],
+    angle: 'We took Twisted\'s 49M food fans and turned them into Iceland shoppers — moving audience from feed to freezer. That\'s a model that works for any food retailer trying to close the gap between content and commercial action.'
+  }
+];
+
+// Build keyword → category lookup
+const KEYWORD_MAP = {};
+for (const cat of JUNGLE_PORTFOLIO) {
+  for (const kw of cat.keywords) {
+    if (!KEYWORD_MAP[kw]) KEYWORD_MAP[kw] = [];
+    if (!KEYWORD_MAP[kw].includes(cat.category)) KEYWORD_MAP[kw].push(cat.category);
+  }
+}
+
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllaGt2bHlqdW1remNjb3FxZ3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTMwNzYsImV4cCI6MjA5MTM4OTA3Nn0.pF9K9aBwWN10JRT_ODTLPzsdPKH3X0CW30WrPMn9lGs';
 const SYNERGIST_SERVER = 'https://junglecreations.synergist.cloud';
 const SYN_USER = 'Coris.leachman';
 const SYN_PASS = 'Jungle@123';
+const EXCLUDE_CLIENTS = new Set(['AGENCY INTERNAL - Non-Billable','MEDIA INTERNAL - Non-Bilable','Jungle Creations Ltd','Creator - Media','Auto created internal organisation for external bookings']);
+const EXCLUDE_PATTERNS = [' - Media','Media Cross-Platform','Website - Media'];
+function shouldExclude(name) { return EXCLUDE_CLIENTS.has(name) || EXCLUDE_PATTERNS.some(p => name.includes(p)); }
 
-const EXCLUDE_CLIENTS = new Set([
-  'AGENCY INTERNAL - Non-Billable', 'MEDIA INTERNAL - Non-Bilable',
-  'Jungle Creations Ltd', 'Creator - Media',
-  'Auto created internal organisation for external bookings'
-]);
-const EXCLUDE_PATTERNS = [' - Media', 'Media Cross-Platform', 'Website - Media'];
+let cards = [];
+let synergistClients = [];
 
-function shouldExclude(name) {
-  if (EXCLUDE_CLIENTS.has(name)) return true;
-  return EXCLUDE_PATTERNS.some(p => name.includes(p));
-}
-
-// ─── STATE ──────────────────────────────────────────────────────────────────
-let prospects = [];
-let clientSectors = {}; // { sectorName: [clientName, ...] }
-let cards = [];         // enriched prospect objects
-let generated = {};     // { prospectId: message }
-
-// ─── DATA LOADING ────────────────────────────────────────────────────────────
+// ─── DATA ─────────────────────────────────────────────────────────────────────
 async function sbFetch(path) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: { 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY }
-  });
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: { 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY } });
   if (!r.ok) throw new Error(`Supabase ${r.status}`);
   return r.json();
 }
@@ -324,400 +276,324 @@ async function synGet(endpoint, params) {
 async function loadData() {
   const btn = document.getElementById('btn-load');
   btn.disabled = true; btn.textContent = '⟳ Loading…';
-  setDot('dripify', 'loading'); setDot('synergist', 'loading');
-  document.getElementById('results-container').innerHTML = '<div class="state-block"><div class="icon">⟳</div><h3>Fetching data…</h3><p>Pulling Dripify prospects and Synergist client sectors.</p></div>';
+  setDot('dripify','loading'); setDot('synergist','loading'); setDot('matches','loading');
+  setContainer('<div class="state-block"><div class="icon">⟳</div><h3>Fetching data…</h3><p>Pulling Dripify prospects and Synergist clients.</p></div>');
 
   try {
-    // Parallel load
-    const [prospectsRaw, jobsData] = await Promise.all([
+    const [prospectsRaw, synRaw] = await Promise.all([
       sbFetch('prospects?select=*&order=created_at.desc,id.desc'),
       loadSynergistClients()
     ]);
 
-    prospects = prospectsRaw || [];
+    const prospects = prospectsRaw || [];
+    synergistClients = synRaw;
+
     setDot('dripify', prospects.length ? 'loaded' : 'error');
     document.getElementById('count-dripify').textContent = `${prospects.length} contacts`;
+    setDot('synergist', synRaw.length ? 'loaded' : 'error');
+    document.getElementById('count-synergist').textContent = `${synRaw.length} active clients`;
 
-    // Build sector → clients map
-    clientSectors = jobsData;
-    const totalClients = Object.values(clientSectors).flat().length;
-    const uniqueClients = new Set(Object.values(clientSectors).flat()).size;
-    setDot('synergist', uniqueClients ? 'loaded' : 'error');
-    document.getElementById('count-synergist').textContent = `${uniqueClients} clients`;
+    cards = prospects.map((p, i) => enrichProspect(p, i));
 
-    // Build enriched cards
-    cards = buildCards(prospects, clientSectors);
+    const matchCount = cards.filter(c => c.matches.length > 0).length;
+    setDot('matches', 'loaded');
+    document.getElementById('count-matches').textContent = `${matchCount} of ${prospects.length} matched`;
 
-    const matchCount = cards.filter(c => c.matchedSectors.length > 0).length;
-    setDot('matches', matchCount ? 'loaded' : 'error');
-    document.getElementById('count-matches').textContent = `${matchCount} matched`;
-
-    populateCampaignFilter();
+    populateFilters();
     renderCards();
     document.getElementById('filter-row').style.display = 'flex';
     document.getElementById('btn-generate').disabled = false;
-
   } catch(e) {
-    setDot('dripify', 'error'); setDot('synergist', 'error');
-    document.getElementById('results-container').innerHTML = `<div class="state-block"><div class="icon">⚠️</div><h3>Error loading data</h3><p>${e.message}</p></div>`;
+    setDot('dripify','error'); setDot('synergist','error'); setDot('matches','error');
+    setContainer(`<div class="state-block"><div class="icon">⚠️</div><h3>Error loading data</h3><p>${esc(e.message)}</p></div>`);
   }
 
   btn.disabled = false; btn.textContent = '⟳ Reload Data';
 }
 
 async function loadSynergistClients() {
-  // Fetch all jobs, paginate
-  let all = [], page = 1, total = null;
-  while (true) {
-    const data = await synGet('jobs.json', { modelstructure: 'jobslist', style: 'modeldata', page });
-    if (!data?.data) break;
-    all = all.concat(data.data);
-    if (total === null) total = data.recordCount || all.length;
-    if (all.length >= total) break;
-    page++;
+  try {
+    let all = [], page = 1, total = null;
+    while (true) {
+      const data = await synGet('jobs.json', { modelstructure: 'jobslist', style: 'modeldata', page });
+      if (!data?.data) break;
+      all = all.concat(data.data);
+      if (total === null) total = data.recordCount || all.length;
+      if (all.length >= total) break;
+      page++;
+    }
+    return [...new Set(all.map(j => j.jobClientName || '').filter(n => n && !shouldExclude(n)))];
+  } catch(e) {
+    console.warn('Synergist failed:', e.message);
+    return [];
   }
-
-  // Build sector → client name map (deduplicated)
-  const sectorMap = {};
-  for (const j of all) {
-    const client = j.jobClientName || '';
-    const sector = (j.jobMarketSector || '').trim();
-    if (!client || shouldExclude(client) || !sector) continue;
-    if (!sectorMap[sector]) sectorMap[sector] = new Set();
-    sectorMap[sector].add(client);
-  }
-
-  // Convert Sets to arrays
-  const result = {};
-  for (const [s, set] of Object.entries(sectorMap)) {
-    result[s] = [...set];
-  }
-  return result;
 }
 
-// ─── MATCHING ────────────────────────────────────────────────────────────────
-function buildCards(prospects, sectorMap) {
-  return prospects.map((p, i) => {
-    const company = (p.company || '').toLowerCase();
-    const title = (p.title || '').toLowerCase();
-    const campaign = (p.campaign || '').toLowerCase();
-
-    // Infer prospect's sector from campaign name / title / company
-    const inferredSectors = inferSectors(p, sectorMap);
-    const matchedSectors = inferredSectors.filter(s => sectorMap[s]);
-    const matchedClients = matchedSectors.flatMap(s => sectorMap[s]);
-
-    return {
-      id: p.id || i,
-      first_name: p.first_name || '',
-      last_name: p.last_name || '',
-      company: p.company || '',
-      title: p.title || '',
-      campaign: p.campaign || '',
-      email: p.email || '',
-      linkedin_url: p.linkedin_url || '',
-      matchedSectors,
-      matchedClients: [...new Set(matchedClients)],
-      message: null,
-      generating: false
-    };
-  });
-}
-
-function inferSectors(prospect, sectorMap) {
-  // Try to find sector matches by comparing prospect's campaign/title/company 
-  // against known sector names and known client names
-  const searchText = [prospect.company, prospect.title, prospect.campaign]
+// ─── MATCHING ─────────────────────────────────────────────────────────────────
+function enrichProspect(p, i) {
+  const searchText = [p.company, p.title, p.campaign]
     .map(s => (s||'').toLowerCase()).join(' ');
 
-  const matched = [];
+  const matchedCats = new Set();
 
-  for (const [sector, clients] of Object.entries(sectorMap)) {
-    const sectorLower = sector.toLowerCase();
-    const sectorWords = sectorLower.split(/[\s\/&,]+/).filter(w => w.length > 3);
+  // 1. Portfolio keyword matching (broadest)
+  for (const [kw, cats] of Object.entries(KEYWORD_MAP)) {
+    const re = kw.length <= 4 ? new RegExp(`\\b${kw}\\b`, 'i') : new RegExp(kw, 'i');
+    if (re.test(searchText)) cats.forEach(c => matchedCats.add(c));
+  }
 
-    // Direct sector keyword match
-    if (sectorWords.some(w => searchText.includes(w))) {
-      matched.push(sector);
-      continue;
-    }
-
-    // Client name match
-    for (const client of clients) {
-      const cLower = client.toLowerCase();
-      if (cLower.length > 4 && searchText.includes(cLower)) {
-        matched.push(sector);
-        break;
+  // 2. Live Synergist client name matching — find if prospect's company resembles a client
+  for (const client of synergistClients) {
+    const words = client.toLowerCase().split(/\s+/).filter(w => w.length > 4 && !/^(ltd|limited|plc|group|uk|the|and|for|with)$/.test(w));
+    if (words.some(w => searchText.includes(w))) {
+      // Map client to portfolio category
+      for (const cat of JUNGLE_PORTFOLIO) {
+        if (cat.clients.some(c => c.toLowerCase().includes(client.toLowerCase().slice(0,8)))) {
+          matchedCats.add(cat.category);
+        }
       }
     }
   }
 
-  return [...new Set(matched)];
+  const matches = JUNGLE_PORTFOLIO.filter(cat => matchedCats.has(cat.category));
+
+  return {
+    id: p.id || `p${i}`,
+    first_name: p.first_name || '',
+    last_name: p.last_name || '',
+    company: p.company || '',
+    title: p.title || '',
+    campaign: p.campaign || '',
+    email: p.email || '',
+    linkedin_url: p.linkedin_url || '',
+    matches,
+    message: null
+  };
 }
 
-// ─── RENDERING ───────────────────────────────────────────────────────────────
+// ─── RENDERING ────────────────────────────────────────────────────────────────
 function renderCards() {
-  const filterMatch = document.getElementById('filter-match').value;
-  const filterCampaign = document.getElementById('filter-campaign').value;
+  const fm = document.getElementById('filter-match').value;
+  const fc = document.getElementById('filter-campaign').value;
+  const fcat = document.getElementById('filter-cat').value;
 
-  let filtered = cards;
-  if (filterMatch === 'match') filtered = filtered.filter(c => c.matchedSectors.length > 0);
-  if (filterMatch === 'nomatch') filtered = filtered.filter(c => c.matchedSectors.length === 0);
-  if (filterMatch === 'generated') filtered = filtered.filter(c => c.message);
-  if (filterCampaign !== 'all') filtered = filtered.filter(c => c.campaign === filterCampaign);
+  let filtered = [...cards];
+  if (fm === 'match') filtered = filtered.filter(c => c.matches.length > 0);
+  if (fm === 'nomatch') filtered = filtered.filter(c => c.matches.length === 0);
+  if (fm === 'generated') filtered = filtered.filter(c => c.message);
+  if (fc !== 'all') filtered = filtered.filter(c => c.campaign === fc);
+  if (fcat !== 'all') filtered = filtered.filter(c => c.matches.some(m => m.category === fcat));
 
   if (!filtered.length) {
-    document.getElementById('results-container').innerHTML = '<div class="state-block"><div class="icon">🔍</div><h3>No results</h3><p>Try adjusting your filters.</p></div>';
+    setContainer('<div class="state-block"><div class="icon">🔍</div><h3>No results</h3><p>Try adjusting your filters.</p></div>');
     return;
   }
 
   const grid = document.createElement('div');
   grid.className = 'results-grid';
-
-  for (const card of filtered) {
-    grid.appendChild(createCard(card));
-  }
-
+  filtered.forEach(card => grid.appendChild(createCard(card)));
   document.getElementById('results-container').innerHTML = '';
   document.getElementById('results-container').appendChild(grid);
 }
 
 function createCard(card) {
   const div = document.createElement('div');
-  const hasMatch = card.matchedSectors.length > 0;
+  const hasMatch = card.matches.length > 0;
   div.className = `result-card ${hasMatch ? 'match' : 'no-match'}`;
   div.id = `card-${card.id}`;
 
-  const initials = ((card.first_name[0]||'') + (card.last_name[0]||'')).toUpperCase() || '?';
+  const initials = ((card.first_name[0]||'')+(card.last_name[0]||'')).toUpperCase() || '?';
   const name = `${card.first_name} ${card.last_name}`.trim() || 'Unknown';
 
-  const sectorTags = card.matchedSectors.slice(0, 2).map(s =>
-    `<span class="tag tag-sector">${s}</span>`
-  ).join('');
+  const catTags = card.matches.slice(0,2).map(m => `<span class="tag tag-cat">${m.category}</span>`).join('');
+  const channelTags = [...new Set(card.matches.flatMap(m => m.channels))].slice(0,1)
+    .map(ch => `<span class="tag tag-channel">${ch.split(' ')[0]}</span>`).join('');
+  const noMatchTag = !hasMatch ? `<span class="tag tag-nomatch">No portfolio match</span>` : '';
+  const campaignTag = card.campaign ? `<span class="tag tag-campaign">${esc(card.campaign)}</span>` : '';
 
-  const matchTag = hasMatch
-    ? `<span class="tag tag-match">✓ ${card.matchedClients.slice(0,2).join(', ')}${card.matchedClients.length > 2 ? ` +${card.matchedClients.length-2}` : ''}</span>`
-    : `<span class="tag tag-nomatch">No sector match</span>`;
+  const matchContextHTML = hasMatch ? `
+    <div class="match-context">
+      <strong>JUNGLE PORTFOLIO MATCH</strong>
+      ${card.matches.map(m => `
+        <div class="match-row">
+          <span class="match-cat-label">${m.category}</span>
+          <span>${[...m.clients.slice(0,3), ...m.channels.slice(0,1)].join(' · ')}</span>
+        </div>`).join('')}
+    </div>` : '';
 
-  const campaignTag = card.campaign ? `<span class="tag tag-campaign">${card.campaign}</span>` : '';
-
-  const badgeText = card.message ? 'Generated' : (hasMatch ? 'Match' : 'Generic');
+  const badgeText = card.message ? '✓ Generated' : (hasMatch ? 'Match' : 'Generic');
   const badgeCls = card.message ? 'yes' : (hasMatch ? 'yes' : 'no');
 
   div.innerHTML = `
     <div class="card-header" onclick="toggleCard('${card.id}')">
       <div class="card-avatar">${initials}</div>
       <div class="card-info">
-        <div class="card-name">${name}</div>
-        <div class="card-meta">${card.title}${card.company ? ` · ${card.company}` : ''}</div>
-        <div class="card-tags">${sectorTags}${matchTag}${campaignTag}</div>
+        <div class="card-name">${esc(name)}</div>
+        <div class="card-meta">${esc(card.title)}${card.company ? ` · ${esc(card.company)}` : ''}</div>
+        <div class="card-tags">${catTags}${channelTags}${noMatchTag}${campaignTag}</div>
       </div>
       <div class="card-right">
-        <span class="match-badge ${badgeCls}">${badgeText}</span>
+        <span class="match-badge ${badgeCls}" id="badge-${card.id}">${badgeText}</span>
         <button class="btn btn-secondary" style="font-size:12px;padding:7px 14px;" onclick="event.stopPropagation();generateOne('${card.id}')">Generate ↗</button>
       </div>
     </div>
     <div class="card-body" id="body-${card.id}">
-      ${hasMatch ? `
-        <div class="matched-clients">
-          <strong>JUNGLE CLIENTS IN THIS SPACE</strong>
-          ${card.matchedClients.join(' · ')}
-        </div>
-      ` : ''}
+      ${matchContextHTML}
       <div class="message-label">LINKEDIN MESSAGE</div>
-      <div class="message-box" id="msg-${card.id}">${card.message || 'Click "Generate" to create a personalised message.'}</div>
-      ${card.message ? `<button class="copy-btn" id="copy-${card.id}" onclick="copyMessage('${card.id}')">Copy message</button>` : ''}
-    </div>
-  `;
+      <div class="message-box" id="msg-${card.id}">${card.message ? esc(card.message) : 'Click "Generate ↗" to create a personalised message.'}</div>
+      <div class="card-actions" id="actions-${card.id}">
+        ${card.message ? `<button class="copy-btn" id="copy-${card.id}" onclick="copyMessage('${card.id}')">Copy message</button><button class="regen-btn" onclick="generateOne('${card.id}')">Regenerate</button>` : ''}
+      </div>
+    </div>`;
 
   return div;
 }
 
-function toggleCard(id) {
-  const body = document.getElementById(`body-${id}`);
-  body.classList.toggle('open');
-}
+function toggleCard(id) { document.getElementById(`body-${id}`)?.classList.toggle('open'); }
 
-function populateCampaignFilter() {
+function populateFilters() {
   const campaigns = [...new Set(cards.map(c => c.campaign).filter(Boolean))].sort();
   const sel = document.getElementById('filter-campaign');
   sel.innerHTML = '<option value="all">All campaigns</option>';
-  campaigns.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    sel.appendChild(opt);
-  });
+  campaigns.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
+
+  const cats = [...new Set(cards.flatMap(c => c.matches.map(m => m.category)))].sort();
+  const sel2 = document.getElementById('filter-cat');
+  sel2.innerHTML = '<option value="all">All categories</option>';
+  cats.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel2.appendChild(o); });
 }
 
-// ─── GENERATION ──────────────────────────────────────────────────────────────
+// ─── PROMPT ───────────────────────────────────────────────────────────────────
+function buildPrompt(card) {
+  const hasMatch = card.matches.length > 0;
+
+  const portfolioContext = hasMatch ? card.matches.map(m => `
+CATEGORY: ${m.category}
+Relevant Jungle clients/projects: ${m.clients.join(', ')}
+${m.channels.length ? `Jungle owned channels in this space: ${m.channels.join(', ')}` : ''}
+Pitch angle: ${m.angle}`).join('\n\n') : '';
+
+  const matchedCatNames = card.matches.map(m => m.category).join(' and ');
+
+  const base = `You are writing a LinkedIn follow-up message on behalf of Coris Leachman, Executive Director of Growth at Jungle Creations.
+
+ABOUT JUNGLE CREATIONS:
+Jungle is a social-first agency with a publisher heritage. Over 12 years they built their own social channels to 150M+ followers and 7B+ views — including Twisted (49M food fans), Four Nine (5M+ women's lifestyle), and SPORF (12M+ sports fans). That publisher background is their sharpest differentiator: they understand audiences from the inside, which is why brands come to them for social content that actually performs rather than content built for a board presentation.
+
+THE PROSPECT:
+Name: ${card.first_name} ${card.last_name}
+Title: ${card.title || 'N/A'}
+Company: ${card.company || 'N/A'}
+Dripify campaign they came from: "${card.campaign || 'N/A'}"`;
+
+  if (hasMatch) {
+    return `${base}
+
+MATCHED PORTFOLIO CONTEXT — use this to make the message specific:
+${portfolioContext}
+
+TASK:
+Write a LinkedIn message (90–130 words) from Coris to ${card.first_name}. Requirements:
+
+1. Open with something specific to their world — reference their sector (${matchedCatNames}), company, or the kind of challenge they likely deal with. No generic openers.
+2. Draw a natural connection to Jungle's relevant work. Name 1–2 specific clients or owned channels from the matched portfolio context where they genuinely fit. Don't list everything — pick what's most credible.
+3. The publisher heritage angle should land as genuinely interesting, not as marketing copy. Jungle built these audiences themselves — that's the differentiator.
+4. End with a specific, low-pressure ask. Not "would love to connect" — something like sharing a relevant case study, a short conversation about a specific challenge, or a thought piece worth discussing.
+5. Sound like it was written by a confident senior person in BD — not generated by a sequence tool.
+
+BANNED PHRASES: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless" / "circle back" / "hop on a call" / "I'd love to" / "looking forward to connecting".
+
+Write ONLY the message body. No "Hi [name]" opener — start straight into the message. No sign-off.`;
+  } else {
+    return `${base}
+
+No specific portfolio match was found for this prospect's sector. Write a strong general message.
+
+TASK:
+Write a LinkedIn message (80–110 words) from Coris to ${card.first_name}. Requirements:
+
+1. Start with something specific to their role or company — show you've thought about who they are, not just that you're running a sequence.
+2. Introduce Jungle's angle briefly but memorably: social-first agency, publisher heritage, 150M+ followers built over 12 years. The point worth landing: they've built audiences themselves, so they know from the inside what makes social content actually work — not just what looks good in a plan.
+3. Make one pointed observation relevant to their world — about social content performance, audience engagement, or the gap between what brands produce and what platforms reward.
+4. End with a soft, genuine ask — something specific enough to feel personal, not templated.
+5. Sound like a confident senior person wrote it.
+
+BANNED PHRASES: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless" / "circle back" / "hop on a call".
+
+Write ONLY the message body. No opener greeting — start straight in. No sign-off.`;
+  }
+}
+
+// ─── CLAUDE API ───────────────────────────────────────────────────────────────
+async function callClaude(card) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt(card) }] })
+  });
+  if (!r.ok) throw new Error(`Claude API ${r.status}`);
+  const data = await r.json();
+  return data.content?.[0]?.text?.trim() || 'No message generated.';
+}
+
 async function generateOne(id) {
   const card = cards.find(c => String(c.id) === String(id));
   if (!card) return;
-
   const msgEl = document.getElementById(`msg-${id}`);
+  const actionsEl = document.getElementById(`actions-${id}`);
   const bodyEl = document.getElementById(`body-${id}`);
+  const badgeEl = document.getElementById(`badge-${id}`);
   bodyEl.classList.add('open');
-  msgEl.className = 'message-box generating';
-  msgEl.textContent = 'Generating…';
-
+  if (msgEl) { msgEl.className = 'message-box generating'; msgEl.textContent = 'Writing…'; }
   try {
-    const message = await callClaude(card);
-    card.message = message;
-    msgEl.className = 'message-box';
-    msgEl.textContent = message;
-
-    // Add copy button if not present
-    let copyBtn = document.getElementById(`copy-${id}`);
-    if (!copyBtn) {
-      copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.id = `copy-${id}`;
-      copyBtn.textContent = 'Copy message';
-      copyBtn.onclick = () => copyMessage(id);
-      msgEl.after(copyBtn);
-    }
-
-    // Update badge
-    const cardEl = document.getElementById(`card-${id}`);
-    const badge = cardEl?.querySelector('.match-badge');
-    if (badge) { badge.textContent = 'Generated'; badge.className = 'match-badge yes'; }
-
+    card.message = await callClaude(card);
+    if (msgEl) { msgEl.className = 'message-box'; msgEl.textContent = card.message; }
+    if (badgeEl) { badgeEl.textContent = '✓ Generated'; badgeEl.className = 'match-badge yes'; }
+    if (actionsEl) actionsEl.innerHTML = `<button class="copy-btn" id="copy-${id}" onclick="copyMessage('${id}')">Copy message</button><button class="regen-btn" onclick="generateOne('${id}')">Regenerate</button>`;
     updateExportBar();
   } catch(e) {
-    msgEl.className = 'message-box error';
-    msgEl.textContent = `Error: ${e.message}`;
+    if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Error: ${e.message}`; }
   }
 }
 
 async function generateAll() {
   const btn = document.getElementById('btn-generate');
   btn.disabled = true; btn.textContent = '✦ Generating…';
+  const track = document.getElementById('progress-track');
+  const bar = document.getElementById('progress-bar');
+  const label = document.getElementById('progress-label');
+  track.classList.add('visible');
 
-  const progressWrap = document.getElementById('progress-wrap');
-  const progressBar = document.getElementById('progress-bar');
-  const progressLabel = document.getElementById('progress-label');
-  progressWrap.classList.add('visible');
-
-  const toGenerate = cards.filter(c => !c.message);
+  const toGen = cards.filter(c => !c.message);
   let done = 0;
-
-  for (const card of toGenerate) {
-    progressLabel.textContent = `${done + 1} / ${toGenerate.length} — ${card.first_name} ${card.last_name}`;
-    progressBar.style.width = `${(done / toGenerate.length) * 100}%`;
-
-    // Open card body
-    const bodyEl = document.getElementById(`body-${card.id}`);
+  for (const card of toGen) {
+    label.textContent = `${done + 1} / ${toGen.length} — ${card.first_name} ${card.last_name}`;
+    bar.style.width = `${(done / toGen.length) * 100}%`;
     const msgEl = document.getElementById(`msg-${card.id}`);
-
-    if (msgEl) {
-      msgEl.className = 'message-box generating';
-      msgEl.textContent = 'Generating…';
-    }
-
+    const actionsEl = document.getElementById(`actions-${card.id}`);
+    const badgeEl = document.getElementById(`badge-${card.id}`);
+    if (msgEl) { msgEl.className = 'message-box generating'; msgEl.textContent = 'Writing…'; }
     try {
-      const message = await callClaude(card);
-      card.message = message;
-
-      if (msgEl) {
-        msgEl.className = 'message-box';
-        msgEl.textContent = message;
-        let copyBtn = document.getElementById(`copy-${card.id}`);
-        if (!copyBtn) {
-          copyBtn = document.createElement('button');
-          copyBtn.className = 'copy-btn';
-          copyBtn.id = `copy-${card.id}`;
-          copyBtn.textContent = 'Copy message';
-          copyBtn.onclick = () => copyMessage(card.id);
-          msgEl.after(copyBtn);
-        }
-      }
-
-      const cardEl = document.getElementById(`card-${card.id}`);
-      const badge = cardEl?.querySelector('.match-badge');
-      if (badge) { badge.textContent = 'Generated'; badge.className = 'match-badge yes'; }
-
+      card.message = await callClaude(card);
+      if (msgEl) { msgEl.className = 'message-box'; msgEl.textContent = card.message; }
+      if (badgeEl) { badgeEl.textContent = '✓ Generated'; badgeEl.className = 'match-badge yes'; }
+      if (actionsEl) actionsEl.innerHTML = `<button class="copy-btn" id="copy-${card.id}" onclick="copyMessage('${card.id}')">Copy message</button><button class="regen-btn" onclick="generateOne('${card.id}')">Regenerate</button>`;
     } catch(e) {
-      if (msgEl) { msgEl.className = 'message-box error'; msgEl.textContent = `Error: ${e.message}`; }
+      if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Error: ${e.message}`; }
     }
-
     done++;
-    progressBar.style.width = `${(done / toGenerate.length) * 100}%`;
-    await sleep(300); // gentle rate limiting
+    bar.style.width = `${(done / toGen.length) * 100}%`;
+    await sleep(300);
   }
-
-  progressLabel.textContent = `Done — ${done} messages generated`;
+  label.textContent = `Done — ${done} messages generated`;
   btn.disabled = false; btn.textContent = '✦ Generate All Messages';
   updateExportBar();
 }
 
-async function callClaude(card) {
-  const hasMatch = card.matchedSectors.length > 0;
-
-  const prompt = hasMatch
-    ? `You are writing a short, warm LinkedIn connection follow-up message on behalf of Coris Leachman, Executive Director of Growth at Jungle Creations.
-
-Jungle Creations is a social-first agency with a publisher heritage. They run their own social channels with 150M+ followers and 7B+ views, and use that audience intelligence to deliver social content that genuinely performs for brands.
-
-The recipient is:
-- Name: ${card.first_name} ${card.last_name}
-- Job title: ${card.title}
-- Company: ${card.company}
-- They came via Dripify campaign: "${card.campaign}"
-
-Jungle has existing clients in the same sector(s): ${card.matchedSectors.join(', ')}
-Specifically: ${card.matchedClients.slice(0, 4).join(', ')}
-
-Write a LinkedIn message (90-130 words) that:
-1. Opens warmly and references their space/sector naturally (don't be generic)
-2. Mentions that Jungle works with brands in a similar space — name 1-2 of the matched clients if they are recognisable brands, otherwise reference the sector generally
-3. Positions Jungle's value as audience intelligence / social-first content (not just "we make content")
-4. Ends with a soft, low-pressure ask — a quick call, a coffee, or sharing something useful
-5. Sounds human, confident, and like it comes from someone senior — not a template
-
-Do NOT use: "I hope this message finds you well", "reach out", "synergies", "touch base", "leverage", "game-changer", or any other AI clichés.
-Write only the message body. No subject line. No sign-off (they'll add their own).`
-
-    : `You are writing a short, warm LinkedIn connection follow-up message on behalf of Coris Leachman, Executive Director of Growth at Jungle Creations.
-
-Jungle Creations is a social-first agency with a publisher heritage. They run their own social channels with 150M+ followers and 7B+ views, and use that audience intelligence to deliver social content that genuinely performs for brands.
-
-The recipient is:
-- Name: ${card.first_name} ${card.last_name}
-- Job title: ${card.title}
-- Company: ${card.company}
-- They came via Dripify campaign: "${card.campaign}"
-
-Write a LinkedIn message (80-110 words) that:
-1. Opens by acknowledging who they are / what they do — reference their role or company specifically
-2. Briefly introduces Jungle's angle: social-first agency, publisher heritage, audience intelligence
-3. Makes a relevant, human observation about why brands in their space often struggle with social (content that was designed for TV, not platforms; audience fatigue; etc.)
-4. Ends with a soft ask — a call, share something useful, or just keep in touch
-5. Sounds confident and natural, not salesy
-
-Do NOT use: "I hope this message finds you well", "reach out", "synergies", "touch base", "leverage", "game-changer", or any AI clichés.
-Write only the message body. No subject line. No sign-off.`;
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  });
-
-  if (!response.ok) throw new Error(`Claude API ${response.status}`);
-  const data = await response.json();
-  return data.content?.[0]?.text?.trim() || 'No message generated.';
-}
-
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function setDot(id, state) {
-  const dot = document.getElementById(`dot-${id}`);
-  dot.className = `status-dot ${state}`;
-}
-
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function setDot(id, state) { const d = document.getElementById(`dot-${id}`); if(d) d.className = `status-dot ${state}`; }
+function setContainer(html) { document.getElementById('results-container').innerHTML = html; }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function copyMessage(id) {
@@ -737,16 +613,14 @@ function updateExportBar() {
 
 function exportCSV() {
   const rows = cards.filter(c => c.message);
-  const header = ['First Name','Last Name','Company','Title','Campaign','Sector Match','Matched Clients','LinkedIn URL','Email','Message'];
+  const header = ['First Name','Last Name','Company','Title','Campaign','Matched Categories','Key Clients Referenced','LinkedIn URL','Email','Message'];
   const csv = [header, ...rows.map(c => [
     c.first_name, c.last_name, c.company, c.title, c.campaign,
-    c.matchedSectors.join('; '),
-    c.matchedClients.join('; '),
-    c.linkedin_url, c.email,
-    `"${(c.message||'').replace(/"/g,'""')}"`
+    c.matches.map(m => m.category).join('; '),
+    c.matches.flatMap(m => m.clients).slice(0,4).join('; '),
+    c.linkedin_url, c.email, c.message||''
   ])].map(r => r.map(v => `"${String(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
-
-  const blob = new Blob([csv], { type: 'text/csv' });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `jungle-outreach-${new Date().toISOString().slice(0,10)}.csv`;
   a.click();
