@@ -124,7 +124,7 @@
 
 <nav class="nav">
   <div class="nav-logo">jungle<span>.</span></div>
-  <a class="nav-back" href="https://jungle-is-massive.github.io/jungle-bd-planner/">← BD Planner</a>
+  <div style="display:flex;align-items:center;gap:12px;"><button onclick="showKeyPrompt()" style="font-size:11px;font-family:'DM Mono',monospace;background:none;border:1px solid rgba(255,255,255,0.2);color:var(--grey);border-radius:100px;padding:5px 12px;cursor:pointer;letter-spacing:0.04em;">API KEY</button><a class="nav-back" href="https://jungle-is-massive.github.io/jungle-bd-planner/">← BD Planner</a></div>
 </nav>
 
 <div class="main">
@@ -559,19 +559,52 @@ Write ONLY the message body. No opener. No sign-off.`;
 }
 
 // ─── CLAUDE API ───────────────────────────────────────────────────────────────
+// ─── OPENAI KEY MANAGEMENT ───────────────────────────────────────────────────
+function getKey() { return localStorage.getItem('oai_key') || ''; }
+function saveKey(k) { localStorage.setItem('oai_key', k); }
+
+function showKeyPrompt() {
+  const existing = getKey();
+  const overlay = document.createElement('div');
+  overlay.id = 'key-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML = `
+    <div style="background:var(--cream);border-radius:16px;padding:32px;width:min(480px,90vw);box-shadow:0 24px 64px rgba(0,0,0,0.2);">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-0.03em;margin-bottom:8px;">OpenAI API Key</div>
+      <div style="font-size:13px;color:var(--grey-mid);margin-bottom:20px;line-height:1.6;">Your key is stored in your browser only — never sent anywhere except directly to OpenAI.</div>
+      <input id="key-input" type="password" placeholder="sk-..." value="${existing}"
+        style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Mono',monospace;font-size:13px;margin-bottom:14px;outline:none;background:var(--white);">
+      <div style="display:flex;gap:10px;">
+        <button onclick="confirmKey()" style="flex:1;background:var(--black);color:var(--white);border:none;border-radius:100px;padding:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">Save & continue</button>
+        <button onclick="document.getElementById('key-overlay').remove()" style="background:none;border:1.5px solid var(--border);border-radius:100px;padding:11px 18px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('key-input').focus();
+}
+
+function confirmKey() {
+  const k = document.getElementById('key-input').value.trim();
+  if (!k.startsWith('sk-')) { alert('That doesn\'t look like an OpenAI key — it should start with sk-'); return; }
+  saveKey(k);
+  document.getElementById('key-overlay').remove();
+}
+
 async function callClaude(card) {
+  let key = getKey();
+  if (!key) { showKeyPrompt(); throw new Error('No API key — enter your OpenAI key and try again.'); }
   const r = await fetchWithRetry(
-    'https://api.anthropic.com/v1/messages',
+    'https://api.openai.com/v1/chat/completions',
     {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt(card) }] })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt(card) }] })
     },
-    2, 'Claude API'
+    2, 'OpenAI'
   );
   const data = await r.json();
   if (data.error) throw new Error(data.error.message);
-  return data.content?.[0]?.text?.trim() || 'No message generated.';
+  return data.choices?.[0]?.message?.content?.trim() || 'No message generated.';
 }
 
 async function generateOne(id) {
