@@ -39,6 +39,7 @@
   .status-dot.loaded { background: var(--green); }
   .status-dot.loading { background: #FFD600; animation: pulse 1s infinite; }
   .status-dot.error { background: #FF4444; }
+  .status-dot.skipped { background: var(--grey); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
   .status-count { font-weight: 600; color: var(--black); }
 
@@ -74,7 +75,7 @@
   .card-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; }
   .card-info { flex: 1; min-width: 0; }
   .card-name { font-size: 15px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 2px; }
-  .card-meta { font-size: 12px; color: var(--grey-mid); margin-bottom: 8px; }
+  .card-meta { font-size: 12px; color: var(--grey-mid); margin-bottom: 8px; line-height: 1.4; }
   .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
   .tag { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em; border-radius: 4px; padding: 3px 8px; font-weight: 500; white-space: nowrap; }
   .tag-cat { background: #EEF5FF; color: #0055CC; }
@@ -99,7 +100,7 @@
   .message-label { font-size: 10px; font-family: 'DM Mono', monospace; letter-spacing: 0.08em; color: var(--grey); text-transform: uppercase; margin-bottom: 8px; }
   .message-box { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.75; color: var(--black); white-space: pre-wrap; margin-bottom: 12px; min-height: 60px; }
   .message-box.generating { color: var(--grey); font-style: italic; }
-  .message-box.error-state { color: #CC2200; }
+  .message-box.error-state { color: #CC2200; font-size: 12px; }
 
   .card-actions { display: flex; gap: 8px; align-items: center; }
   .copy-btn { font-size: 12px; font-family: 'DM Mono', monospace; background: var(--black); color: var(--white); border: none; border-radius: 8px; padding: 7px 14px; cursor: pointer; transition: background 0.15s; }
@@ -111,6 +112,7 @@
   .state-block { text-align: center; padding: 80px 32px; color: var(--grey); font-size: 13px; line-height: 1.8; }
   .state-block .icon { font-size: 36px; margin-bottom: 16px; }
   .state-block h3 { font-size: 16px; font-weight: 600; color: var(--black); margin-bottom: 6px; }
+  .state-block .hint { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--grey); margin-top: 8px; background: var(--grey-light); display: inline-block; padding: 6px 12px; border-radius: 6px; }
 
   .export-bar { display: none; align-items: center; gap: 12px; margin-top: 32px; padding: 16px 20px; background: var(--white); border: 1px solid var(--border); border-radius: 12px; }
   .export-bar.visible { display: flex; }
@@ -133,7 +135,7 @@
 
   <div class="status-bar">
     <div class="status-pill"><div class="status-dot" id="dot-dripify"></div><span>Dripify</span><span class="status-count" id="count-dripify">—</span></div>
-    <div class="status-pill"><div class="status-dot" id="dot-synergist"></div><span>Synergist Clients</span><span class="status-count" id="count-synergist">—</span></div>
+    <div class="status-pill"><div class="status-dot" id="dot-synergist"></div><span>Synergist</span><span class="status-count" id="count-synergist">—</span></div>
     <div class="status-pill"><div class="status-dot" id="dot-matches"></div><span>Portfolio Matches</span><span class="status-count" id="count-matches">—</span></div>
   </div>
 
@@ -181,59 +183,59 @@
 const JUNGLE_PORTFOLIO = [
   {
     category: 'Sports & Sporting Events',
-    keywords: ['sport','sports','football','cricket','rugby','golf','tennis','athletics','olympic','stadium','league','cup','championship','racing','cycling','swimming','esport','esports','gaming','fan','fixture','tournament','team','club','athlete','branded content','ryder','mlb','nba','nfl','premier','wsl','superbowl','wimbledon','formula','f1','sporting','motorsport','skiing','triathlon','marathon','fitness','health club','leisure','recreation','arena','betting','odds','fantasy'],
+    keywords: ['sport','sports','football','soccer','cricket','rugby','golf','tennis','athletics','olympic','olympics','stadium','league','cup','championship','racing','cycling','swimming','esport','esports','gaming','fan','fans','fixture','tournament','team','club','athlete','branded content','ryder','ryder cup','mlb','nba','nfl','premier','wsl','superbowl','wimbledon','formula','f1','sporting','motorsport','skiing','triathlon','marathon','arena','betting','odds','fantasy sport','sports marketing','sports media','sports content','sports brand','golf club','rugby union','rugby league','netball','hockey','handball','volleyball','boxing','mma','ufc'],
     clients: ['MLB (Major League Baseball Europe)', 'Team GB / The Olympics', 'Sky Sports — Women\'s Super League'],
     channels: ['SPORF (12M+ sports fans across social)'],
     angle: 'We\'ve worked with major sporting organisations — from MLB\'s European push to Olympic content — and our SPORF channel puts us in direct conversation with 12M+ sports fans on social every week. We understand how to build audiences in sport, not just activate them.'
   },
   {
     category: 'Food & Beverage',
-    keywords: ['food','drink','beverage','fmcg','snack','beer','wine','spirits','gin','vodka','cider','lager','ale','soft drink','restaurant','recipe','grocery','supermarket','confectionery','chocolate','biscuit','crisp','pub','hospitality','chef','culinary','consumer goods','cpg','taco','pizza','burger','pasta','sauce','pukka','heinz','pepsi','galaxy','mars','ferrero','lindt','waitrose','tesco','iceland','kraft','unilever','diageo','pernod','suntory','campari','beam','bacardi','constellation','drinks brand','food brand','fmcg brand'],
-    clients: ['Heinz','Pepsi MAX','Galaxy (Mars)','M&Ms','Hendrick\'s Gin','Hi-Spirits','Wasa','Taco Bell','Fruit-ella','Pukka Pies','Brew City','Bullseye','Symprove','Inch\'s Cider'],
+    keywords: ['food','drink','beverage','fmcg','snack','beer','wine','spirits','gin','vodka','cider','lager','ale','soft drink','restaurant','recipe','grocery','supermarket','confectionery','chocolate','biscuit','crisp','pub','hospitality','chef','culinary','consumer goods','cpg','taco','pizza','burger','pasta','sauce','pukka','heinz','pepsi','galaxy','mars','ferrero','lindt','waitrose','tesco','iceland','kraft','unilever','diageo','pernod','suntory','campari','bacardi','constellation','drinks','food brand','alcohol','alcoholic','distillery','brewery','brewer','winery','aperitif','digestif','mixology','cocktail','barista','coffee','tea','juice','smoothie','dairy','cheese','butter','bakery','bread','cake','baking','cooking','cuisine','catering','meal','lunch','dinner','breakfast','snacking','indulgent','treat','confection','sweet','savoury','vegan','plant-based','organic','health food','nutrition'],
+    clients: ['Heinz','Pepsi MAX','Galaxy (Mars)','M&Ms','Hendrick\'s Gin','Hi-Spirits','Wasa','Taco Bell','Fruit-ella','Pukka Pies','Brew City','Bullseye','Symprove','Inch\'s Cider','Pernod Ricard','Lindt'],
     channels: ['Twisted (49M+ food fans globally — one of the world\'s biggest food social channels)'],
-    angle: 'Food & drink is our heartland. We built Twisted from scratch into a 49M community — we don\'t just run campaigns, we understand what food audiences actually want. Brands from Heinz and Pepsi MAX to Taco Bell and Pukka Pies have used that to drive real results, not just impressions.'
+    angle: 'Food & drink is our heartland. We built Twisted from scratch into a 49M community — we don\'t just run campaigns, we understand what food audiences actually want. Brands from Heinz and Pepsi MAX to Taco Bell and Pukka Pies have used that to drive real results.'
   },
   {
     category: 'Beauty, Wellness & Health',
-    keywords: ['beauty','skincare','cosmetic','wellness','health','fitness','supplement','pharmaceutical','personal care','haircare','fragrance','makeup','spa','gym','nutrition','vitamin','gut','medical','dental','optical','pharmacy','drug','biotech','femtech','period','menopause','mental health','therapy','nhs','body care','grooming','shaving','deodorant','suncare','dermatology','aesthetics','wellbeing','sleep','mindfulness','yoga','pilates','weight loss','diet'],
-    clients: ['Clarins','Symprove','Superdrug Studio London'],
+    keywords: ['beauty','skincare','cosmetic','wellness','health','fitness','supplement','pharmaceutical','personal care','haircare','fragrance','makeup','spa','gym','nutrition','vitamin','gut','medical','dental','optical','pharmacy','drug','biotech','femtech','period','menopause','mental health','therapy','nhs','body care','grooming','shaving','deodorant','suncare','dermatology','aesthetics','wellbeing','sleep','mindfulness','yoga','pilates','weight loss','diet','loreal','l\'oreal','garnier','lancome','clarins','clinique','estee lauder','dior beauty','chanel beauty','nars','mac cosmetics','urban decay','revolution','elf','superdrug','boots','vitabiotics','haleon','gsk','reckitt','pfizer','astrazeneca'],
+    clients: ['Clarins','Symprove','Superdrug Studio London','L\'Oréal / Garnier','Vitabiotics'],
     channels: ['Four Nine (5M+ women\'s lifestyle community)'],
-    angle: 'We\'ve helped beauty and wellness brands reach younger, more engaged social audiences — from heritage names like Clarins to challenger brands like Symprove. Our Four Nine community (5M+ women) gives us genuine insight into how this audience engages with health and beauty content beyond the obvious.'
+    angle: 'We\'ve helped beauty and wellness brands reach younger, more engaged social audiences — from heritage names like Clarins to challenger brands like Symprove. Our Four Nine community (5M+ women) gives us genuine insight into how this audience engages with health and beauty content.'
   },
   {
     category: 'Entertainment, Media & Publishing',
-    keywords: ['entertainment','media','publishing','streaming','tv','television','film','movie','music','record','label','artist','content','production','studio','broadcast','radio','podcast','gaming','disney','netflix','amazon','youtube','tiktok','influencer','creator','talent','talent management','pr','comms','communications','branded entertainment','events','live events','theatre','concerts','ticketing','theme park','attractions','vod','svod','avod','content studio','video','animation'],
-    clients: ['Disney Store','Tom Daley','Sony Music','Air Rylan (YouTube production)'],
+    keywords: ['entertainment','media','publishing','streaming','tv','television','film','movie','music','record','label','artist','content','production','studio','broadcast','radio','podcast','disney','netflix','amazon','youtube','tiktok','influencer','creator','talent','talent management','pr','comms','communications','branded entertainment','events','live events','theatre','concerts','ticketing','theme park','attractions','vod','svod','avod','content studio','video','animation','documentary','editorial','journalism','news','magazine','newspaper','digital media','social media','online video','short form','long form','series','channel','subscriber','audience','reach plc','bauer','global radio','sky','itv','channel 4','channel 5','paramount','warner','universal','sony music','sony pictures','nbcuniversal','lad bible','ladbible','unilad','ball street','joe media','the tab','vice','buzzfeed','podimo','acast'],
+    clients: ['Disney Store','Tom Daley','Sony Music','Air Rylan (YouTube)','NBCUniversal','Reach plc','Bauer Media','Podimo','Acast'],
     channels: ['Four Nine','Twisted','SPORF — owned publisher network (150M+ followers combined)'],
     angle: 'We sit at the intersection of entertainment and social — we\'re a publisher as much as an agency. From Disney and Sony Music to talent like Tom Daley, we produce social-first content that earns attention. Our owned channels (150M+ combined followers) mean we know from the inside what makes people stop, watch, and share.'
   },
   {
-    category: 'Fashion & Retail',
-    keywords: ['fashion','retail','clothing','apparel','luxury','brand','ecommerce','e-commerce','online retail','high street','department store','sportswear','footwear','accessories','jewellery','watch','bags','lifestyle brand','h&m','zara','asos','next','marks','primark','john lewis','dfs','ikea','homeware','interiors','furnishings','garden','diy','hardware','consumer electronics','white goods','electrical','appliances'],
-    clients: ['H&M'],
+    category: 'Fashion, Retail & Lifestyle',
+    keywords: ['fashion','retail','clothing','apparel','luxury','brand','ecommerce','e-commerce','online retail','high street','department store','sportswear','footwear','accessories','jewellery','jewelry','watch','bags','lifestyle brand','h&m','zara','asos','next','marks','primark','john lewis','dfs','ikea','homeware','interiors','furnishings','garden','diy','hardware','consumer electronics','electrical','appliances','flannels','jd sports','foot locker','nike','adidas','puma','reebok','new balance','vans','converse','levi','wrangler','ralph lauren','tommy','calvin klein','gap','banana republic','uniqlo','cos','arket','monki','& other stories','topshop','river island','boohoo','pretty little thing','missguided','shein','fashion week','trend','style','wardrobe','outfit','streetwear','athleisure','sustainable fashion','preloved','vintage','resale'],
+    clients: ['H&M','JD Sports','Foot Locker EMEA','Jimmy Choo','FLANNELS'],
     channels: ['Four Nine (fashion-forward women\'s lifestyle audience)'],
     angle: 'Fashion brands are fighting for attention in one of the most competitive spaces on social. We helped H&M bridge street culture and digital content — and our Four Nine channel gives us real insight into what fashion audiences respond to beyond the obvious trend pieces.'
   },
   {
-    category: 'Technology & Apps',
-    keywords: ['tech','technology','app','software','saas','platform','startup','fintech','ai','machine learning','data','digital','cyber','security','cloud','mobile','developer','product','marketplace','verification','identity','navigation','maps','gps','wearable','iot','hardware','telecoms','telecom','telco','broadband','mobile network','insurance','insurtech','proptech','edtech','legaltech','hrtech','martech','adtech'],
-    clients: ['Waze','Yoti'],
+    category: 'Technology, Telecoms & Finance',
+    keywords: ['tech','technology','app','software','saas','platform','startup','fintech','ai','machine learning','data','digital','cyber','security','cloud','mobile','developer','product','marketplace','verification','identity','navigation','maps','gps','wearable','iot','hardware','telecoms','telecom','telco','broadband','mobile network','insurance','insurtech','proptech','edtech','legaltech','hrtech','martech','adtech','bank','banking','finance','financial','investment','wealth','mortgage','loan','credit','debit','payment','crypto','blockchain','neobank','monzo','revolut','starling','wise','paypal','klarna','checkout','shopify','salesforce','microsoft','apple','google','amazon','meta','samsung','lg','currys','nothing','datasite','ancestry'],
+    clients: ['Waze','Yoti','Monzo Bank','Currys plc','LG UK','Apple','Nothing','Ancestry','Datasite'],
     channels: [],
-    angle: 'Tech brands often struggle to make social content feel genuinely human rather than functional. We\'ve helped brands like Waze turn a product feature into a moment people actually talked about — moving beyond product demos into content that earns organic attention on platform.'
+    angle: 'Tech and finance brands often struggle to make social content feel genuinely human rather than functional. We\'ve helped brands like Waze and Monzo turn product features and brand moments into content people actually engaged with — moving beyond demos into work that earns attention on platform.'
   },
   {
     category: 'Government, Charity & Public Sector',
-    keywords: ['charity','ngo','non-profit','nonprofit','government','public sector','nhs','council','lottery','foundation','trust','cause','social good','mental health','suicide','poverty','housing','education','university','military','defence','veteran','raf','army','navy','police','fire','ambulance','civil service','local authority','campaign','awareness','public health','voting','election','environment','sustainability','climate','social impact'],
-    clients: ['RAF','CALM (mental health charity — Level Headed campaign)','National Lottery Good Causes','Yoti'],
+    keywords: ['charity','ngo','non-profit','nonprofit','government','public sector','nhs','council','lottery','foundation','trust','cause','social good','mental health','suicide','poverty','housing','education','university','military','defence','defense','veteran','raf','army','navy','police','fire','ambulance','civil service','local authority','campaign','awareness','public health','voting','election','environment','sustainability','climate','social impact','rail','transport','tfl','transport for london','rail delivery','network rail'],
+    clients: ['RAF','CALM (mental health — Level Headed)','National Lottery Good Causes','Transport for London','Rail Delivery Group'],
     channels: [],
-    angle: 'We\'ve helped organisations with genuine purpose — from the RAF to mental health awareness campaigns — use social to reach audiences who\'ve traditionally been hard to engage. When budgets are tight, earned attention through compelling content beats paid reach every time.'
+    angle: 'We\'ve helped organisations with genuine purpose — from the RAF to mental health awareness — use social to reach audiences who\'ve traditionally been hard to engage. When budgets are tight, earned attention through compelling content beats paid reach every time.'
   },
   {
-    category: 'Grocers & Food Retail',
-    keywords: ['grocer','supermarket','grocery','food retail','iceland','tesco','sainsbury','waitrose','asda','morrisons','aldi','lidl','co-op','convenience','wholesale','distribution','food service','catering','canteen','vending','meal kit','delivery','just eat','deliveroo','uber eats'],
-    clients: ['Iceland (Twisted x Iceland — taking 49M fans from feed to freezer)'],
-    channels: ['Twisted (49M+ food community)'],
-    angle: 'We took Twisted\'s 49M food fans and turned them into Iceland shoppers — moving audience from feed to freezer. That\'s a model that works for any food retailer trying to close the gap between content and commercial action.'
+    category: 'Automotive, Travel & Leisure',
+    keywords: ['automotive','car','vehicle','motor','auto','electric vehicle','ev','fleet','manufacturer','dealer','dealership','motoring','driving','travel','holiday','tourism','hotel','hospitality','cruise','airline','airport','rail','coach','bus','leisure','attraction','theme park','resort','spa resort','booking','flights','accommodation','airbnb','booking.com','expedia','tripadvisor','kia','bmw','mercedes','audi','volkswagen','ford','toyota','honda','hyundai','vauxhall','renault','peugeot','citroen','jeep','land rover','jaguar','carnival','p&o','cunard','mandarin oriental','qvc','david lloyd','leisure centre','gym chain','fitness club'],
+    clients: ['Kia UK','Carnival UK (P&O Cruises & Cunard)','Mandarin Oriental','David Lloyd Clubs','QVC'],
+    channels: [],
+    angle: 'Travel and automotive brands need social content that genuinely inspires and informs, not just re-versions TV ads for mobile. We understand how to create content that moves people from aspiration to action — and our owned channels give us a read on what audiences actually want to see.'
   }
 ];
 
@@ -254,101 +256,138 @@ const SYN_USER = 'Coris.leachman';
 const SYN_PASS = 'Jungle@123';
 const EXCLUDE_CLIENTS = new Set(['AGENCY INTERNAL - Non-Billable','MEDIA INTERNAL - Non-Bilable','Jungle Creations Ltd','Creator - Media','Auto created internal organisation for external bookings']);
 const EXCLUDE_PATTERNS = [' - Media','Media Cross-Platform','Website - Media'];
-function shouldExclude(name) { return EXCLUDE_CLIENTS.has(name) || EXCLUDE_PATTERNS.some(p => name.includes(p)); }
+function shouldExclude(n) { return EXCLUDE_CLIENTS.has(n) || EXCLUDE_PATTERNS.some(p => n.includes(p)); }
 
 let cards = [];
 let synergistClients = [];
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+// ─── FETCH WITH RETRY ─────────────────────────────────────────────────────────
+async function fetchWithRetry(url, opts = {}, retries = 3, label = '') {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const controller = new AbortController();
+      const tid = setTimeout(() => controller.abort(), 15000); // 15s timeout
+      const r = await fetch(url, { ...opts, signal: controller.signal });
+      clearTimeout(tid);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r;
+    } catch (e) {
+      const isLast = i === retries - 1;
+      if (isLast) throw new Error(`${label ? label + ': ' : ''}${e.message} (tried ${retries}x)`);
+      setProgress(`${label} — retrying (${i + 2}/${retries})…`);
+      await sleep(1500 * (i + 1)); // backoff
+    }
+  }
+}
+
 async function sbFetch(path) {
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: { 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY } });
-  if (!r.ok) throw new Error(`Supabase ${r.status}`);
+  const r = await fetchWithRetry(
+    `${SUPABASE_URL}/rest/v1/${path}`,
+    { headers: { 'Authorization': `Bearer ${SUPABASE_KEY}`, 'apikey': SUPABASE_KEY } },
+    3, 'Supabase'
+  );
   return r.json();
 }
 
 async function synGet(endpoint, params) {
   const qp = new URLSearchParams({ username: SYN_USER, password: SYN_PASS, version: '4', company: '1', ...params });
-  const r = await fetch(`${SYNERGIST_SERVER}/jsonapi/${endpoint}?${qp}`);
-  if (!r.ok) throw new Error(`Synergist ${r.status}`);
+  const r = await fetchWithRetry(
+    `${SYNERGIST_SERVER}/jsonapi/${endpoint}?${qp}`,
+    {}, 3, 'Synergist'
+  );
   return r.json();
 }
 
+// ─── LOAD ─────────────────────────────────────────────────────────────────────
 async function loadData() {
   const btn = document.getElementById('btn-load');
   btn.disabled = true; btn.textContent = '⟳ Loading…';
   setDot('dripify','loading'); setDot('synergist','loading'); setDot('matches','loading');
-  setContainer('<div class="state-block"><div class="icon">⟳</div><h3>Fetching data…</h3><p>Pulling Dripify prospects and Synergist clients.</p></div>');
+  setContainer('<div class="state-block"><div class="icon">⟳</div><h3>Fetching prospects…</h3><p>Waking up Supabase — this can take 10–15 seconds on first load.</p><div class="hint">If it times out, just click Reload Data again.</div></div>');
 
+  // Load prospects (essential) — Synergist is optional bonus context
+  let prospects = [];
   try {
-    const [prospectsRaw, synRaw] = await Promise.all([
-      sbFetch('prospects?select=*&order=created_at.desc,id.desc'),
-      loadSynergistClients()
-    ]);
-
-    const prospects = prospectsRaw || [];
-    synergistClients = synRaw;
-
+    setProgress('Loading Dripify prospects from Supabase…');
+    prospects = await sbFetch('prospects?select=*&order=created_at.desc,id.desc') || [];
     setDot('dripify', prospects.length ? 'loaded' : 'error');
     document.getElementById('count-dripify').textContent = `${prospects.length} contacts`;
-    setDot('synergist', synRaw.length ? 'loaded' : 'error');
-    document.getElementById('count-synergist').textContent = `${synRaw.length} active clients`;
-
-    cards = prospects.map((p, i) => enrichProspect(p, i));
-
-    const matchCount = cards.filter(c => c.matches.length > 0).length;
-    setDot('matches', 'loaded');
-    document.getElementById('count-matches').textContent = `${matchCount} of ${prospects.length} matched`;
-
-    populateFilters();
-    renderCards();
-    document.getElementById('filter-row').style.display = 'flex';
-    document.getElementById('btn-generate').disabled = false;
   } catch(e) {
-    setDot('dripify','error'); setDot('synergist','error'); setDot('matches','error');
-    setContainer(`<div class="state-block"><div class="icon">⚠️</div><h3>Error loading data</h3><p>${esc(e.message)}</p></div>`);
+    setDot('dripify','error');
+    document.getElementById('count-dripify').textContent = 'Error';
+    setContainer(`<div class="state-block"><div class="icon">⚠️</div><h3>Supabase failed to load</h3><p>${esc(e.message)}</p><div class="hint">Try clicking Reload Data — Supabase sometimes needs a moment to wake up.</div></div>`);
+    btn.disabled = false; btn.textContent = '⟳ Reload Data';
+    return;
   }
 
+  // Load Synergist (non-blocking — nice to have for extra context)
+  try {
+    setProgress('Loading Synergist client list…');
+    synergistClients = await loadSynergistClients();
+    setDot('synergist', synergistClients.length ? 'loaded' : 'skipped');
+    document.getElementById('count-synergist').textContent = synergistClients.length ? `${synergistClients.length} clients` : 'Skipped';
+  } catch(e) {
+    console.warn('Synergist failed (non-fatal):', e.message);
+    setDot('synergist','skipped');
+    document.getElementById('count-synergist').textContent = 'Unavailable';
+  }
+
+  // Build cards using portfolio taxonomy
+  cards = prospects.map((p, i) => enrichProspect(p, i));
+  const matchCount = cards.filter(c => c.matches.length > 0).length;
+  setDot('matches','loaded');
+  document.getElementById('count-matches').textContent = `${matchCount} of ${prospects.length} matched`;
+
+  populateFilters();
+  renderCards();
+  document.getElementById('filter-row').style.display = 'flex';
+  document.getElementById('btn-generate').disabled = false;
+  setProgress('');
   btn.disabled = false; btn.textContent = '⟳ Reload Data';
 }
 
 async function loadSynergistClients() {
-  try {
-    let all = [], page = 1, total = null;
-    while (true) {
-      const data = await synGet('jobs.json', { modelstructure: 'jobslist', style: 'modeldata', page });
-      if (!data?.data) break;
-      all = all.concat(data.data);
-      if (total === null) total = data.recordCount || all.length;
-      if (all.length >= total) break;
-      page++;
-    }
-    return [...new Set(all.map(j => j.jobClientName || '').filter(n => n && !shouldExclude(n)))];
-  } catch(e) {
-    console.warn('Synergist failed:', e.message);
-    return [];
+  let all = [], page = 1, total = null;
+  while (true) {
+    const data = await synGet('jobs.json', { modelstructure: 'jobslist', style: 'modeldata', page });
+    if (!data?.data) break;
+    all = all.concat(data.data);
+    if (total === null) total = data.recordCount || all.length;
+    if (all.length >= total) break;
+    page++;
+    if (page > 20) break; // safety cap
   }
+  return [...new Set(all.map(j => j.jobClientName || '').filter(n => n && !shouldExclude(n)))];
 }
 
 // ─── MATCHING ─────────────────────────────────────────────────────────────────
 function enrichProspect(p, i) {
-  const searchText = [p.company, p.title, p.campaign]
-    .map(s => (s||'').toLowerCase()).join(' ');
+  // Use the full title field (LinkedIn headline) + company + campaign for matching
+  // The title often contains "at CompanyName" with sector context, previous roles, interests etc.
+  const searchText = [
+    p.first_name, p.last_name,
+    p.company,
+    p.title,           // LinkedIn headline — rich with sector signals
+    p.campaign,
+    p.company_website
+  ].map(s => (s||'').toLowerCase()).join(' ');
 
   const matchedCats = new Set();
 
-  // 1. Portfolio keyword matching (broadest)
+  // 1. Portfolio keyword matching
   for (const [kw, cats] of Object.entries(KEYWORD_MAP)) {
-    const re = kw.length <= 4 ? new RegExp(`\\b${kw}\\b`, 'i') : new RegExp(kw, 'i');
+    // Word-boundary for short words, substring for longer ones
+    const re = kw.length <= 5 ? new RegExp(`\\b${kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\b`, 'i') : new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'i');
     if (re.test(searchText)) cats.forEach(c => matchedCats.add(c));
   }
 
-  // 2. Live Synergist client name matching — find if prospect's company resembles a client
+  // 2. Live Synergist client name overlap
   for (const client of synergistClients) {
-    const words = client.toLowerCase().split(/\s+/).filter(w => w.length > 4 && !/^(ltd|limited|plc|group|uk|the|and|for|with)$/.test(w));
+    const cleanClient = client.toLowerCase().replace(/[^a-z0-9\s]/g,'');
+    const words = cleanClient.split(/\s+/).filter(w => w.length > 5 && !['limited','company','group','international','global','europe','united','kingdom'].includes(w));
     if (words.some(w => searchText.includes(w))) {
-      // Map client to portfolio category
       for (const cat of JUNGLE_PORTFOLIO) {
-        if (cat.clients.some(c => c.toLowerCase().includes(client.toLowerCase().slice(0,8)))) {
+        if (cat.clients.some(c => c.toLowerCase().includes(client.toLowerCase().slice(0,6)))) {
           matchedCats.add(cat.category);
         }
       }
@@ -357,12 +396,16 @@ function enrichProspect(p, i) {
 
   const matches = JUNGLE_PORTFOLIO.filter(cat => matchedCats.has(cat.category));
 
+  // Clean title: remove "at CompanyName" suffix for display
+  const cleanTitle = (p.title || '').replace(/\s+(at|@)\s+.+$/i, '').trim();
+
   return {
     id: p.id || `p${i}`,
     first_name: p.first_name || '',
     last_name: p.last_name || '',
     company: p.company || '',
-    title: p.title || '',
+    title: p.title || '',       // full LinkedIn headline for Claude
+    display_title: cleanTitle,  // shortened for display
     campaign: p.campaign || '',
     email: p.email || '',
     linkedin_url: p.linkedin_url || '',
@@ -429,7 +472,7 @@ function createCard(card) {
       <div class="card-avatar">${initials}</div>
       <div class="card-info">
         <div class="card-name">${esc(name)}</div>
-        <div class="card-meta">${esc(card.title)}${card.company ? ` · ${esc(card.company)}` : ''}</div>
+        <div class="card-meta">${esc(card.display_title || card.title)}${card.company ? ` · ${esc(card.company)}` : ''}</div>
         <div class="card-tags">${catTags}${channelTags}${noMatchTag}${campaignTag}</div>
       </div>
       <div class="card-right">
@@ -466,73 +509,68 @@ function populateFilters() {
 // ─── PROMPT ───────────────────────────────────────────────────────────────────
 function buildPrompt(card) {
   const hasMatch = card.matches.length > 0;
-
-  const portfolioContext = hasMatch ? card.matches.map(m => `
-CATEGORY: ${m.category}
-Relevant Jungle clients/projects: ${m.clients.join(', ')}
-${m.channels.length ? `Jungle owned channels in this space: ${m.channels.join(', ')}` : ''}
-Pitch angle: ${m.angle}`).join('\n\n') : '';
-
-  const matchedCatNames = card.matches.map(m => m.category).join(' and ');
+  const portfolioContext = hasMatch ? card.matches.map(m =>
+    `CATEGORY: ${m.category}\nRelevant Jungle clients/projects: ${m.clients.join(', ')}\n${m.channels.length ? `Jungle owned channels: ${m.channels.join(', ')}\n` : ''}Pitch angle: ${m.angle}`
+  ).join('\n\n') : '';
 
   const base = `You are writing a LinkedIn follow-up message on behalf of Coris Leachman, Executive Director of Growth at Jungle Creations.
 
-ABOUT JUNGLE CREATIONS:
-Jungle is a social-first agency with a publisher heritage. Over 12 years they built their own social channels to 150M+ followers and 7B+ views — including Twisted (49M food fans), Four Nine (5M+ women's lifestyle), and SPORF (12M+ sports fans). That publisher background is their sharpest differentiator: they understand audiences from the inside, which is why brands come to them for social content that actually performs rather than content built for a board presentation.
+ABOUT JUNGLE:
+Jungle is a social-first agency with a publisher heritage. Over 12 years they built their own social channels to 150M+ followers and 7B+ views — including Twisted (49M food fans), Four Nine (5M+ women's lifestyle), and SPORF (12M+ sports fans). That publisher background is their sharpest differentiator: they've built real audiences themselves, so they understand from the inside what social content actually performs — not just what looks good in a plan.
 
 THE PROSPECT:
 Name: ${card.first_name} ${card.last_name}
-Title: ${card.title || 'N/A'}
+LinkedIn headline: ${card.title || 'N/A'}
 Company: ${card.company || 'N/A'}
-Dripify campaign they came from: "${card.campaign || 'N/A'}"`;
+Dripify campaign: "${card.campaign || 'N/A'}"`;
 
   if (hasMatch) {
     return `${base}
 
-MATCHED PORTFOLIO CONTEXT — use this to make the message specific:
+MATCHED PORTFOLIO CONTEXT:
 ${portfolioContext}
 
-TASK:
-Write a LinkedIn message (90–130 words) from Coris to ${card.first_name}. Requirements:
+TASK — write a LinkedIn message (90–130 words):
+1. Open with something specific to their world — reference their sector, company, or what they likely deal with. Not generic.
+2. Draw a natural connection to Jungle's relevant work. Name 1–2 specific clients or owned channels from the matched portfolio context. Pick the most credible, don't list everything.
+3. The publisher heritage point should feel genuinely interesting, not like a sales line.
+4. End with a specific low-pressure ask — not "would love to connect". Something like sharing a case study, a brief call about a specific challenge, or something relevant and timely.
+5. Sound like a confident senior BD person wrote it — not a sequence tool.
 
-1. Open with something specific to their world — reference their sector (${matchedCatNames}), company, or the kind of challenge they likely deal with. No generic openers.
-2. Draw a natural connection to Jungle's relevant work. Name 1–2 specific clients or owned channels from the matched portfolio context where they genuinely fit. Don't list everything — pick what's most credible.
-3. The publisher heritage angle should land as genuinely interesting, not as marketing copy. Jungle built these audiences themselves — that's the differentiator.
-4. End with a specific, low-pressure ask. Not "would love to connect" — something like sharing a relevant case study, a short conversation about a specific challenge, or a thought piece worth discussing.
-5. Sound like it was written by a confident senior person in BD — not generated by a sequence tool.
+BANNED: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless" / "circle back" / "hop on a call" / "I'd love to" / "looking forward to connecting".
 
-BANNED PHRASES: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless" / "circle back" / "hop on a call" / "I'd love to" / "looking forward to connecting".
-
-Write ONLY the message body. No "Hi [name]" opener — start straight into the message. No sign-off.`;
+Write ONLY the message body. No "Hi [name]" opener. No sign-off.`;
   } else {
     return `${base}
 
-No specific portfolio match was found for this prospect's sector. Write a strong general message.
+No specific portfolio match found. Write a strong general message.
 
-TASK:
-Write a LinkedIn message (80–110 words) from Coris to ${card.first_name}. Requirements:
+TASK — write a LinkedIn message (80–110 words):
+1. Open specifically — reference their role, company, or something about their world. Show you've thought about who they are.
+2. Introduce Jungle's angle briefly but memorably. The point worth landing: they've built audiences themselves (150M+ followers over 12 years), so they understand social content from the inside — not just as a service they deliver.
+3. Make one pointed observation relevant to their work — about social performance, audience engagement, or the gap between what brands produce and what platforms reward.
+4. End with a soft, specific ask.
+5. Sound like a confident senior person — not a template.
 
-1. Start with something specific to their role or company — show you've thought about who they are, not just that you're running a sequence.
-2. Introduce Jungle's angle briefly but memorably: social-first agency, publisher heritage, 150M+ followers built over 12 years. The point worth landing: they've built audiences themselves, so they know from the inside what makes social content actually work — not just what looks good in a plan.
-3. Make one pointed observation relevant to their world — about social content performance, audience engagement, or the gap between what brands produce and what platforms reward.
-4. End with a soft, genuine ask — something specific enough to feel personal, not templated.
-5. Sound like a confident senior person wrote it.
+BANNED: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless".
 
-BANNED PHRASES: "I hope this message finds you well" / "reach out" / "synergies" / "touch base" / "leverage" / "game-changer" / "excited to" / "passionate about" / "innovative" / "cutting-edge" / "seamless" / "circle back" / "hop on a call".
-
-Write ONLY the message body. No opener greeting — start straight in. No sign-off.`;
+Write ONLY the message body. No opener. No sign-off.`;
   }
 }
 
 // ─── CLAUDE API ───────────────────────────────────────────────────────────────
 async function callClaude(card) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt(card) }] })
-  });
-  if (!r.ok) throw new Error(`Claude API ${r.status}`);
+  const r = await fetchWithRetry(
+    'https://api.anthropic.com/v1/messages',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: buildPrompt(card) }] })
+    },
+    2, 'Claude API'
+  );
   const data = await r.json();
+  if (data.error) throw new Error(data.error.message);
   return data.content?.[0]?.text?.trim() || 'No message generated.';
 }
 
@@ -541,9 +579,8 @@ async function generateOne(id) {
   if (!card) return;
   const msgEl = document.getElementById(`msg-${id}`);
   const actionsEl = document.getElementById(`actions-${id}`);
-  const bodyEl = document.getElementById(`body-${id}`);
   const badgeEl = document.getElementById(`badge-${id}`);
-  bodyEl.classList.add('open');
+  document.getElementById(`body-${id}`)?.classList.add('open');
   if (msgEl) { msgEl.className = 'message-box generating'; msgEl.textContent = 'Writing…'; }
   try {
     card.message = await callClaude(card);
@@ -552,7 +589,7 @@ async function generateOne(id) {
     if (actionsEl) actionsEl.innerHTML = `<button class="copy-btn" id="copy-${id}" onclick="copyMessage('${id}')">Copy message</button><button class="regen-btn" onclick="generateOne('${id}')">Regenerate</button>`;
     updateExportBar();
   } catch(e) {
-    if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Error: ${e.message}`; }
+    if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Failed to generate: ${e.message}\n\nClick "Generate ↗" to retry.`; }
   }
 }
 
@@ -561,13 +598,12 @@ async function generateAll() {
   btn.disabled = true; btn.textContent = '✦ Generating…';
   const track = document.getElementById('progress-track');
   const bar = document.getElementById('progress-bar');
-  const label = document.getElementById('progress-label');
   track.classList.add('visible');
 
   const toGen = cards.filter(c => !c.message);
   let done = 0;
   for (const card of toGen) {
-    label.textContent = `${done + 1} / ${toGen.length} — ${card.first_name} ${card.last_name}`;
+    setProgress(`${done + 1} / ${toGen.length} — ${card.first_name} ${card.last_name}`);
     bar.style.width = `${(done / toGen.length) * 100}%`;
     const msgEl = document.getElementById(`msg-${card.id}`);
     const actionsEl = document.getElementById(`actions-${card.id}`);
@@ -579,13 +615,13 @@ async function generateAll() {
       if (badgeEl) { badgeEl.textContent = '✓ Generated'; badgeEl.className = 'match-badge yes'; }
       if (actionsEl) actionsEl.innerHTML = `<button class="copy-btn" id="copy-${card.id}" onclick="copyMessage('${card.id}')">Copy message</button><button class="regen-btn" onclick="generateOne('${card.id}')">Regenerate</button>`;
     } catch(e) {
-      if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Error: ${e.message}`; }
+      if (msgEl) { msgEl.className = 'message-box error-state'; msgEl.textContent = `Failed: ${e.message}`; }
     }
     done++;
     bar.style.width = `${(done / toGen.length) * 100}%`;
-    await sleep(300);
+    await sleep(400);
   }
-  label.textContent = `Done — ${done} messages generated`;
+  setProgress(`Done — ${done} messages generated`);
   btn.disabled = false; btn.textContent = '✦ Generate All Messages';
   updateExportBar();
 }
@@ -594,6 +630,7 @@ async function generateAll() {
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function setDot(id, state) { const d = document.getElementById(`dot-${id}`); if(d) d.className = `status-dot ${state}`; }
 function setContainer(html) { document.getElementById('results-container').innerHTML = html; }
+function setProgress(msg) { document.getElementById('progress-label').textContent = msg; }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function copyMessage(id) {
