@@ -3109,30 +3109,7 @@ function _confirmClose(result) {
   setTimeout(() => { overlay.style.display = 'none'; }, 200);
   if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
 }
-</script>
 
-<!-- Custom Confirm Dialog -->
-<div id="confirm-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(14,14,14,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
-  <div id="confirm-box" style="background:var(--cream);border-radius:18px;width:min(420px,92vw);box-shadow:0 32px 80px rgba(0,0,0,0.28);padding:32px 28px 24px;font-family:'DM Sans',sans-serif;transform:translateY(12px);transition:transform 0.2s;">
-    <div id="confirm-title" style="font-size:17px;font-weight:800;letter-spacing:-0.02em;color:var(--black);margin-bottom:10px;"></div>
-    <div id="confirm-message" style="font-size:13px;color:#555;line-height:1.55;margin-bottom:28px;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:10px;">
-      <button onclick="_confirmClose(false)" style="background:var(--grey-light);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--grey-mid);transition:background 0.15s;" onmouseover="this.style.background='var(--grey)';this.style.color='var(--black)'" onmouseout="this.style.background='var(--grey-light)';this.style.color='var(--grey-mid)'">Cancel</button>
-      <button id="confirm-ok-btn" onclick="_confirmClose(true)" style="border:none;border-radius:100px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;"></button>
-    </div>
-  </div>
-</div>
-
-<style>
-.confirm-visible { opacity: 1 !important; }
-.confirm-visible #confirm-box { transform: translateY(0) !important; }
-.confirm-btn--danger { background: #e05c5c; color: white; }
-.confirm-btn--danger:hover { opacity: 0.85; }
-.confirm-btn--primary { background: var(--black); color: var(--green); }
-.confirm-btn--primary:hover { opacity: 0.85; }
-</style>
-
-  <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer>
 // ═══════════════════════════════════════════════════════════════════
 // COMMS PLAN EVOLUTION — data loaders + render functions
 // Uses the existing SUPABASE_URL + SUPABASE_ANON / sb() helper defined above
@@ -3937,5 +3914,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+
+<!-- Custom Confirm Dialog -->
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(14,14,14,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;">
+  <div id="confirm-box" style="background:var(--cream);border-radius:18px;width:min(420px,92vw);box-shadow:0 32px 80px rgba(0,0,0,0.28);padding:32px 28px 24px;font-family:'DM Sans',sans-serif;transform:translateY(12px);transition:transform 0.2s;">
+    <div id="confirm-title" style="font-size:17px;font-weight:800;letter-spacing:-0.02em;color:var(--black);margin-bottom:10px;"></div>
+    <div id="confirm-message" style="font-size:13px;color:#555;line-height:1.55;margin-bottom:28px;"></div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;">
+      <button onclick="_confirmClose(false)" style="background:var(--grey-light);border:none;border-radius:100px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--grey-mid);transition:background 0.15s;" onmouseover="this.style.background='var(--grey)';this.style.color='var(--black)'" onmouseout="this.style.background='var(--grey-light)';this.style.color='var(--grey-mid)'">Cancel</button>
+      <button id="confirm-ok-btn" onclick="_confirmClose(true)" style="border:none;border-radius:100px;padding:10px 22px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity 0.15s;"></button>
+    </div>
+  </div>
+</div>
+
+<style>
+.confirm-visible { opacity: 1 !important; }
+.confirm-visible #confirm-box { transform: translateY(0) !important; }
+.confirm-btn--danger { background: #e05c5c; color: white; }
+.confirm-btn--danger:hover { opacity: 0.85; }
+.confirm-btn--primary { background: var(--black); color: var(--green); }
+.confirm-btn--primary:hover { opacity: 0.85; }
+</style>
+
+  <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer></script>
 </body>
 </html>
