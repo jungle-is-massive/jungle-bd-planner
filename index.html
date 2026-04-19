@@ -3867,7 +3867,7 @@ function openBrandHouseModal() {
       </div>
       <form onsubmit="return cpSaveBrandHouse(event)">
         <div class="cp-modal-body">
-          <label><div class="label-text">Proposition line *</div><input name="proposition_line" required value="${cpEsc(bh.proposition_line||'')}" placeholder="The agency that builds social into a growth engine." /></label>
+          <label><div class="label-text">Proposition line *</div><input name="proposition_line" required value="${cpEsc(bh.proposition_line||'')}" placeholder="Jungle. The agency for brands that demand more from social." /></label>
           <label><div class="label-text">Status</div><select name="proposition_status">${opts(bh.proposition_status||'draft', [['draft','Draft'],['in_review','In review'],['approved','Approved']])}</select></label>
           <label><div class="label-text">Core POV</div><textarea name="core_pov" style="min-height:120px">${cpEsc(bh.core_pov||'')}</textarea></label>
           <label><div class="label-text">Vision statement</div><textarea name="vision_statement">${cpEsc(bh.vision_statement||'')}</textarea></label>
