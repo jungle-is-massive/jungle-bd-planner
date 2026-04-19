@@ -1395,19 +1395,19 @@ const MONTHS = [
 const PLAN_START = new Date(2026,3,1), PLAN_END = new Date(2027,3,1);
 
 let SECTIONS = [
-  {id:'intermediaries',label:'Intermediary Activity',rows:[
+  {id:'intermediaries',label:'Intermediary Activity',tier:'rumble',rows:[
     {key:'intermediary-ingenuity',label:'Ingenuity+'},
     {key:'intermediary-oystercatchers',label:'Oystercatchers'},
     {key:'intermediary-aar',label:'AAR'},
     {key:'intermediary-masterclassing',label:'Masterclassing'},
   ]},
-  {id:'owned',label:'Owned Events',rows:[{key:'owned-events',label:'Jungle Event'}]},
-  {id:'speaking',label:'Speaking',rows:[{key:'event-speaking',label:'Speaking Slots'}]},
-  {id:'attendance',label:'Event Attendance',rows:[{key:'event-attendance',label:'Conferences'}]},
-  {id:'content',label:'Content & Comms',rows:[
-    {key:'content-thought-leadership',label:'Thought Leadership'},
-    {key:'content-nurture',label:'Nurture Cadence'},
-    {key:'content-social',label:'Owned Social',placeholder:true},
+  {id:'owned',label:'Owned Events',tier:'roar',rows:[{key:'owned-events',label:'Jungle Event'}]},
+  {id:'speaking',label:'Speaking',tier:'rumble',rows:[{key:'event-speaking',label:'Speaking Slots'}]},
+  {id:'attendance',label:'Event Attendance',tier:'rumble',rows:[{key:'event-attendance',label:'Conferences'}]},
+  {id:'content',label:'Content & Comms',tier:'mixed',rows:[
+    {key:'content-thought-leadership',label:'Thought Leadership',tier:'rumble'},
+    {key:'content-nurture',label:'Nurture Cadence',tier:'buzz'},
+    {key:'content-social',label:'Owned Social',tier:'buzz',placeholder:true},
   ]},
 ];
 
@@ -2117,16 +2117,34 @@ function saveCollapseState(id, collapsed) { const s=getCollapseState(); s[id]=co
 function renderRows() {
   const c=document.getElementById('rows-container'); c.innerHTML='';
   const collapseState = getCollapseState();
+  const tierPill = (tier) => {
+    if (!tier) return '';
+    const labels = { buzz:'Buzz', rumble:'Rumble', roar:'Roar', mixed:'Buzz + Rumble' };
+    return `<span class="cp-tier ${tier === 'mixed' ? 'rumble' : tier}" style="font-size:9px;padding:3px 8px;margin-left:10px;letter-spacing:0.1em">${labels[tier]||tier}</span>`;
+  };
+  const rowTierPill = (tier) => {
+    if (!tier) return '';
+    const labels = { buzz:'Buzz', rumble:'Rumble', roar:'Roar' };
+    return `<span class="cp-tier ${tier}" style="font-size:8px;padding:2px 6px;margin-left:8px;letter-spacing:0.08em;vertical-align:middle">${labels[tier]||tier}</span>`;
+  };
   SECTIONS.forEach(s=>{
     // Default collapsed = true (first visit), unless explicitly saved as false
     const isCollapsed = collapseState[s.id] !== false;
     const sg=document.createElement('div'); sg.className='section-group'+(isCollapsed?' collapsed':''); sg.dataset.section=s.id;
     const sh=document.createElement('div'); sh.className='section-header';
     sh.onclick=()=>{ sg.classList.toggle('collapsed'); saveCollapseState(s.id, sg.classList.contains('collapsed')); };
-    sh.innerHTML=`<div></div><div style="display:flex;align-items:center"><div class="section-title">${s.label}</div><div class="section-chevron"><svg viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z"/></svg></div></div>`;
+    sh.innerHTML=`<div></div><div style="display:flex;align-items:center"><div class="section-title">${s.label}${tierPill(s.tier)}</div><div class="section-chevron"><svg viewBox="0 0 8 5"><path d="M0 0l4 5 4-5z"/></svg></div></div>`;
     sg.appendChild(sh);
     const sr=document.createElement('div'); sr.className='section-rows';
-    s.rows.forEach(rc=>{sr.appendChild(rc.placeholder?buildPlaceholder(rc):buildRow(rc,allEvents.filter(e=>e.row_key===rc.key),s.id));});
+    s.rows.forEach(rc=>{
+      const rowEl = rc.placeholder?buildPlaceholder(rc):buildRow(rc,allEvents.filter(e=>e.row_key===rc.key),s.id);
+      // Inject row-level tier badge into the row-label
+      if (rc.tier && s.tier === 'mixed') {
+        const lbl = rowEl.querySelector('.row-label, .placeholder-label');
+        if (lbl) lbl.innerHTML = lbl.textContent + rowTierPill(rc.tier);
+      }
+      sr.appendChild(rowEl);
+    });
     sg.appendChild(sr); c.appendChild(sg);
   });
   renderTodayLine();
@@ -2266,6 +2284,39 @@ async function openModal(evt) {
   currentModalEvent=evt;
   const labels={intermediary:'Intermediary',owned:'Owned Event',speaking:'Speaking',attendance:'Attendance',content:'Content',nurture:'Nurture'};
   const pill=document.getElementById('modal-pill'); pill.textContent=labels[evt.category]||evt.category; pill.className=`modal-cat-pill ${evt.category}`;
+
+  // Infer tier from SECTIONS — match row_key → row → tier (falling back to section tier)
+  let tier = null;
+  for (const s of SECTIONS) {
+    for (const r of s.rows) {
+      if (r.key === evt.row_key) { tier = r.tier || s.tier; break; }
+    }
+    if (tier) break;
+  }
+  // Update tier-chip next to the pill
+  let tierChip = document.getElementById('modal-tier-chip');
+  if (!tierChip) {
+    tierChip = document.createElement('span');
+    tierChip.id = 'modal-tier-chip';
+    tierChip.style.cssText = 'margin-left:8px;font-family:\'DM Mono\',monospace;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 10px;border-radius:100px;display:none';
+    pill.after(tierChip);
+  }
+  if (tier && tier !== 'mixed') {
+    const tierColors = {
+      buzz: {bg:'rgba(74,191,255,0.15)', fg:'#0a5a8c', border:'rgba(74,191,255,0.3)'},
+      rumble: {bg:'rgba(240,180,41,0.18)', fg:'#7a4e00', border:'rgba(240,180,41,0.35)'},
+      roar: {bg:'rgba(255,107,74,0.18)', fg:'#8a2400', border:'rgba(255,107,74,0.35)'}
+    };
+    const c = tierColors[tier];
+    tierChip.textContent = tier;
+    tierChip.style.background = c.bg;
+    tierChip.style.color = c.fg;
+    tierChip.style.border = `1px solid ${c.border}`;
+    tierChip.style.display = 'inline-block';
+  } else {
+    tierChip.style.display = 'none';
+  }
+
   document.getElementById('modal-title').textContent=evt.name;
   document.getElementById('modal-date').textContent=fmtR(evt.start_date,evt.end_date);
   const meta=document.getElementById('modal-meta');
@@ -2277,7 +2328,7 @@ async function openModal(evt) {
       <button onclick="openEditEvent()" style="background:var(--black);color:var(--green);border:none;border-radius:100px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer">✎ Edit</button>
       <button onclick="deleteEvent('${evt.id}')" style="background:none;border:1.5px solid rgba(192,57,43,0.3);color:#c0392b;border-radius:100px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer">Delete</button>
     </div>` : '';
-  meta.innerHTML=(evt.location?`<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`:'')+`<div class="modal-meta-item">Type<strong>${labels[evt.category]}</strong></div>${editBtns}`;
+  meta.innerHTML=(evt.location?`<div class="modal-meta-item">Location<strong>${evt.location}</strong></div>`:'')+`<div class="modal-meta-item">Type<strong>${labels[evt.category]}</strong></div>${tier && tier !== 'mixed' ? `<div class="modal-meta-item">Tier<strong style="text-transform:capitalize">${tier}</strong></div>` : ''}${editBtns}`;
   const prep=document.getElementById('modal-prep');
   if(evt.category==='owned'){
     const ed=new Date(evt.start_date);
