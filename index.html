@@ -493,6 +493,209 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .s-replied { background: #FFF3CD; color: #856404; }
 .s-meeting { background: rgba(135,251,102,0.2); color: #2d6b00; }
 .s-default { background: var(--grey-light); color: var(--grey-mid); }
+/* ═══════════════════════════════════════════════════════════════════
+   COMMS PLAN EVOLUTION — styles for Plan / Brand House / Comms / Nurture / Decisions
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* SHARED — base view page wrapper, matches .prog-section pattern */
+.cp-view { max-width: 1100px; margin: 0 auto; padding: 48px 32px 120px; }
+.cp-view.wide { max-width: 1240px; }
+
+.cp-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 10px; display: inline-flex; align-items: center; gap: 10px; }
+.cp-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green-dim); }
+.cp-h1 { font-size: clamp(34px,4.5vw,52px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 16px; }
+.cp-h1 span { color: var(--green-dim); font-style: italic; font-weight: 400; }
+.cp-sub { font-size: 15px; color: var(--grey-mid); line-height: 1.55; max-width: 720px; margin-bottom: 40px; }
+
+.cp-section { margin-top: 48px; }
+.cp-section-label { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 14px; display: flex; align-items: center; gap: 14px; }
+.cp-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.cp-section-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 8px; }
+.cp-section-sub { font-size: 13px; color: var(--grey-mid); line-height: 1.55; margin-bottom: 20px; max-width: 680px; }
+
+/* CARDS */
+.cp-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px 24px; }
+.cp-card + .cp-card { margin-top: 12px; }
+.cp-card.editable { transition: border-color 0.15s; }
+.cp-card.editable:hover { border-color: var(--grey); }
+
+.cp-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+.cp-card-title { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+.cp-card-body { font-size: 13px; color: #333; line-height: 1.55; }
+.cp-card-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey-mid); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 10px; }
+
+.cp-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cp-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.cp-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 900px) { .cp-grid-3, .cp-grid-4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .cp-grid-2, .cp-grid-3, .cp-grid-4 { grid-template-columns: 1fr; } }
+
+/* TBD / empty states */
+.cp-tbd { background: #fff8e1; border: 1.5px dashed #f5a623; color: #7a4e00; padding: 14px 18px; border-radius: 10px; font-size: 13px; line-height: 1.5; display: flex; align-items: flex-start; gap: 10px; }
+.cp-tbd::before { content: '!'; flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; background: #f5a623; color: white; font-family: 'DM Mono', monospace; font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; margin-top: -1px; }
+
+/* Status pills */
+.cp-pill { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 9px; border-radius: 100px; background: var(--grey-light); color: var(--grey-mid); white-space: nowrap; }
+.cp-pill.green { background: rgba(139,255,87,0.25); color: #2d6b00; }
+.cp-pill.amber { background: rgba(245,166,35,0.18); color: #7a4e00; }
+.cp-pill.red { background: rgba(224,92,92,0.15); color: #9b1c1c; }
+.cp-pill.blue { background: rgba(74,144,217,0.15); color: #1a4a7a; }
+.cp-pill.black { background: var(--black); color: var(--green); }
+
+/* Tier badges (Buzz/Rumble/Roar) */
+.cp-tier { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 100px; }
+.cp-tier.buzz { background: rgba(74,191,255,0.15); color: #0a5a8c; border: 1px solid rgba(74,191,255,0.3); }
+.cp-tier.rumble { background: rgba(240,180,41,0.18); color: #7a4e00; border: 1px solid rgba(240,180,41,0.35); }
+.cp-tier.roar { background: rgba(255,107,74,0.18); color: #8a2400; border: 1px solid rgba(255,107,74,0.35); }
+
+/* Open-decisions strip (cross-cutting) */
+.cp-decisions-strip { background: var(--black); color: var(--cream); border-radius: 12px; padding: 16px 20px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+.cp-decisions-strip .ds-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.cp-decisions-strip .ds-count { font-size: 22px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; line-height: 1; font-family: 'DM Mono', monospace; }
+.cp-decisions-strip .ds-label { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.4; }
+.cp-decisions-strip .ds-label strong { color: var(--green); font-weight: 700; }
+.cp-decisions-strip .ds-cta { background: var(--green); color: var(--black); border: none; padding: 8px 16px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: -0.01em; white-space: nowrap; }
+.cp-decisions-strip .ds-cta:hover { background: var(--green-dim); }
+.cp-decisions-strip.empty { background: rgba(139,255,87,0.12); color: #2d6b00; border: 1px solid rgba(139,255,87,0.3); }
+.cp-decisions-strip.empty .ds-count { color: #2d6b00; }
+
+/* PLAN view — big quarterly narrative */
+.plan-hero { background: var(--black); color: var(--cream); border-radius: 20px; padding: 44px 48px; margin-bottom: 40px; }
+.plan-hero .hero-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.16em; color: var(--green); text-transform: uppercase; margin-bottom: 18px; }
+.plan-hero h1 { font-size: clamp(36px,4.5vw,56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; margin-bottom: 16px; }
+.plan-hero h1 span { color: var(--green); font-style: italic; font-weight: 400; }
+.plan-hero p { font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.6; max-width: 640px; }
+.plan-hero .hero-cta-row { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.plan-hero .hero-cta { background: var(--green); color: var(--black); border: none; padding: 10px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: -0.01em; }
+.plan-hero .hero-cta.ghost { background: transparent; color: var(--cream); border: 1px solid rgba(255,255,255,0.2); }
+.plan-hero .hero-cta.ghost:hover { background: rgba(255,255,255,0.08); }
+.plan-hero .hero-cta:not(.ghost):hover { background: var(--green-dim); }
+
+.plan-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
+@media (max-width: 800px) { .plan-stats { grid-template-columns: repeat(2, 1fr); } }
+.plan-stat { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+.plan-stat-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.plan-stat-value { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+.plan-stat-value.green { color: var(--green-dim); }
+.plan-stat-value.amber { color: #e09a00; }
+.plan-stat-value.red { color: #c44; }
+.plan-stat-sub { font-size: 11px; color: var(--grey-mid); margin-top: 4px; line-height: 1.4; }
+
+.plan-quarters { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 40px; }
+@media (max-width: 900px) { .plan-quarters { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .plan-quarters { grid-template-columns: 1fr; } }
+.plan-quarter { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+.plan-quarter-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); letter-spacing: 0.14em; text-transform: uppercase; }
+.plan-quarter-title { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 2px; }
+.plan-quarter-desc { font-size: 12px; color: #555; line-height: 1.5; margin-bottom: 8px; flex: 1; }
+.plan-quarter-anchor { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--black); font-weight: 600; padding-top: 10px; border-top: 1px solid var(--border); }
+
+/* DECISIONS board */
+.dec-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.dec-card.critical { border-color: #c44; border-width: 2px; }
+.dec-card.high { border-color: #f5a623; }
+.dec-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.dec-title { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; flex: 1; }
+.dec-question { font-size: 12.5px; color: #333; line-height: 1.55; }
+.dec-why { font-size: 12px; color: var(--grey-mid); line-height: 1.5; font-style: italic; padding-left: 10px; border-left: 2px solid var(--border); }
+.dec-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--grey-mid); }
+.dec-columns { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; align-items: start; }
+@media (max-width: 1000px) { .dec-columns { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .dec-columns { grid-template-columns: 1fr; } }
+.dec-col { display: flex; flex-direction: column; gap: 10px; }
+.dec-col-header { display: flex; justify-content: space-between; align-items: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--grey-mid); margin-bottom: 2px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.dec-col-header .count { background: var(--grey-light); padding: 2px 8px; border-radius: 100px; font-weight: 600; }
+
+/* Buzz/Rumble/Roar tiers — overview strip */
+.tier-strip { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+@media (max-width: 800px) { .tier-strip { grid-template-columns: 1fr; } }
+.tier-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 8px; }
+.tier-card .tier-badge { align-self: flex-start; margin-bottom: 6px; }
+.tier-card .tier-name { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.tier-card .tier-purpose { font-size: 12px; color: var(--grey-mid); line-height: 1.5; }
+.tier-card .tier-cadence { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--black); font-weight: 600; padding: 8px 0; border-top: 1px solid var(--border); margin-top: 10px; }
+
+/* Content-series rows */
+.cs-row { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 20px; display: grid; grid-template-columns: auto 1fr auto; gap: 16px; align-items: center; }
+.cs-row + .cs-row { margin-top: 10px; }
+.cs-row .cs-main { min-width: 0; }
+.cs-row .cs-title { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 4px; }
+.cs-row .cs-desc { font-size: 12px; color: var(--grey-mid); line-height: 1.45; }
+.cs-row .cs-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; font-size: 10px; color: var(--grey-mid); font-family: 'DM Mono', monospace; letter-spacing: 0.08em; }
+
+/* Pillar cards (Brand House) */
+.bh-pillar { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px; display: flex; flex-direction: column; gap: 10px; transition: border-color 0.15s; }
+.bh-pillar.confirmed { border-color: rgba(139,255,87,0.45); }
+.bh-pillar.under-review { border-color: rgba(245,166,35,0.35); }
+.bh-pillar-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--grey-mid); letter-spacing: 0.12em; }
+.bh-pillar-title { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.bh-pillar-desc { font-size: 13px; color: #333; line-height: 1.55; }
+.bh-pillar-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); margin-top: 6px; }
+.bh-pillar-stat { text-align: center; }
+.bh-pillar-stat-num { font-size: 18px; font-weight: 800; color: var(--black); font-family: 'DM Mono', monospace; }
+.bh-pillar-stat-num.incomplete { color: #c44; }
+.bh-pillar-stat-label { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--grey-mid); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+.bh-pillar-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; font-size: 11px; color: var(--grey-mid); margin-top: auto; }
+
+/* Proposition card — hero element of brand house */
+.prop-card { background: var(--black); color: var(--cream); border-radius: 20px; padding: 36px 40px; margin-bottom: 40px; display: flex; flex-direction: column; gap: 14px; }
+.prop-card .prop-eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); letter-spacing: 0.16em; text-transform: uppercase; }
+.prop-card .prop-line { font-size: clamp(28px,3.5vw,40px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: var(--cream); }
+.prop-card .prop-pov { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.6; max-width: 680px; margin-top: 10px; }
+.prop-card .prop-status { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+
+/* NURTURE — funnel visualization */
+.funnel-stages { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 32px; }
+@media (max-width: 1000px) { .funnel-stages { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .funnel-stages { grid-template-columns: repeat(2, 1fr); } }
+.funnel-stage { background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; }
+.funnel-stage.mql { border-color: var(--green); }
+.funnel-stage.sql { border-color: #4a90d9; }
+.funnel-stage-num { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); letter-spacing: 0.1em; }
+.funnel-stage-name { font-size: 12px; font-weight: 700; letter-spacing: -0.01em; margin-top: 4px; }
+.funnel-stage-count { font-size: 18px; font-weight: 800; font-family: 'DM Mono', monospace; color: var(--grey-mid); margin-top: 6px; }
+
+.nurture-step-row { display: grid; grid-template-columns: 80px 60px 1fr auto; gap: 14px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.nurture-step-row:last-child { border-bottom: none; }
+.nurture-step-row .step-n { font-family: 'DM Mono', monospace; color: var(--grey-mid); font-size: 10px; letter-spacing: 0.1em; }
+.nurture-step-row .step-offset { font-family: 'DM Mono', monospace; font-weight: 700; font-size: 11px; }
+.nurture-step-row .step-title { font-weight: 600; }
+.nurture-step-row .step-goal { display: block; color: var(--grey-mid); font-size: 11px; font-weight: 400; margin-top: 2px; line-height: 1.4; }
+.nurture-list { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; }
+.nurture-list-header { display: grid; grid-template-columns: 80px 60px 1fr auto; gap: 14px; padding: 10px 16px; background: var(--grey-light); font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); letter-spacing: 0.12em; text-transform: uppercase; }
+
+/* Edit pencil icon on editable cards */
+.cp-edit-btn { background: transparent; border: 1px solid var(--border); border-radius: 7px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--grey-mid); flex-shrink: 0; }
+.cp-edit-btn:hover { background: var(--grey-light); color: var(--black); border-color: var(--grey); }
+.cp-edit-btn svg { width: 12px; height: 12px; }
+
+/* Edit modal (shared) */
+.cp-modal-backdrop { position: fixed; inset: 0; background: rgba(17,17,16,0.55); backdrop-filter: blur(3px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.cp-modal { background: var(--white); border-radius: 16px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.35); }
+.cp-modal-header { padding: 22px 26px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+.cp-modal-eyebrow { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
+.cp-modal-title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+.cp-modal-close { background: transparent; border: none; cursor: pointer; color: var(--grey-mid); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.cp-modal-close:hover { background: var(--grey-light); color: var(--black); }
+.cp-modal-body { padding: 22px 26px; display: flex; flex-direction: column; gap: 14px; }
+.cp-modal-body label { display: block; }
+.cp-modal-body .label-text { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--grey-mid); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 5px; }
+.cp-modal-body input, .cp-modal-body select, .cp-modal-body textarea {
+  width: 100%; padding: 9px 11px; border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--white); color: var(--black);
+}
+.cp-modal-body input:focus, .cp-modal-body select:focus, .cp-modal-body textarea:focus { outline: none; border-color: var(--black); }
+.cp-modal-body textarea { min-height: 80px; resize: vertical; }
+.cp-modal-body .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cp-modal-footer { padding: 16px 26px 22px; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); }
+.cp-btn { padding: 9px 18px; border-radius: 100px; border: none; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 12px; cursor: pointer; letter-spacing: -0.01em; }
+.cp-btn.primary { background: var(--black); color: var(--green); }
+.cp-btn.primary:hover:not(:disabled) { background: #000; }
+.cp-btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.cp-btn.ghost { background: transparent; border: 1.5px solid var(--border); color: var(--black); }
+.cp-btn.ghost:hover { border-color: var(--black); }
+
+
 </style>
 </head>
 <body>
@@ -512,7 +715,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 <header id="topbar">
   <div class="wordmark">JUNGLE<span>.</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchView('calendar',this)">Calendar</button>
+    <button class="nav-tab active" onclick="switchView('plan',this)">Plan</button>
+    <button class="nav-tab" onclick="switchView('calendar',this)">Calendar</button>
+    <button class="nav-tab" onclick="switchView('brand-house',this)">Brand House</button>
+    <button class="nav-tab" onclick="switchView('comms',this)">Comms</button>
+    <button class="nav-tab" onclick="switchView('nurture',this)">Nurture</button>
+    <button class="nav-tab" onclick="switchView('decisions',this)">Decisions</button>
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
     <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
@@ -520,15 +728,15 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab" onclick="switchView('awards',this)">Awards</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
-    <button class="add-btn" id="add-btn" onclick="openAddModal()">+ Add Event</button>
-    <button class="add-btn" id="ws-btn" onclick="openWsModal()" style="opacity:0.7">+ Workstream</button>
+    <button class="add-btn" id="add-btn" onclick="openAddModal()" style="display:none">+ Add Event</button>
+    <button class="add-btn" id="ws-btn" onclick="openWsModal()" style="display:none;opacity:0.7">+ Workstream</button>
   </div>
 </header>
 
 <div id="tooltip"><div class="tt-name"></div><div class="tt-date"></div><div class="tt-loc"></div></div>
 
 <!-- CALENDAR VIEW -->
-<div class="view active" id="calendar-view">
+<div class="view" id="calendar-view">
   <div id="month-header-sticky">
     <div id="month-header-inner">
       <div id="month-header"></div>
@@ -539,13 +747,48 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       <div id="rows-container"></div>
     </div>
   </div>
-  <div id="legend">
+  <div id="legend" style="display:none">
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-intermediary)"></div>Intermediary</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-owned);border:1px solid #666"></div>Owned</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-speaking)"></div>Speaking</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-attendance)"></div>Attending</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--c-content)"></div>Content</div>
   </div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     PLAN VIEW — the executive summary. First thing Jade/Mal see.
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view active" id="plan-view-el">
+<div id="plan-view"></div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     BRAND HOUSE VIEW
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="brand-house-view-el">
+<div id="brand-house-view"></div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     COMMS VIEW — Buzz / Rumble / Roar engine spec
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="comms-view-el">
+<div id="comms-view"></div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     NURTURE VIEW — funnel, definitions, post-event sequences
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="nurture-view-el">
+<div id="nurture-view"></div>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════════════
+     DECISIONS VIEW — explicit open questions
+     ════════════════════════════════════════════════════════════════════ -->
+<div class="view" id="decisions-view-el">
+<div id="decisions-view"></div>
 </div>
 
 <!-- PROGRAMME VIEW -->
@@ -1293,13 +1536,30 @@ async function updateStatus(id, status) {
 function switchView(v, btn) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
-  const viewMap = {calendar:'calendar-view', programme:'programme-view-el', assets:'assets-view-el', prospects:'prospects-view-el', intermediaries:'intermediaries-view-el', awards:'awards-view-el'};
+  const viewMap = {
+    plan:'plan-view-el',
+    calendar:'calendar-view',
+    'brand-house':'brand-house-view-el',
+    comms:'comms-view-el',
+    nurture:'nurture-view-el',
+    decisions:'decisions-view-el',
+    programme:'programme-view-el',
+    assets:'assets-view-el',
+    prospects:'prospects-view-el',
+    intermediaries:'intermediaries-view-el',
+    awards:'awards-view-el'
+  };
   document.getElementById(viewMap[v]).classList.add('active');
   btn.classList.add('active');
   const isCalendar = v==='calendar';
   document.getElementById('add-btn').style.display = isCalendar?'':'none';
   document.getElementById('ws-btn').style.display = isCalendar?'':'none';
   document.getElementById('legend').style.display = isCalendar?'':'none';
+  if(v==='plan') renderPlan();
+  if(v==='brand-house') renderBrandHouse();
+  if(v==='comms') renderComms();
+  if(v==='nurture') renderNurture();
+  if(v==='decisions') renderDecisions();
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadBdContacts();
   if(v==='intermediaries') loadIntermediaries();
@@ -2821,6 +3081,810 @@ function _confirmClose(result) {
 .confirm-btn--primary:hover { opacity: 0.85; }
 </style>
 
-  <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer></script>
+  <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer>
+// ═══════════════════════════════════════════════════════════════════
+// COMMS PLAN EVOLUTION — data loaders + render functions
+// Uses the existing SUPABASE_URL + SUPABASE_ANON / sb() helper defined above
+// ═══════════════════════════════════════════════════════════════════
+
+const CP_STATE = {
+  team: [],
+  brand_house: null,
+  pillars: [],
+  pillar_messages: [],
+  content_series: [],
+  decisions: [],
+  funnel_stages: [],
+  funnel_definitions: [],
+  nurture_sequences: [],
+  nurture_steps: [],
+  loaded: false,
+  loading: null,
+};
+
+async function cpLoadAll(force=false) {
+  if (CP_STATE.loaded && !force) return;
+  if (CP_STATE.loading) return CP_STATE.loading;
+
+  CP_STATE.loading = (async () => {
+    const endpoints = {
+      team: 'team_members?select=*&order=sort_order.asc',
+      brand_house: 'brand_house?select=*&limit=1',
+      pillars: 'narrative_pillars?select=*&order=sort_order.asc',
+      pillar_messages: 'pillar_messages?select=*&order=sort_order.asc',
+      content_series: 'content_series?select=*',
+      decisions: 'strategic_decisions?select=*&order=sort_order.asc',
+      funnel_stages: 'funnel_stages?select=*&order=stage_order.asc',
+      funnel_definitions: 'funnel_definitions?select=*',
+      nurture_sequences: 'nurture_sequences?select=*',
+      nurture_steps: 'nurture_steps?select=*&order=step_number.asc',
+    };
+    const results = await Promise.all(
+      Object.entries(endpoints).map(async ([k, path]) => {
+        try {
+          const res = await sbFetch(path);
+          const data = await res.json();
+          return [k, Array.isArray(data) ? data : []];
+        } catch (e) {
+          console.warn(`[comms] Failed to load ${k}:`, e);
+          return [k, []];
+        }
+      })
+    );
+    for (const [k, v] of results) {
+      if (k === 'brand_house') CP_STATE.brand_house = v[0] || null;
+      else CP_STATE[k] = v;
+    }
+    CP_STATE.loaded = true;
+  })();
+  return CP_STATE.loading;
+}
+
+function cpPersonName(id) {
+  if (!id) return null;
+  const p = CP_STATE.team.find(m => m.id === id);
+  return p ? p.full_name : null;
+}
+
+function cpEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function cpOpenDecisionsCount(area) {
+  return CP_STATE.decisions.filter(d => d.status === 'open' && (!area || d.related_area === area)).length;
+}
+
+function cpDecisionsStrip(area) {
+  const open = cpOpenDecisionsCount(area);
+  const total = CP_STATE.decisions.filter(d => !area || d.related_area === area).length;
+  if (total === 0) return '';
+  if (open === 0) {
+    return `<div class="cp-decisions-strip empty">
+      <div class="ds-left">
+        <div class="ds-count">✓</div>
+        <div class="ds-label">All decisions in this area are <strong>resolved</strong>.</div>
+      </div>
+      <button class="ds-cta" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View board →</button>
+    </div>`;
+  }
+  return `<div class="cp-decisions-strip">
+    <div class="ds-left">
+      <div class="ds-count">${open}</div>
+      <div class="ds-label"><strong>Open decision${open === 1 ? '' : 's'}</strong> related to this area — decisions block the work downstream.</div>
+    </div>
+    <button class="ds-cta" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View board →</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// PLAN VIEW — the executive summary
+// ═══════════════════════════════════════════════════════════════════
+
+async function renderPlan() {
+  const root = document.getElementById('plan-view');
+  root.innerHTML = '<div class="cp-view"><div style="padding:40px;text-align:center;color:var(--grey-mid)">Loading the plan…</div></div>';
+  await cpLoadAll();
+
+  const openDec = CP_STATE.decisions.filter(d => d.status === 'open').length;
+  const criticalDec = CP_STATE.decisions.filter(d => d.status === 'open' && d.impact_level === 'critical').length;
+  const unownedSeries = CP_STATE.content_series.filter(c => !c.owner_id).length;
+  const pillarsConfirmed = CP_STATE.pillars.filter(p => p.status === 'confirmed').length;
+  const pillarsTotal = CP_STATE.pillars.length;
+
+  const prop = CP_STATE.brand_house?.proposition_line || 'Proposition TBD';
+  const propStatus = CP_STATE.brand_house?.proposition_status || 'draft';
+
+  root.innerHTML = `
+  <div class="cp-view wide">
+
+    <div class="plan-hero">
+      <div class="hero-eyebrow">The plan · Apr 2026 → Mar 2027</div>
+      <h1>${cpEsc(prop)} <span>→</span></h1>
+      <p>This is Jungle's twelve-month comms and growth plan. Four narrative pillars, three-tier content engine (Buzz → Rumble → Roar), one flagship moment (the Social Maturity Index event in October), and a post-event nurture system designed to convert attention into pipeline.</p>
+      <div class="hero-cta-row">
+        <button class="hero-cta" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">See the 12-month calendar →</button>
+        <button class="hero-cta ghost" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">${openDec} open decisions</button>
+      </div>
+    </div>
+
+    <div class="plan-stats">
+      <div class="plan-stat">
+        <div class="plan-stat-label">Pillars confirmed</div>
+        <div class="plan-stat-value ${pillarsConfirmed === pillarsTotal ? 'green' : 'amber'}">${pillarsConfirmed}/${pillarsTotal}</div>
+        <div class="plan-stat-sub">${pillarsTotal - pillarsConfirmed} still under review</div>
+      </div>
+      <div class="plan-stat">
+        <div class="plan-stat-label">Open decisions</div>
+        <div class="plan-stat-value ${criticalDec > 0 ? 'red' : openDec > 0 ? 'amber' : 'green'}">${openDec}</div>
+        <div class="plan-stat-sub">${criticalDec} critical · blocking work</div>
+      </div>
+      <div class="plan-stat">
+        <div class="plan-stat-label">Content series</div>
+        <div class="plan-stat-value ${unownedSeries > 0 ? 'amber' : 'green'}">${CP_STATE.content_series.length}</div>
+        <div class="plan-stat-sub">${unownedSeries} without an assigned owner</div>
+      </div>
+      <div class="plan-stat">
+        <div class="plan-stat-label">SMI event</div>
+        <div class="plan-stat-value">Oct 26</div>
+        <div class="plan-stat-sub">Flagship · 6-month nurture after</div>
+      </div>
+    </div>
+
+    <div class="cp-section-label">The year, in four quarters</div>
+
+    <div class="plan-quarters">
+      <div class="plan-quarter">
+        <div class="plan-quarter-label">Q2 · Apr – Jun 26</div>
+        <div class="plan-quarter-title">Launch</div>
+        <div class="plan-quarter-desc">Lock the proposition and pillars. Open intermediary conversations. Start Buzz cadence. First pillar content live. MAD//Meets + Social Media Marketing conferences as launch-pad.</div>
+        <div class="plan-quarter-anchor">Anchor: first intermediary meetings, first thought piece</div>
+      </div>
+      <div class="plan-quarter">
+        <div class="plan-quarter-label">Q3 · Jul – Sep 26</div>
+        <div class="plan-quarter-title">Build</div>
+        <div class="plan-quarter-desc">Build the SMI framework, report, and landing page. Secure speakers. Rumble cadence in full swing. Start invite list for October. Pitch readiness: creds refresh, case study depth.</div>
+        <div class="plan-quarter-anchor">Anchor: SMI event build-out + promotion starts</div>
+      </div>
+      <div class="plan-quarter">
+        <div class="plan-quarter-label">Q4 · Oct – Dec 26</div>
+        <div class="plan-quarter-title">Roar</div>
+        <div class="plan-quarter-desc">October: the Social Maturity Index event. The Roar moment. Everything upstream was preparation for this. Then immediately: post-event recap, nurture sequence kicks off, meetings booked.</div>
+        <div class="plan-quarter-anchor">Anchor: SMI event + 6-month nurture begins</div>
+      </div>
+      <div class="plan-quarter">
+        <div class="plan-quarter-label">Q1 · Jan – Mar 27</div>
+        <div class="plan-quarter-title">Convert</div>
+        <div class="plan-quarter-desc">Nurture sequence in full effect. Post-event conversations mature into briefs. Intermediary pipeline now has depth. Masterclassing Dec, year-end review content, refine next year's plan from what landed.</div>
+        <div class="plan-quarter-anchor">Anchor: convert nurtured leads into pipeline</div>
+      </div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">What's in place · what isn't</div>
+      <div class="cp-grid-2">
+
+        <div class="cp-card">
+          <div class="cp-card-title" style="margin-bottom:12px">✓ What's decided</div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#333">
+            <li>Two confirmed pillars: <strong>Social Maturity</strong> + <strong>Death of Vanity</strong></li>
+            <li>Three-tier content engine structure: Buzz / Rumble / Roar</li>
+            <li>SMI as the flagship October event</li>
+            <li>Draft proposition: <em>"${cpEsc(prop)}"</em></li>
+            <li>Intermediary roster (10 orgs, tiered)</li>
+            <li>9-stage funnel definition</li>
+          </ul>
+        </div>
+
+        <div class="cp-card">
+          <div class="cp-card-title" style="margin-bottom:12px;color:#c44">⚠ What's still open</div>
+          <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#333">
+            ${CP_STATE.decisions.filter(d => d.status === 'open').slice(0,6).map(d => `
+              <li>${cpEsc(d.title)}${d.impact_level === 'critical' ? ' <span class="cp-pill red" style="vertical-align:middle">critical</span>' : ''}</li>
+            `).join('')}
+          </ul>
+          <div style="margin-top:14px">
+            <button class="cp-btn ghost" style="font-size:11px;padding:7px 14px" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View decisions board →</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Dig in</div>
+      <div class="cp-grid-3">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('brand-house', document.querySelector('.nav-tab[onclick*=brand-house]'))">
+          <div class="cp-card-title">Brand House →</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Proposition, POV, four pillars, messaging per pillar.</div>
+        </div>
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('comms', document.querySelector('.nav-tab[onclick*=comms]'))">
+          <div class="cp-card-title">Comms engine →</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Buzz / Rumble / Roar: owners, cadence, content series.</div>
+        </div>
+        <div class="cp-card editable" style="cursor:pointer" onclick="window.open('https://jungle-is-massive.github.io/smi/','_blank')">
+          <div class="cp-card-title">Social Maturity Index ↗</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Event timeline, workstreams, speakers, nurture plan.</div>
+        </div>
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('nurture', document.querySelector('.nav-tab[onclick*=nurture]'))">
+          <div class="cp-card-title">Nurture & funnel →</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Funnel stages, MQL rules, post-event nurture sequence.</div>
+        </div>
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">
+          <div class="cp-card-title">12-month calendar →</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Every workstream, month by month. The spine.</div>
+        </div>
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">
+          <div class="cp-card-title">Decisions board →</div>
+          <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">The open questions that block progress. Visible on purpose.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// BRAND HOUSE VIEW
+// ═══════════════════════════════════════════════════════════════════
+
+async function renderBrandHouse() {
+  const root = document.getElementById('brand-house-view');
+  root.innerHTML = '<div class="cp-view"><div style="padding:40px;text-align:center;color:var(--grey-mid)">Loading…</div></div>';
+  await cpLoadAll();
+
+  const bh = CP_STATE.brand_house || {};
+  const prop = bh.proposition_line || 'Proposition not yet defined';
+  const pov = bh.core_pov || '';
+  const propStatus = bh.proposition_status || 'draft';
+
+  root.innerHTML = `
+  <div class="cp-view">
+    <div class="cp-eyebrow">Foundation</div>
+    <div class="cp-h1">Brand <span>House.</span></div>
+    <div class="cp-sub">The proposition, POV, and four narrative pillars Jungle owns across every conversation. This is the single source of truth — if it's not here, it's not the line.</div>
+
+    ${cpDecisionsStrip('brand_house')}
+
+    <div class="prop-card">
+      <div class="prop-eyebrow">Proposition</div>
+      <div class="prop-line">${cpEsc(prop)}</div>
+      ${pov ? `<div class="prop-pov">${cpEsc(pov)}</div>` : ''}
+      <div class="prop-status">
+        <span class="cp-pill ${propStatus === 'approved' ? 'green' : propStatus === 'in_review' ? 'amber' : 'black'}">${cpEsc(propStatus.replace('_', ' '))}</span>
+        <button class="cp-edit-btn" onclick="openBrandHouseModal()" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);color:var(--cream)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Four narrative pillars</div>
+      <div class="cp-section-sub">Each pillar needs 3 talking points, 3 proof points, and 3 content angles. Without these, the team doesn't know what to say. Click a pillar to edit or fill its messaging.</div>
+
+      <div class="cp-grid-2">
+        ${CP_STATE.pillars.map((p, idx) => {
+          const myMsgs = CP_STATE.pillar_messages.filter(m => m.pillar_id === p.id);
+          const tpCount = myMsgs.filter(m => m.message_type === 'talking_point' && !m.title.startsWith('TBD')).length;
+          const ppCount = myMsgs.filter(m => m.message_type === 'proof_point' && !m.title.startsWith('TBD')).length;
+          const caCount = myMsgs.filter(m => m.message_type === 'content_angle' && !m.title.startsWith('TBD')).length;
+          const statusCls = p.status === 'confirmed' ? 'confirmed' : p.status === 'under_review' ? 'under-review' : '';
+          return `
+            <div class="bh-pillar ${statusCls}">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                <div>
+                  <div class="bh-pillar-num">Pillar 0${idx+1}</div>
+                  <div class="bh-pillar-title">${cpEsc(p.title)}</div>
+                </div>
+                <span class="cp-pill ${p.status === 'confirmed' ? 'green' : p.status === 'under_review' ? 'amber' : ''}">${cpEsc(p.status.replace('_', ' '))}</span>
+              </div>
+              <div class="bh-pillar-desc">${cpEsc(p.description || '')}</div>
+              ${p.key_question ? `<div class="cp-tbd" style="font-size:12px;padding:10px 14px">Key question: ${cpEsc(p.key_question)}</div>` : ''}
+              <div class="bh-pillar-stats">
+                <div class="bh-pillar-stat">
+                  <div class="bh-pillar-stat-num ${tpCount < 3 ? 'incomplete' : ''}">${tpCount}/3</div>
+                  <div class="bh-pillar-stat-label">Talking points</div>
+                </div>
+                <div class="bh-pillar-stat">
+                  <div class="bh-pillar-stat-num ${ppCount < 3 ? 'incomplete' : ''}">${ppCount}/3</div>
+                  <div class="bh-pillar-stat-label">Proof points</div>
+                </div>
+                <div class="bh-pillar-stat">
+                  <div class="bh-pillar-stat-num ${caCount < 3 ? 'incomplete' : ''}">${caCount}/3</div>
+                  <div class="bh-pillar-stat-label">Content angles</div>
+                </div>
+              </div>
+              <div class="bh-pillar-footer">
+                <span>ICP: ${cpEsc(p.best_icp_fit || 'TBD')}</span>
+                <button class="cp-edit-btn" onclick="openPillarModal('${p.id}')" title="Edit pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COMMS VIEW — Buzz / Rumble / Roar engine spec
+// ═══════════════════════════════════════════════════════════════════
+
+async function renderComms() {
+  const root = document.getElementById('comms-view');
+  root.innerHTML = '<div class="cp-view"><div style="padding:40px;text-align:center;color:var(--grey-mid)">Loading…</div></div>';
+  await cpLoadAll();
+
+  const byTier = (t) => CP_STATE.content_series.filter(c => c.content_tier === t);
+  const buzz = byTier('buzz'), rumble = byTier('rumble'), roar = byTier('roar');
+
+  const seriesRow = (c) => {
+    const owner = cpPersonName(c.owner_id);
+    return `
+      <div class="cs-row">
+        <div><span class="cp-tier ${c.content_tier}">${cpEsc(c.content_tier || '')}</span></div>
+        <div class="cs-main">
+          <div class="cs-title">${cpEsc(c.title)}</div>
+          <div class="cs-desc">${cpEsc(c.description || '')}</div>
+          ${c.decision_required && c.decision_note ? `<div class="cp-tbd" style="font-size:11.5px;padding:8px 12px;margin-top:8px">${cpEsc(c.decision_note)}</div>` : ''}
+        </div>
+        <div class="cs-meta">
+          <span>${cpEsc(c.cadence_label || 'Cadence TBD')}</span>
+          <span class="cp-pill ${owner ? '' : 'amber'}">${owner || 'Owner TBD'}</span>
+          <span class="cp-pill ${c.status === 'active' ? 'green' : c.status === 'paused' ? 'red' : ''}">${cpEsc(c.status || '')}</span>
+        </div>
+      </div>
+    `;
+  };
+
+  root.innerHTML = `
+  <div class="cp-view wide">
+    <div class="cp-eyebrow">The comms engine</div>
+    <div class="cp-h1">Buzz. Rumble. <span>Roar.</span></div>
+    <div class="cp-sub">Three tiers. Always-on presence, monthly depth, and flagship moments. Different cadences, different formats, different purposes — but one coherent arc that feeds the pipeline.</div>
+
+    ${cpDecisionsStrip('comms')}
+
+    <div class="tier-strip">
+      <div class="tier-card">
+        <span class="cp-tier buzz tier-badge">Buzz</span>
+        <div class="tier-name">Always on</div>
+        <div class="tier-purpose">Consistency. Visibility. Familiarity. Keeps Jungle present in intermediaries' and prospects' feeds. Feeds the higher tiers.</div>
+        <div class="tier-cadence">3–5 posts per week · biweekly newsletter</div>
+      </div>
+      <div class="tier-card">
+        <span class="cp-tier rumble tier-badge">Rumble</span>
+        <div class="tier-name">Monthly depth</div>
+        <div class="tier-purpose">Authority. Credibility. Conversion. Deeper thought pieces + optional podcast/video series that earn the right to talk to CMOs.</div>
+        <div class="tier-cadence">1–2 thought pieces per month</div>
+      </div>
+      <div class="tier-card">
+        <span class="cp-tier roar tier-badge">Roar</span>
+        <div class="tier-name">Flagship moments</div>
+        <div class="tier-purpose">The big swings. Social Maturity Index as the anchor. Generates MQLs, creates content for 6 months of nurture.</div>
+        <div class="tier-cadence">Annual flagship + selective speaking</div>
+      </div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Content series — Buzz</div>
+      ${buzz.map(seriesRow).join('') || '<div class="cp-tbd">No Buzz series defined yet</div>'}
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Content series — Rumble</div>
+      ${rumble.map(seriesRow).join('') || '<div class="cp-tbd">No Rumble series defined yet</div>'}
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Content series — Roar</div>
+      ${roar.map(seriesRow).join('') || '<div class="cp-tbd">No Roar series defined yet</div>'}
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">What goes on the calendar</div>
+      <div class="cp-section-sub">The comms engine feeds into the 12-month calendar. Every planned piece of content, every event, every nurture touchpoint lives there as the operational spine.</div>
+      <button class="cp-btn primary" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">Open the calendar →</button>
+    </div>
+
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NURTURE VIEW — funnel, definitions, post-event sequences
+// ═══════════════════════════════════════════════════════════════════
+
+async function renderNurture() {
+  const root = document.getElementById('nurture-view');
+  root.innerHTML = '<div class="cp-view"><div style="padding:40px;text-align:center;color:var(--grey-mid)">Loading…</div></div>';
+  await cpLoadAll();
+
+  const defs = CP_STATE.funnel_definitions || [];
+  const defByType = Object.fromEntries(defs.map(d => [d.rule_type, d]));
+
+  root.innerHTML = `
+  <div class="cp-view wide">
+    <div class="cp-eyebrow">The funnel · post-event nurture</div>
+    <div class="cp-h1">Nurture &amp; <span>Funnel.</span></div>
+    <div class="cp-sub">Where contact becomes conversation becomes pipeline. The system that catches what Buzz, Rumble, and Roar generate — and stops it falling through the floor.</div>
+
+    ${cpDecisionsStrip('nurture')}
+
+    <div class="cp-section">
+      <div class="cp-section-label">Funnel stages</div>
+      <div class="funnel-stages">
+        ${CP_STATE.funnel_stages.map(s => `
+          <div class="funnel-stage ${s.is_mql ? 'mql' : ''} ${s.is_sql ? 'sql' : ''}" title="${cpEsc(s.description || '')}">
+            <div class="funnel-stage-num">0${s.stage_order}</div>
+            <div class="funnel-stage-name">${cpEsc(s.name)}</div>
+            <div class="funnel-stage-count">—</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="cp-section-sub" style="font-size:12px">Contact counts will populate once contacts are linked to stages.</div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Funnel definitions</div>
+      <div class="cp-section-sub">These rules define when a contact moves stage, and what we do when they do. Without them, the funnel is decorative.</div>
+      <div class="cp-grid-2">
+        ${['mql_definition', 'sql_definition', 'followup_rule', 'routing_rule'].map(type => {
+          const d = defByType[type];
+          const notDefined = !d || d.status === 'not_defined';
+          const label = {mql_definition:'MQL Definition', sql_definition:'SQL Definition', followup_rule:'Follow-Up Rule', routing_rule:'Lead Routing Rule'}[type];
+          return `
+            <div class="cp-card ${notDefined ? '' : ''}">
+              <div class="cp-card-header">
+                <div class="cp-card-title">${label}</div>
+                <span class="cp-pill ${notDefined ? 'red' : 'green'}">${notDefined ? 'Not defined' : cpEsc(d.status)}</span>
+              </div>
+              ${notDefined
+                ? `<div class="cp-tbd" style="margin-top:8px">This rule hasn't been defined yet. Without it, the funnel has no teeth.</div>`
+                : `<div class="cp-card-body">${cpEsc(d.body)}</div>`}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="cp-section">
+      <div class="cp-section-label">Post-event nurture sequence</div>
+      ${CP_STATE.nurture_sequences.map(seq => {
+        const steps = CP_STATE.nurture_steps.filter(s => s.sequence_id === seq.id);
+        return `
+          <div style="margin-bottom:24px">
+            <div class="cp-card" style="margin-bottom:10px">
+              <div class="cp-card-header">
+                <div>
+                  <div class="cp-card-title">${cpEsc(seq.title)}</div>
+                  <div style="font-size:12px;color:var(--grey-mid);margin-top:4px">${cpEsc(seq.description || '')}</div>
+                </div>
+                <span class="cp-pill ${seq.status === 'active' ? 'green' : 'amber'}">${cpEsc(seq.status || '')}</span>
+              </div>
+            </div>
+            <div class="nurture-list">
+              <div class="nurture-list-header">
+                <span>Step</span>
+                <span>Day</span>
+                <span>Title · Goal</span>
+                <span>Channel</span>
+              </div>
+              ${steps.map(s => `
+                <div class="nurture-step-row">
+                  <div class="step-n">Step ${s.step_number}</div>
+                  <div class="step-offset">+${s.offset_days}d</div>
+                  <div class="step-title">${cpEsc(s.title)}${s.goal ? `<span class="step-goal">${cpEsc(s.goal)}</span>` : ''}</div>
+                  <div><span class="cp-pill">${cpEsc(s.channel_type || '')}</span></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('') || '<div class="cp-tbd">No sequences defined yet</div>'}
+    </div>
+
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DECISIONS VIEW — Kanban board
+// ═══════════════════════════════════════════════════════════════════
+
+async function renderDecisions() {
+  const root = document.getElementById('decisions-view');
+  root.innerHTML = '<div class="cp-view"><div style="padding:40px;text-align:center;color:var(--grey-mid)">Loading…</div></div>';
+  await cpLoadAll();
+
+  const decs = CP_STATE.decisions;
+  const cols = {
+    open:       decs.filter(d => d.status === 'open'),
+    in_review:  decs.filter(d => d.status === 'in_review'),
+    decided:    decs.filter(d => d.status === 'decided'),
+    blocked:    decs.filter(d => d.status === 'blocked'),
+  };
+
+  const decCard = (d) => `
+    <div class="dec-card ${d.impact_level === 'critical' ? 'critical' : d.impact_level === 'high' ? 'high' : ''}">
+      <div class="dec-header">
+        <div class="dec-title">${cpEsc(d.title)}</div>
+        <span class="cp-pill ${d.impact_level === 'critical' ? 'red' : d.impact_level === 'high' ? 'amber' : ''}">${cpEsc(d.impact_level)}</span>
+      </div>
+      ${d.question ? `<div class="dec-question">${cpEsc(d.question)}</div>` : ''}
+      ${d.why_it_matters ? `<div class="dec-why">${cpEsc(d.why_it_matters)}</div>` : ''}
+      ${d.proposed_answer ? `<div style="font-size:12px;background:rgba(139,255,87,0.12);border-radius:8px;padding:8px 10px;color:#2d6b00"><strong>Proposed:</strong> ${cpEsc(d.proposed_answer)}</div>` : ''}
+      <div class="dec-footer">
+        <span>${cpEsc(d.related_area || 'unassigned')} · ${cpPersonName(d.owner_id) || 'no owner'}</span>
+        <button class="cp-edit-btn" onclick="openDecisionModal('${d.id}')" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      </div>
+    </div>
+  `;
+
+  root.innerHTML = `
+  <div class="cp-view wide">
+    <div class="cp-eyebrow">The open questions</div>
+    <div class="cp-h1">Decisions <span>board.</span></div>
+    <div class="cp-sub">Every unanswered strategic question. Visible on purpose — if it's not here, it's not blocking us. Critical decisions are marked red because they block downstream work.</div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:20px">
+      <button class="cp-btn primary" onclick="openDecisionModal()">+ Add decision</button>
+    </div>
+
+    <div class="dec-columns">
+      <div class="dec-col">
+        <div class="dec-col-header">Open <span class="count">${cols.open.length}</span></div>
+        ${cols.open.map(decCard).join('') || '<div style="font-size:12px;color:var(--grey-mid);padding:12px">Nothing open. Rare.</div>'}
+      </div>
+      <div class="dec-col">
+        <div class="dec-col-header">In review <span class="count">${cols.in_review.length}</span></div>
+        ${cols.in_review.map(decCard).join('') || '<div style="font-size:12px;color:var(--grey-mid);padding:12px">Nothing under review.</div>'}
+      </div>
+      <div class="dec-col">
+        <div class="dec-col-header">Decided <span class="count">${cols.decided.length}</span></div>
+        ${cols.decided.map(decCard).join('') || '<div style="font-size:12px;color:var(--grey-mid);padding:12px">No decisions landed yet.</div>'}
+      </div>
+      <div class="dec-col">
+        <div class="dec-col-header">Blocked <span class="count">${cols.blocked.length}</span></div>
+        ${cols.blocked.map(decCard).join('') || '<div style="font-size:12px;color:var(--grey-mid);padding:12px">Nothing blocked.</div>'}
+      </div>
+    </div>
+
+  </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EDIT MODALS — decisions, pillars, brand house
+// ═══════════════════════════════════════════════════════════════════
+
+function cpOpenModal(innerHtml) {
+  const existing = document.getElementById('cp-modal-wrap');
+  if (existing) existing.remove();
+  const wrap = document.createElement('div');
+  wrap.id = 'cp-modal-wrap';
+  wrap.innerHTML = `<div class="cp-modal-backdrop" onclick="if(event.target===this) cpCloseModal()">${innerHtml}</div>`;
+  document.body.appendChild(wrap);
+  document.body.style.overflow = 'hidden';
+}
+
+function cpCloseModal() {
+  const w = document.getElementById('cp-modal-wrap');
+  if (w) w.remove();
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('cp-modal-wrap')) cpCloseModal();
+});
+
+// ── DECISION MODAL ──
+function openDecisionModal(id) {
+  const d = id ? CP_STATE.decisions.find(x => x.id === id) : null;
+  const isEdit = !!d;
+  const opts = (cur, items) => items.map(([v,l]) => `<option value="${v}"${cur===v?' selected':''}>${l}</option>`).join('');
+  cpOpenModal(`
+    <div class="cp-modal">
+      <div class="cp-modal-header">
+        <div>
+          <div class="cp-modal-eyebrow">${isEdit ? 'Edit decision' : 'New decision'}</div>
+          <div class="cp-modal-title">${isEdit ? cpEsc(d.title) : 'Log a strategic decision'}</div>
+        </div>
+        <button class="cp-modal-close" onclick="cpCloseModal()">✕</button>
+      </div>
+      <form onsubmit="return cpSaveDecision(event, ${id ? `'${id}'` : 'null'})">
+        <div class="cp-modal-body">
+          <label><div class="label-text">Title *</div><input name="title" required value="${cpEsc(d?.title || '')}" placeholder="e.g. Who owns Buzz?" /></label>
+          <label><div class="label-text">Question</div><textarea name="question" placeholder="The specific question to answer">${cpEsc(d?.question || '')}</textarea></label>
+          <label><div class="label-text">Why it matters</div><textarea name="why_it_matters" placeholder="What breaks if we don't decide?">${cpEsc(d?.why_it_matters || '')}</textarea></label>
+          <div class="row-2">
+            <label><div class="label-text">Category</div><select name="category">${opts(d?.category||'ownership', [['ownership','Ownership'],['format','Format'],['proposition','Proposition'],['funnel','Funnel'],['event','Event'],['pillar','Pillar'],['distribution','Distribution']])}</select></label>
+            <label><div class="label-text">Impact</div><select name="impact_level">${opts(d?.impact_level||'medium', [['low','Low'],['medium','Medium'],['high','High'],['critical','Critical']])}</select></label>
+          </div>
+          <div class="row-2">
+            <label><div class="label-text">Status</div><select name="status">${opts(d?.status||'open', [['open','Open'],['in_review','In review'],['decided','Decided'],['blocked','Blocked']])}</select></label>
+            <label><div class="label-text">Related area</div><select name="related_area">${opts(d?.related_area||'comms', [['brand_house','Brand House'],['comms','Comms'],['nurture','Nurture'],['smi','SMI'],['intermediaries','Intermediaries'],['ops','Ops']])}</select></label>
+          </div>
+          <label><div class="label-text">Proposed answer</div><textarea name="proposed_answer" placeholder="Draft answer, if any">${cpEsc(d?.proposed_answer || '')}</textarea></label>
+          <label><div class="label-text">Final answer (if decided)</div><textarea name="final_answer">${cpEsc(d?.final_answer || '')}</textarea></label>
+          <label><div class="label-text">Owner</div><select name="owner_id"><option value="">— Unassigned —</option>${CP_STATE.team.map(m=>`<option value="${m.id}"${d?.owner_id===m.id?' selected':''}>${cpEsc(m.full_name)}</option>`).join('')}</select></label>
+        </div>
+        <div class="cp-modal-footer">
+          ${isEdit ? `<button type="button" class="cp-btn ghost" style="color:#c44" onclick="cpDeleteDecision('${d.id}')">Delete</button>` : ''}
+          <button type="button" class="cp-btn ghost" onclick="cpCloseModal()">Cancel</button>
+          <button type="submit" class="cp-btn primary" id="cp-modal-submit">${isEdit ? 'Save' : 'Create'}</button>
+        </div>
+      </form>
+    </div>
+  `);
+}
+
+async function cpSaveDecision(e, id) {
+  e.preventDefault();
+  const btn = document.getElementById('cp-modal-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const fd = new FormData(e.target);
+  const rec = {
+    title: fd.get('title').trim(),
+    question: fd.get('question').trim() || null,
+    why_it_matters: fd.get('why_it_matters').trim() || null,
+    category: fd.get('category'),
+    impact_level: fd.get('impact_level'),
+    status: fd.get('status'),
+    related_area: fd.get('related_area'),
+    proposed_answer: fd.get('proposed_answer').trim() || null,
+    final_answer: fd.get('final_answer').trim() || null,
+    owner_id: fd.get('owner_id') || null,
+  };
+  try {
+    const url = id ? `strategic_decisions?id=eq.${id}` : 'strategic_decisions';
+    const res = await sbFetch(url, { method: id ? 'PATCH' : 'POST', headers: { 'Prefer': 'return=representation' }, body: JSON.stringify(rec) });
+    if (!res.ok) throw new Error(await res.text());
+    const saved = (await res.json())[0] || {};
+    if (id) {
+      const i = CP_STATE.decisions.findIndex(x => x.id === id);
+      if (i >= 0) CP_STATE.decisions[i] = saved;
+    } else {
+      saved.sort_order = CP_STATE.decisions.length + 1;
+      CP_STATE.decisions.push(saved);
+    }
+    cpCloseModal();
+    renderDecisions();
+  } catch (err) {
+    alert('Save failed: ' + err.message);
+    btn.disabled = false; btn.textContent = id ? 'Save' : 'Create';
+  }
+  return false;
+}
+
+async function cpDeleteDecision(id) {
+  if (!confirm('Delete this decision?')) return;
+  try {
+    const res = await sbFetch(`strategic_decisions?id=eq.${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(await res.text());
+    CP_STATE.decisions = CP_STATE.decisions.filter(x => x.id !== id);
+    cpCloseModal();
+    renderDecisions();
+  } catch (err) { alert('Delete failed: ' + err.message); }
+}
+
+// ── PILLAR MODAL ──
+function openPillarModal(id) {
+  const p = CP_STATE.pillars.find(x => x.id === id);
+  if (!p) return;
+  const opts = (cur, items) => items.map(([v,l]) => `<option value="${v}"${cur===v?' selected':''}>${l}</option>`).join('');
+  cpOpenModal(`
+    <div class="cp-modal">
+      <div class="cp-modal-header">
+        <div>
+          <div class="cp-modal-eyebrow">Edit pillar</div>
+          <div class="cp-modal-title">${cpEsc(p.title)}</div>
+        </div>
+        <button class="cp-modal-close" onclick="cpCloseModal()">✕</button>
+      </div>
+      <form onsubmit="return cpSavePillar(event, '${p.id}')">
+        <div class="cp-modal-body">
+          <label><div class="label-text">Title *</div><input name="title" required value="${cpEsc(p.title)}" /></label>
+          <label><div class="label-text">Description</div><textarea name="description">${cpEsc(p.description||'')}</textarea></label>
+          <label><div class="label-text">Best ICP fit</div><input name="best_icp_fit" value="${cpEsc(p.best_icp_fit||'')}" /></label>
+          <label><div class="label-text">Key open question</div><input name="key_question" value="${cpEsc(p.key_question||'')}" /></label>
+          <div class="row-2">
+            <label><div class="label-text">Status</div><select name="status">${opts(p.status, [['confirmed','Confirmed'],['under_review','Under review'],['parked','Parked']])}</select></label>
+            <label><div class="label-text">Owner</div><select name="owner_id"><option value="">— Unassigned —</option>${CP_STATE.team.map(m=>`<option value="${m.id}"${p.owner_id===m.id?' selected':''}>${cpEsc(m.full_name)}</option>`).join('')}</select></label>
+          </div>
+        </div>
+        <div class="cp-modal-footer">
+          <button type="button" class="cp-btn ghost" onclick="cpCloseModal()">Cancel</button>
+          <button type="submit" class="cp-btn primary" id="cp-modal-submit">Save</button>
+        </div>
+      </form>
+    </div>
+  `);
+}
+
+async function cpSavePillar(e, id) {
+  e.preventDefault();
+  const btn = document.getElementById('cp-modal-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const fd = new FormData(e.target);
+  const rec = {
+    title: fd.get('title').trim(),
+    description: fd.get('description').trim() || null,
+    best_icp_fit: fd.get('best_icp_fit').trim() || null,
+    key_question: fd.get('key_question').trim() || null,
+    status: fd.get('status'),
+    owner_id: fd.get('owner_id') || null,
+  };
+  try {
+    const res = await sbFetch(`narrative_pillars?id=eq.${id}`, { method:'PATCH', headers:{'Prefer':'return=representation'}, body: JSON.stringify(rec) });
+    if (!res.ok) throw new Error(await res.text());
+    const saved = (await res.json())[0];
+    const i = CP_STATE.pillars.findIndex(x => x.id === id);
+    if (i >= 0) CP_STATE.pillars[i] = saved;
+    cpCloseModal();
+    renderBrandHouse();
+  } catch (err) { alert('Save failed: ' + err.message); btn.disabled=false; btn.textContent='Save'; }
+  return false;
+}
+
+// ── BRAND HOUSE MODAL ──
+function openBrandHouseModal() {
+  const bh = CP_STATE.brand_house || {};
+  const opts = (cur, items) => items.map(([v,l]) => `<option value="${v}"${cur===v?' selected':''}>${l}</option>`).join('');
+  cpOpenModal(`
+    <div class="cp-modal">
+      <div class="cp-modal-header">
+        <div>
+          <div class="cp-modal-eyebrow">Edit brand house</div>
+          <div class="cp-modal-title">Proposition &amp; POV</div>
+        </div>
+        <button class="cp-modal-close" onclick="cpCloseModal()">✕</button>
+      </div>
+      <form onsubmit="return cpSaveBrandHouse(event)">
+        <div class="cp-modal-body">
+          <label><div class="label-text">Proposition line *</div><input name="proposition_line" required value="${cpEsc(bh.proposition_line||'')}" placeholder="The agency that builds social into a growth engine." /></label>
+          <label><div class="label-text">Status</div><select name="proposition_status">${opts(bh.proposition_status||'draft', [['draft','Draft'],['in_review','In review'],['approved','Approved']])}</select></label>
+          <label><div class="label-text">Core POV</div><textarea name="core_pov" style="min-height:120px">${cpEsc(bh.core_pov||'')}</textarea></label>
+          <label><div class="label-text">Vision statement</div><textarea name="vision_statement">${cpEsc(bh.vision_statement||'')}</textarea></label>
+          <label><div class="label-text">Mission statement</div><textarea name="mission_statement">${cpEsc(bh.mission_statement||'')}</textarea></label>
+        </div>
+        <div class="cp-modal-footer">
+          <button type="button" class="cp-btn ghost" onclick="cpCloseModal()">Cancel</button>
+          <button type="submit" class="cp-btn primary" id="cp-modal-submit">Save</button>
+        </div>
+      </form>
+    </div>
+  `);
+}
+
+async function cpSaveBrandHouse(e) {
+  e.preventDefault();
+  const btn = document.getElementById('cp-modal-submit');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const fd = new FormData(e.target);
+  const rec = {
+    proposition_line: fd.get('proposition_line').trim(),
+    proposition_status: fd.get('proposition_status'),
+    core_pov: fd.get('core_pov').trim() || null,
+    vision_statement: fd.get('vision_statement').trim() || null,
+    mission_statement: fd.get('mission_statement').trim() || null,
+  };
+  try {
+    const existing = CP_STATE.brand_house;
+    const url = existing ? `brand_house?id=eq.${existing.id}` : 'brand_house';
+    const method = existing ? 'PATCH' : 'POST';
+    const res = await sbFetch(url, { method, headers:{'Prefer':'return=representation'}, body: JSON.stringify(rec) });
+    if (!res.ok) throw new Error(await res.text());
+    CP_STATE.brand_house = (await res.json())[0];
+    cpCloseModal();
+    renderBrandHouse();
+  } catch (err) { alert('Save failed: '+err.message); btn.disabled=false; btn.textContent='Save'; }
+  return false;
+}
+
+// Auto-render Plan on load (default tab)
+document.addEventListener('DOMContentLoaded', () => {
+  // If we land on Plan (default), render it once CP data is available
+  setTimeout(() => { if (document.getElementById('plan-view-el')?.classList.contains('active')) renderPlan(); }, 100);
+});
+
+</script>
 </body>
 </html>
