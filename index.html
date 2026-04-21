@@ -724,7 +724,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
     <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
-    <button class="nav-tab" onclick="switchView('intermediaries',this)">Intermediaries</button>
+    <button class="nav-tab" onclick="window.open('https://jungle-is-massive.github.io/intermediary-plan/','_blank')" title="Opens the Intermediary Plan page">Intermediaries ↗</button>
     <button class="nav-tab" onclick="switchView('awards',this)">Awards</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
@@ -1871,7 +1871,7 @@ function renderIntTable() {
     if(pitchCost) totalPitchCost += pitchCost;
     if(projected) totalRevenue += projected;
     return `<tr>
-      <td style="font-weight:600">${esc(item.name)}</td>
+      <td style="font-weight:600"><a href="https://jungle-is-massive.github.io/intermediary-plan/" target="_blank" rel="noopener" style="color:var(--black);text-decoration:none;border-bottom:1px solid var(--border);transition:border-color .12s" onmouseover="this.style.borderColor='var(--green)'" onmouseout="this.style.borderColor='var(--border)'">${esc(item.name)}</a></td>
       <td><span class="int-status-pill ${intStatusClass(item.status)}">${esc(item.status||'')}</span></td>
       <td><input class="int-inline-input" type="number" value="${item.annual_cost_estimate??''}" placeholder="—" onchange="patchInt('${item.id}','annual_cost_estimate',this.value)" title="${esc(item.cost_to_jungle||'')}"></td>
       <td><input class="int-inline-input" type="number" value="${item.pitch_target??''}" placeholder="—" onchange="patchInt('${item.id}','pitch_target',this.value)" style="width:60px"></td>
