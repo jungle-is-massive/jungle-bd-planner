@@ -61,7 +61,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .wordmark { font-size: 17px; font-weight: 800; letter-spacing: -0.03em; color: var(--cream); white-space: nowrap; }
 .wordmark span { color: var(--green); }
 .nav-tabs { display: flex; gap: 4px; background: rgba(255,255,255,0.07); border-radius: 100px; padding: 4px; }
-.nav-tab { padding: 7px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--grey); letter-spacing: 0.02em; transition: background 0.15s, color 0.15s; }
+.nav-tab { padding: 7px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--grey); letter-spacing: 0.02em; transition: background 0.15s, color 0.15s; text-decoration: none; display: inline-block; }
 .nav-tab.active { background: var(--green); color: var(--black); }
 .nav-tab:hover:not(.active) { color: var(--cream); }
 .add-btn { background: rgba(255,255,255,0.1); color: var(--cream); border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
@@ -732,18 +732,18 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 <header id="topbar">
   <div class="wordmark">JUNGLE<span>.</span></div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchView('plan',this)">Plan</button>
-    <button class="nav-tab" onclick="switchView('calendar',this)">Calendar</button>
-    <button class="nav-tab" onclick="switchView('brand-house',this)">Brand House</button>
-    <button class="nav-tab" onclick="switchView('comms',this)">Comms</button>
-    <button class="nav-tab" onclick="switchView('nurture',this)">Nurture</button>
-    <button class="nav-tab" onclick="switchView('decisions',this)">Decisions</button>
-    <button class="nav-tab" onclick="switchView('programme',this)">Programme</button>
-    <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
-    <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
-    <button class="nav-tab" onclick="window.open('https://jungle-is-massive.github.io/intermediary-plan/','_blank')" title="Opens the Intermediary Plan page">Intermediaries ↗</button>
-    <button class="nav-tab" onclick="switchView('opportunities',this)">Opportunities</button>
-    <button class="nav-tab" onclick="switchView('awards',this)">Awards</button>
+    <a class="nav-tab" href="#plan">Plan</a>
+    <a class="nav-tab" href="#calendar">Calendar</a>
+    <a class="nav-tab" href="#brand-house">Brand House</a>
+    <a class="nav-tab" href="#comms">Comms</a>
+    <a class="nav-tab" href="#nurture">Nurture</a>
+    <a class="nav-tab" href="#decisions">Decisions</a>
+    <a class="nav-tab" href="#programme">Programme</a>
+    <a class="nav-tab" href="#assets">Assets</a>
+    <a class="nav-tab" href="#prospects">Prospects</a>
+    <a class="nav-tab" href="https://jungle-is-massive.github.io/intermediary-plan/" target="_blank" title="Opens the Intermediary Plan page">Intermediaries ↗</a>
+    <a class="nav-tab" href="#opportunities">Opportunities</a>
+    <a class="nav-tab" href="#awards">Awards</a>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
     <button class="add-btn" id="add-btn" onclick="openAddModal()" style="display:none">+ Add Event</button>
@@ -777,7 +777,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 <!-- ═════════════════════════════════════════════════════════════════════
      PLAN VIEW — the executive summary. First thing Jade/Mal see.
      ════════════════════════════════════════════════════════════════════ -->
-<div class="view active" id="plan-view-el">
+<div class="view" id="plan-view-el">
 <div id="plan-view"></div>
 </div>
 
@@ -1569,7 +1569,7 @@ async function updateStatus(id, status) {
   const all = JSON.parse(localStorage.getItem('jc_questions')||'[]'); const i=all.findIndex(q=>q.id===id); if(i>-1){all[i].status=status;localStorage.setItem('jc_questions',JSON.stringify(all));}
 }
 
-function switchView(v, btn) {
+function switchView(v) {
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el=>el.classList.remove('active'));
   const viewMap = {
@@ -1586,8 +1586,13 @@ function switchView(v, btn) {
     opportunities:'opportunities-view-el',
     awards:'awards-view-el'
   };
-  document.getElementById(viewMap[v]).classList.add('active');
-  btn.classList.add('active');
+  const viewId = viewMap[v];
+  if (!viewId) return;
+  document.getElementById(viewId).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(el => {
+    if (el.getAttribute('href') === '#' + v) el.classList.add('active');
+  });
+  history.replaceState(null, '', '#' + v);
   const isCalendar = v==='calendar';
   document.getElementById('add-btn').style.display = isCalendar?'':'none';
   document.getElementById('ws-btn').style.display = isCalendar?'':'none';
@@ -3240,7 +3245,7 @@ function cpDecisionsStrip(area) {
         <div class="ds-count">✓</div>
         <div class="ds-label">All decisions in this area are <strong>resolved</strong>.</div>
       </div>
-      <button class="ds-cta" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View board →</button>
+      <button class="ds-cta" onclick="switchView('decisions')">View board →</button>
     </div>`;
   }
   return `<div class="cp-decisions-strip">
@@ -3248,7 +3253,7 @@ function cpDecisionsStrip(area) {
       <div class="ds-count">${open}</div>
       <div class="ds-label"><strong>Open decision${open === 1 ? '' : 's'}</strong> related to this area — decisions block the work downstream.</div>
     </div>
-    <button class="ds-cta" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View board →</button>
+    <button class="ds-cta" onclick="switchView('decisions')">View board →</button>
   </div>`;
 }
 
@@ -3278,8 +3283,8 @@ async function renderPlan() {
       <h1>${cpEsc(prop)} <span>→</span></h1>
       <p>This is Jungle's twelve-month comms and growth plan. Four narrative pillars, three-tier content engine (Buzz → Rumble → Roar), one flagship moment (the Social Maturity Index event in October), and a post-event nurture system designed to convert attention into pipeline.</p>
       <div class="hero-cta-row">
-        <button class="hero-cta" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">See the 12-month calendar →</button>
-        <button class="hero-cta ghost" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">${openDec} open decisions</button>
+        <button class="hero-cta" onclick="switchView('calendar')">See the 12-month calendar →</button>
+        <button class="hero-cta ghost" onclick="switchView('decisions')">${openDec} open decisions</button>
       </div>
     </div>
 
@@ -3359,7 +3364,7 @@ async function renderPlan() {
             `).join('')}
           </ul>
           <div style="margin-top:14px">
-            <button class="cp-btn ghost" style="font-size:11px;padding:7px 14px" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">View decisions board →</button>
+            <button class="cp-btn ghost" style="font-size:11px;padding:7px 14px" onclick="switchView('decisions')">View decisions board →</button>
           </div>
         </div>
 
@@ -3369,11 +3374,11 @@ async function renderPlan() {
     <div class="cp-section">
       <div class="cp-section-label">Dig in</div>
       <div class="cp-grid-3">
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('brand-house', document.querySelector('.nav-tab[onclick*=brand-house]'))">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('brand-house')">
           <div class="cp-card-title">Brand House →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Proposition, POV, four pillars, messaging per pillar.</div>
         </div>
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('comms', document.querySelector('.nav-tab[onclick*=comms]'))">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('comms')">
           <div class="cp-card-title">Comms engine →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Buzz / Rumble / Roar: owners, cadence, content series.</div>
         </div>
@@ -3381,15 +3386,15 @@ async function renderPlan() {
           <div class="cp-card-title">Social Maturity Index ↗</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Event timeline, workstreams, speakers, nurture plan.</div>
         </div>
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('nurture', document.querySelector('.nav-tab[onclick*=nurture]'))">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('nurture')">
           <div class="cp-card-title">Nurture & funnel →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Funnel stages, MQL rules, post-event nurture sequence.</div>
         </div>
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('calendar')">
           <div class="cp-card-title">12-month calendar →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Every workstream, month by month. The spine.</div>
         </div>
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('decisions', document.querySelector('.nav-tab[onclick*=decisions]'))">
+        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('decisions')">
           <div class="cp-card-title">Decisions board →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">The open questions that block progress. Visible on purpose.</div>
         </div>
@@ -3559,7 +3564,7 @@ async function renderComms() {
     <div class="cp-section">
       <div class="cp-section-label">What goes on the calendar</div>
       <div class="cp-section-sub">The comms engine feeds into the 12-month calendar. Every planned piece of content, every event, every nurture touchpoint lives there as the operational spine.</div>
-      <button class="cp-btn primary" onclick="switchView('calendar', document.querySelector('.nav-tab[onclick*=calendar]'))">Open the calendar →</button>
+      <button class="cp-btn primary" onclick="switchView('calendar')">Open the calendar →</button>
     </div>
 
   </div>
@@ -4143,6 +4148,21 @@ async function saveOppModal(id){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Wire up nav tab anchor clicks for hash routing
+  document.querySelectorAll('.nav-tab[href^="#"]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      const v = el.getAttribute('href').slice(1);
+      switchView(v);
+    });
+  });
+
+  // On load, read hash and navigate to correct tab
+  const validViews = ['plan','calendar','brand-house','comms','nurture','decisions','programme','assets','prospects','opportunities','awards'];
+  const hash = location.hash.slice(1);
+  const initialView = validViews.includes(hash) ? hash : 'plan';
+  switchView(initialView);
+
   // If we land on Plan (default), render it once CP data is available
   setTimeout(() => { if (document.getElementById('plan-view-el')?.classList.contains('active')) renderPlan(); }, 100);
 });
@@ -4336,3 +4356,4 @@ async function saveContactModal(id) {
 <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer></script>
 </body>
 </html>
+
