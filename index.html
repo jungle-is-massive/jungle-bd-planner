@@ -28,7 +28,24 @@
   --c-attendance: #4ABFFF;
   --c-content: #F0B429;
   --c-nurture: #3ECF8E;
+  --border: #E0DBD3;
+  --border-strong: #C8C3B8;
 }
+/* Opportunity pills */
+.pill { display:inline-block; padding:2px 8px; border-radius:100px; font-family:'DM Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+.pill-grey   { background:#EDEBE6; color:#6B6966; }
+.pill-blue   { background:#E0ECFF; color:#1E5FCC; }
+.pill-amber  { background:#FFF4E0; color:#B36200; }
+.pill-green  { background:#E3F9D5; color:#277A00; }
+.pill-black  { background:#0E0E0E; color:#F5F0E8; }
+.pill-red    { background:#FFE8E8; color:#CC1E1E; }
+/* Stat cards (Opportunities) */
+.stat-card   { background:var(--white); border:1.5px solid var(--border); border-radius:12px; padding:18px 20px; }
+.stat-label  { font-family:'DM Mono',monospace; font-size:9px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--grey-mid); margin-bottom:6px; }
+.stat-value  { font-size:22px; font-weight:800; letter-spacing:-0.03em; color:var(--black); }
+.stat-value.green { color:#277A00; }
+.card-grid   { display:grid; gap:12px; }
+.card-grid-4 { grid-template-columns:repeat(4,1fr); }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { background: var(--cream); color: var(--black); font-family: 'DM Sans', system-ui, sans-serif; height: 100%; }
 
@@ -858,7 +875,41 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       </div>
     </div>
 
+    <!-- Dynamic header -->
+    <div class="prospects-header">
+      <div>
+        <div class="assets-view-label" id="contacts-panel-label">All sources</div>
+        <h2 class="assets-view-title" id="contacts-panel-title">All Contacts</h2>
+        <p class="assets-view-sub" id="contacts-panel-sub">Every contact across all sources.</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="add-asset-btn" onclick="openContactModal(null)">+ Add Contact</button>
+      </div>
+    </div>
 
+    <div class="prospects-controls">
+      <input type="text" class="prospects-search" id="contacts-search" placeholder="Search by name, company or title…" oninput="filterContacts()">
+      <div class="prospects-count" id="contacts-count"></div>
+    </div>
+
+    <div id="contacts-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
+    <div id="contacts-error" class="prospects-error" style="display:none"></div>
+    <table class="prospects-table" id="contacts-table" style="display:none">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Company</th>
+          <th>Title</th>
+          <th>Source</th>
+          <th>Campaign</th>
+          <th>Status</th>
+          <th>Next Action</th>
+          <th>LI</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="contacts-tbody"></tbody>
+    </table>
 
   </div>
 </div>
