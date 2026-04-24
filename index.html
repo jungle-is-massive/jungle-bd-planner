@@ -2115,6 +2115,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
         <button class="qa-submit" id="qa-btn" onclick="submitQuestion()">Submit</button>
         <div class="qa-log" id="qa-log"></div>
       </div>
+      <div style="padding:0 22px 20px;display:flex;justify-content:flex-end;gap:10px;margin-top:8px">
+        <button onclick="openEditEvent()" style="background:var(--black);color:var(--green);border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer">Edit event</button>
+        <button onclick="closeModalDirect()" style="background:var(--grey-light);color:var(--grey-mid);border:none;padding:9px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer">Close</button>
+      </div>
     </div>
   </div>
 </div>
