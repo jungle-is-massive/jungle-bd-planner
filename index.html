@@ -64,7 +64,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .nav-tab { padding: 7px 18px; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--grey); letter-spacing: 0.02em; transition: background 0.15s, color 0.15s; text-decoration: none; display: inline-block; }
 .nav-tab.active { background: var(--green); color: var(--black); }
 .nav-tab:hover:not(.active) { color: var(--cream); }
-.add-btn { background: rgba(255,255,255,0.1); color: var(--cream); border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.add-btn { background: var(--black); color: var(--cream); border: 1px solid rgba(255,255,255,0.15); border-radius: 100px; padding: 7px 16px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
 .add-btn:hover { background: rgba(255,255,255,0.18); }
 
 /* VIEWS */
@@ -745,7 +745,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <a class="nav-tab" href="#opportunities">Opportunities</a>
     <a class="nav-tab" href="#awards">Awards</a>
   </div>
-  <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
+  <div style="display:flex;gap:8px;align-items:center;position: absolute;right: 20px;top: 120px;" class="topbar-right">
     <button class="add-btn" id="add-btn" onclick="openAddModal()" style="display:none">+ Add Event</button>
     <button class="add-btn" id="ws-btn" onclick="openWsModal()" style="display:none;opacity:0.7">+ Workstream</button>
   </div>
