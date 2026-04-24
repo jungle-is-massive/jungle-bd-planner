@@ -1829,6 +1829,7 @@ function intStatusClass(s) {
 }
 
 function fmtGBP(n) { if(!n && n !== 0) return '—'; return '£' + Number(n).toLocaleString('en-GB'); }
+function fmt(n) { return fmtGBP(n); }
 function fmtN(n) { if(!n && n !== 0) return '—'; return Number(n).toLocaleString('en-GB'); }
 
 function nl2br(s) { return (s||'').replace(/\n/g, '<br>'); }
