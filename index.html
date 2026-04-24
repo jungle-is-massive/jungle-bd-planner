@@ -725,6 +725,8 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <button class="nav-tab" onclick="switchView('assets',this)">Assets</button>
     <button class="nav-tab" onclick="switchView('prospects',this)">Prospects</button>
     <button class="nav-tab" onclick="window.open('https://jungle-is-massive.github.io/intermediary-plan/','_blank')" title="Opens the Intermediary Plan page">Intermediaries ↗</button>
+    <button class="nav-tab" onclick="switchView('opportunities',this)">Opportunities</button>
+    <button class="nav-tab" onclick="switchView('opportunities',this)">Opportunities</button>
     <button class="nav-tab" onclick="switchView('awards',this)">Awards</button>
   </div>
   <div style="display:flex;gap:8px;align-items:center" class="topbar-right">
@@ -1860,6 +1862,48 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 </div>
 
 <!-- AWARDS VIEW -->
+
+<!-- OPPORTUNITIES TAB -->
+<div class="view" id="opportunities-view-el">
+<div id="opps-view" style="max-width:1200px;margin:0 auto;padding:48px 32px 120px">
+  <div class="assets-view-label">Central pipeline</div>
+  <h2 class="assets-view-title">Opportunities</h2>
+  <p class="assets-view-sub" style="margin-bottom:24px">Every opportunity across all sources — intermediaries, inbound, referrals, events and more.</p>
+  <div class="card-grid card-grid-4" id="opps-stats" style="margin-bottom:28px"></div>
+  <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <input type="text" class="prospects-search" id="opps-search" placeholder="Search by title, brand, source…" oninput="filterOpps()" style="flex:1;min-width:200px">
+    <select id="opps-stage-filter" onchange="filterOpps()" style="padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:12px;background:var(--white);cursor:pointer">
+      <option value="">All stages</option>
+      <option>Longlist</option><option>Shortlist</option><option>RFI</option>
+      <option>RTB</option><option>Pitch</option><option>Pitch Sent</option>
+      <option>Presented &amp; Awaiting</option><option>Negotiation</option><option>Closed</option>
+    </select>
+    <div class="prospects-count" id="opps-count"></div>
+    <button onclick="openOppModal()" style="background:var(--green);color:var(--black);border:none;padding:9px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap">+ Add opportunity</button>
+  </div>
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+    <div class="prospects-loading" id="opps-loading" style="display:flex"><div class="prospects-spinner"></div>Loading…</div>
+    <div class="prospects-error" id="opps-error-msg" style="display:none;padding:20px;font-size:13px;color:var(--grey-mid)"></div>
+    <table class="prospects-table" id="opps-main-table" style="display:none;width:100%;border-collapse:collapse;font-size:12px">
+      <thead><tr style="border-bottom:1.5px solid var(--border)">
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Opportunity</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Brand</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Source</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Via</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Stage</th>
+        <th style="padding:10px 14px;text-align:right;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Value</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Outcome</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Owner</th>
+        <th style="padding:10px 14px;text-align:left;font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em">Date</th>
+        <th style="width:60px"></th>
+      </tr></thead>
+      <tbody id="opps-tbody"></tbody>
+      <tfoot><tr id="opps-add-row"></tr></tfoot>
+    </table>
+  </div>
+</div>
+</div>
+
 <div class="view" id="awards-view-el">
   <div id="awards-view">
     <!-- Tab Headers -->
@@ -2393,6 +2437,7 @@ function switchView(v, btn) {
     assets:'assets-view-el',
     prospects:'prospects-view-el',
     intermediaries:'intermediaries-view-el',
+    opportunities:'opportunities-view-el',
     awards:'awards-view-el'
   };
   document.getElementById(viewMap[v]).classList.add('active');
@@ -2408,6 +2453,7 @@ function switchView(v, btn) {
   if(v==='decisions') renderDecisions();
   if(v==='assets') renderAssetsView();
   if(v==='prospects') loadContacts('all');
+  if(v==='opportunities') loadOpportunities();
   if(v==='intermediaries') loadIntermediaries();
   if(v==='awards') switchAwardsTab('entries', document.getElementById('awards-tab-entries'));
 }
