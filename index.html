@@ -4094,6 +4094,11 @@ async function deleteOpp(id){
   renderOppsTable();
 }
 
+async function _oppModalDelete(id) {
+  await deleteOpp(id);
+  closeOppModal();
+}
+
 function openOppModal(id){
   const o = id ? OPPS_DATA.find(x=>x.id===id) : null;
   const sel=(key,label,opts,val)=>`<label style="display:block"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px">${label}</div><select id="om-${key}" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white)">${opts.map(op=>`<option value="${op}"${op===(val||'')?'  selected':''}>${op||'—'}</option>`).join('')}</select></label>`;
@@ -4125,7 +4130,7 @@ function openOppModal(id){
         <label style="display:block"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px">Notes / learnings</div>
           <textarea id="om-notes" rows="2" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical">${esc(o?.notes||o?.learnings||'')}</textarea></label>
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)">
-          <div>${o?`<button onclick="deleteOpp('${o.id}').then(()=>{ if(!document.getElementById('opp-modal-wrap')) return; closeOppModal(); })" style="background:none;border:1px solid rgba(224,92,92,0.4);color:var(--red);padding:7px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;cursor:pointer">Delete</button>`:''}</div>
+          <div>${o?`<button onclick="_oppModalDelete('${o.id}')" style="background:none;border:1px solid rgba(224,92,92,0.4);color:var(--red);padding:7px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;cursor:pointer">Delete</button>`:''}</div>
           <div style="display:flex;gap:8px">
             <button onclick="closeOppModal()" style="background:none;border:1.5px solid var(--border);padding:9px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;cursor:pointer">Cancel</button>
             <button id="om-save" onclick="saveOppModal('${id||''}')" style="background:var(--black);color:var(--green);border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer">${o?'Save changes':'Add opportunity'}</button>
