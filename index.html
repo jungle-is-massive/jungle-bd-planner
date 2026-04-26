@@ -3844,7 +3844,7 @@ async function cpSaveDecision(e, id) {
 }
 
 async function cpDeleteDecision(id) {
-  if (!confirm('Delete this decision?')) return;
+  if(!(await showConfirm({title:'Delete Decision',message:"Delete this decision? This can't be undone.",confirmLabel:'Delete'}))) return;
   try {
     const res = await sbFetch(`strategic_decisions?id=eq.${id}`, { method: 'DELETE' });
     if (!res.ok) throw new Error(await res.text());
@@ -4070,7 +4070,7 @@ function renderOppsTable() {
 function filterOpps(){ renderOppsTable(); }
 
 async function deleteOpp(id){
-  if(!confirm('Delete this opportunity?')) return;
+  if(!(await showConfirm({title:'Delete Opportunity',message:"Delete this opportunity? This can't be undone.",confirmLabel:'Delete'}))) return;
   await sbFetch(`opportunities?id=eq.${id}`,{method:'DELETE'});
   OPPS_DATA = OPPS_DATA.filter(o=>o.id!==id);
   renderOppsTable();
