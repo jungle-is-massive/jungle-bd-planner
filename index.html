@@ -497,9 +497,20 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .prospects-spinner { width: 16px; height: 16px; border: 2px solid var(--grey-light); border-top-color: var(--black); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .prospects-error { padding: 48px; text-align: center; font-size: 13px; color: var(--grey-mid); background: var(--white); border: 1.5px solid var(--grey-light); border-radius: 12px; }
-.prospects-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: 12px; overflow: hidden; font-size: 12px; box-shadow: 0 0 0 1.5px var(--grey-light); }
-.prospects-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); padding: 10px 14px; text-align: left; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); white-space: nowrap; }
-.prospects-table td { padding: 11px 14px; border-bottom: 1px solid var(--grey-light); vertical-align: top; color: var(--black); line-height: 1.4; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prospects-table-wrap { width: 100%; overflow-x: auto; border-radius: 12px; box-shadow: 0 0 0 1.5px var(--grey-light); }
+.prospects-table { width: 100%; min-width: 680px; table-layout: fixed; border-collapse: collapse; background: var(--white); font-size: 12px; }
+.prospects-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); padding: 10px 14px; text-align: left; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prospects-table td { padding: 11px 14px; border-bottom: 1px solid var(--grey-light); vertical-align: top; color: var(--black); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* contacts-table column widths */
+#contacts-table th:nth-child(1), #contacts-table td:nth-child(1) { width: 18%; font-weight: 600; }
+#contacts-table th:nth-child(2), #contacts-table td:nth-child(2) { width: 16%; }
+#contacts-table th:nth-child(3), #contacts-table td:nth-child(3) { width: 15%; color: var(--grey-mid); font-size: 11px; }
+#contacts-table th:nth-child(4), #contacts-table td:nth-child(4) { width: 10%; }
+#contacts-table th:nth-child(5), #contacts-table td:nth-child(5) { width: 13%; color: var(--grey-mid); font-size: 11px; }
+#contacts-table th:nth-child(6), #contacts-table td:nth-child(6) { width: 11%; }
+#contacts-table th:nth-child(7), #contacts-table td:nth-child(7) { width: 13%; font-size: 11px; }
+#contacts-table th:nth-child(8), #contacts-table td:nth-child(8) { width: 4%; text-align: center; }
+#contacts-table th:nth-child(9), #contacts-table td:nth-child(9) { width: 6%; padding: 6px 8px; vertical-align: middle; }
 .prospects-table tr:last-child td { border-bottom: none; }
 .prospects-table tbody tr:hover td { background: rgba(0,0,0,0.018); }
 .prospects-table td a { color: var(--black); text-decoration: none; border-bottom: 1px solid var(--grey); transition: border-color 0.15s; }
@@ -894,7 +905,8 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
     <div id="contacts-loading" class="prospects-loading"><div class="prospects-spinner"></div>Loading…</div>
     <div id="contacts-error" class="prospects-error" style="display:none"></div>
-    <table class="prospects-table" id="contacts-table" style="display:none">
+    <div class="prospects-table-wrap" id="contacts-table-wrap" style="display:none">
+    <table class="prospects-table" id="contacts-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -910,6 +922,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
       </thead>
       <tbody id="contacts-tbody"></tbody>
     </table>
+    </div>
 
   </div>
 </div>
@@ -4188,8 +4201,8 @@ async function loadContacts(sourceType='all', force=false) {
   }
   const loading = document.getElementById('contacts-loading');
   const error   = document.getElementById('contacts-error');
-  const table   = document.getElementById('contacts-table');
-  loading.style.display = 'flex'; error.style.display = 'none'; table.style.display = 'none';
+  const tableWrap = document.getElementById('contacts-table-wrap');
+  loading.style.display = 'flex'; error.style.display = 'none'; tableWrap.style.display = 'none';
   try {
     const filter = sourceType !== 'all' ? `&source_type=eq.${encodeURIComponent(sourceType)}` : '';
     const r = await sbFetch(`contacts?select=*&order=created_at.desc${filter}`);
@@ -4215,6 +4228,7 @@ const CONTACT_STATUS_CLASS = {
 
 function renderContactsTable(rows) {
   const loading = document.getElementById('contacts-loading');
+  const tableWrap = document.getElementById('contacts-table-wrap');
   const table   = document.getElementById('contacts-table');
   const tbody   = document.getElementById('contacts-tbody');
   const count   = document.getElementById('contacts-count');
@@ -4228,13 +4242,13 @@ function renderContactsTable(rows) {
   ) : rows;
   count.textContent = `${filtered.length} contact${filtered.length!==1?'s':''}`;
   if(!filtered.length) {
-    table.style.display = 'none';
+    tableWrap.style.display = 'none';
     document.getElementById('contacts-error').style.display = 'block';
     document.getElementById('contacts-error').innerHTML = 'No contacts yet for this source type. Add one via the extension or click + Add Contact.';
     return;
   }
   document.getElementById('contacts-error').style.display = 'none';
-  table.style.display = '';
+  tableWrap.style.display = '';
   const sc = s => CONTACT_STATUS_CLASS[s] || 's-not-started';
   tbody.innerHTML = filtered.map(c => {
     const name = c.full_name || [c.first_name,c.last_name].filter(Boolean).join(' ') || '—';
