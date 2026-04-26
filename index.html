@@ -3151,16 +3151,21 @@ function showConfirm({ title = 'Are you sure?', message = '', confirmLabel = 'De
     document.getElementById('confirm-message').textContent = message;
     const btn = document.getElementById('confirm-ok-btn');
     btn.textContent = confirmLabel;
-    btn.className = 'confirm-btn confirm-btn--' + confirmClass;
     const overlay = document.getElementById('confirm-overlay');
+    const box = overlay.querySelector('.confirm-box');
     overlay.style.display = 'flex';
-    requestAnimationFrame(() => overlay.classList.add('confirm-visible'));
+    requestAnimationFrame(() => {
+      overlay.style.opacity = '1';
+      box.style.transform = 'translateY(0)';
+    });
   });
 }
 
 function _confirmClose(result) {
   const overlay = document.getElementById('confirm-overlay');
-  overlay.classList.remove('confirm-visible');
+  const box = overlay.querySelector('.confirm-box');
+  overlay.style.opacity = '0';
+  box.style.transform = 'translateY(16px)';
   setTimeout(() => { overlay.style.display = 'none'; }, 200);
   if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
 }
@@ -3756,6 +3761,7 @@ function cpCloseModal() {
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && document.getElementById('cp-modal-wrap')) cpCloseModal();
+  if (e.key === 'Escape' && document.getElementById('confirm-overlay')?.style.display === 'flex') _confirmClose(false);
 });
 
 // ── DECISION MODAL ──
@@ -4352,6 +4358,22 @@ async function saveContactModal(id) {
 }
 
 </script>
+
+<!-- ── CONFIRM MODAL ─────────────────────────────────────────────── -->
+<div id="confirm-overlay" style="display:none;position:fixed;inset:0;background:rgba(17,17,16,0.55);backdrop-filter:blur(3px);z-index:9000;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.2s;" onclick="if(event.target===this)_confirmClose(false)">
+  <div class="confirm-box" style="background:#F5F2EB;border-radius:16px;width:min(400px,94vw);box-shadow:0 24px 64px rgba(0,0,0,0.3);transform:translateY(16px);transition:transform 0.2s;">
+    <div style="padding:24px 24px 18px;border-bottom:1px solid rgba(0,0,0,0.08);">
+      <div id="confirm-title" style="font-family:'DM Sans',sans-serif;font-size:17px;font-weight:800;letter-spacing:-0.02em;color:#111110;"></div>
+    </div>
+    <div style="padding:16px 24px 8px;">
+      <p id="confirm-message" style="font-family:'DM Sans',sans-serif;font-size:13px;color:#555;line-height:1.6;margin:0;"></p>
+    </div>
+    <div style="padding:16px 24px 22px;display:flex;justify-content:flex-end;gap:8px;">
+      <button onclick="_confirmClose(false)" style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:1.5px solid rgba(0,0,0,0.15);background:transparent;cursor:pointer;color:#555;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Cancel</button>
+      <button id="confirm-ok-btn" onclick="_confirmClose(true)" style="font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:100px;border:none;background:#e05c5c;color:white;cursor:pointer;" onmouseover="this.style.background='#c94e4e'" onmouseout="this.style.background='#e05c5c'">Delete</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer></script>
 </body>
