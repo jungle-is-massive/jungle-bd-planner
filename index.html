@@ -498,10 +498,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 @keyframes spin { to { transform: rotate(360deg); } }
 .prospects-error { padding: 48px; text-align: center; font-size: 13px; color: var(--grey-mid); background: var(--white); border: 1.5px solid var(--grey-light); border-radius: 12px; }
 .prospects-table-wrap { width: 100%; overflow-x: auto; border-radius: 12px; box-shadow: 0 0 0 1.5px var(--grey-light); }
-.prospects-table { width: 100%; min-width: 680px; table-layout: fixed; border-collapse: collapse; background: var(--white); font-size: 12px; }
-.prospects-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); padding: 10px 14px; text-align: left; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.prospects-table td { padding: 11px 14px; border-bottom: 1px solid var(--grey-light); vertical-align: top; color: var(--black); line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* contacts-table column widths */
+.prospects-table { width: 100%; border-collapse: collapse; background: var(--white); font-size: 12px; }
+.prospects-table th { font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); padding: 10px 14px; text-align: left; background: var(--grey-light); border-bottom: 1px solid var(--grey-light); white-space: nowrap; }
+.prospects-table td { padding: 11px 14px; border-bottom: 1px solid var(--grey-light); vertical-align: top; color: var(--black); line-height: 1.4; }
+/* contacts-table: fixed layout with scroll wrapper */
+#contacts-table { table-layout: fixed; min-width: 680px; }
+#contacts-table td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #contacts-table th:nth-child(1), #contacts-table td:nth-child(1) { width: 18%; font-weight: 600; }
 #contacts-table th:nth-child(2), #contacts-table td:nth-child(2) { width: 16%; }
 #contacts-table th:nth-child(3), #contacts-table td:nth-child(3) { width: 15%; color: var(--grey-mid); font-size: 11px; }
@@ -511,6 +513,9 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #contacts-table th:nth-child(7), #contacts-table td:nth-child(7) { width: 13%; font-size: 11px; }
 #contacts-table th:nth-child(8), #contacts-table td:nth-child(8) { width: 4%; text-align: center; }
 #contacts-table th:nth-child(9), #contacts-table td:nth-child(9) { width: 6%; padding: 6px 8px; vertical-align: middle; }
+/* opps table: natural layout, no overflow clipping */
+#opps-main-table { table-layout: auto; }
+#opps-main-table td { white-space: nowrap; overflow: visible; }
 .prospects-table tr:last-child td { border-bottom: none; }
 .prospects-table tbody tr:hover td { background: rgba(0,0,0,0.018); }
 .prospects-table td a { color: var(--black); text-decoration: none; border-bottom: 1px solid var(--grey); transition: border-color 0.15s; }
@@ -1040,7 +1045,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     <div class="prospects-count" id="opps-count"></div>
     <button onclick="openOppModal()" style="background:var(--green);color:var(--black);border:none;padding:9px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap">+ Add opportunity</button>
   </div>
-  <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:visible">
     <div class="prospects-loading" id="opps-loading" style="display:flex"><div class="prospects-spinner"></div>Loading…</div>
     <div class="prospects-error" id="opps-error-msg" style="display:none;padding:20px;font-size:13px;color:var(--grey-mid)"></div>
     <table class="prospects-table" id="opps-main-table" style="display:none;width:100%;border-collapse:collapse;font-size:12px">
@@ -4120,7 +4125,7 @@ function openOppModal(id){
         <label style="display:block"><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px">Notes / learnings</div>
           <textarea id="om-notes" rows="2" style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical">${esc(o?.notes||o?.learnings||'')}</textarea></label>
         <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border)">
-          <div>${o?`<button onclick="deleteOpp('${o.id}');closeOppModal()" style="background:none;border:1px solid rgba(224,92,92,0.4);color:var(--red);padding:7px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;cursor:pointer">Delete</button>`:''}</div>
+          <div>${o?`<button onclick="deleteOpp('${o.id}').then(()=>{ if(!document.getElementById('opp-modal-wrap')) return; closeOppModal(); })" style="background:none;border:1px solid rgba(224,92,92,0.4);color:var(--red);padding:7px 14px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;cursor:pointer">Delete</button>`:''}</div>
           <div style="display:flex;gap:8px">
             <button onclick="closeOppModal()" style="background:none;border:1.5px solid var(--border);padding:9px 16px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;cursor:pointer">Cancel</button>
             <button id="om-save" onclick="saveOppModal('${id||''}')" style="background:var(--black);color:var(--green);border:none;padding:9px 20px;border-radius:100px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer">${o?'Save changes':'Add opportunity'}</button>
