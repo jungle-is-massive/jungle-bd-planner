@@ -2542,6 +2542,7 @@ async function renderAssetsView() {
       </select></div>
       <div>${docHtml}</div>
       <div class="asset-row-actions">
+        <button class="asset-action-btn" onclick="captureAssetTask('${a.id}','${esc(a.name)}')" title="Add to To Do list">☑</button>
         <button class="asset-action-btn" onclick="openEditAsset('${a.id}')" title="Edit">✏️</button>
         <button class="asset-action-btn del" onclick="deleteAsset('${a.id}')" title="Delete">✕</button>
       </div>
@@ -4400,6 +4401,72 @@ async function saveContactModal(id) {
 </div>
 
 <script src="https://jungle-is-massive.github.io/hub/hub-overlay.js" defer></script>
+
+<!-- TODO CAPTURE — shared with Activity Dashboard -->
+<div id="todo-capture-panel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1px solid #e8e3da;border-radius:14px;padding:20px;width:340px;box-shadow:0 16px 40px -12px rgba(0,0,0,0.18);font-family:'DM Sans',system-ui,sans-serif">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div style="font-size:14px;font-weight:700">Capture task</div>
+    <button onclick="document.getElementById('todo-capture-panel').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:16px;color:#8A8880">✕</button>
+  </div>
+  <input type="text" id="capture-title" placeholder="Task description…" style="width:100%;padding:8px 12px;border:1px solid #e8e3da;border-radius:8px;font-family:inherit;font-size:13px;margin-bottom:8px;box-sizing:border-box;outline:none">
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <select id="capture-priority" style="flex:1;padding:6px 8px;border:1px solid #e8e3da;border-radius:8px;font-family:inherit;font-size:12px">
+      <option value="red">🔴 High</option>
+      <option value="amber" selected>🟡 Medium</option>
+      <option value="green">🟢 Low</option>
+    </select>
+    <input type="date" id="capture-due" style="flex:1;padding:6px 8px;border:1px solid #e8e3da;border-radius:8px;font-family:inherit;font-size:12px">
+  </div>
+  <div id="capture-asset-label" style="font-size:11px;color:#8A8880;margin-bottom:10px"></div>
+  <div style="display:flex;gap:8px">
+    <button onclick="document.getElementById('todo-capture-panel').style.display='none'" style="flex:1;padding:8px;border:1px solid #e8e3da;border-radius:8px;background:none;cursor:pointer;font-family:inherit;font-size:12px">Cancel</button>
+    <button onclick="submitCaptureTask()" style="flex:1;padding:8px;border:none;border-radius:8px;background:#0E0E0E;color:#87FB66;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700">Add to list</button>
+  </div>
+  <div id="capture-feedback" style="font-size:11px;color:#3ECF8E;margin-top:8px;text-align:center;display:none">✓ Added to your to do list</div>
+</div>
+
+<script>
+const _SUPA_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
+const _SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllaGt2bHlqdW1remNjb3FxZ3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTMwNzYsImV4cCI6MjA5MTM4OTA3Nn0.pF9K9aBwWN10JRT_ODTLPzsdPKH3X0CW30WrPMn9lGs';
+const _ASSETS_CAT_ID = 'f1ee93e3-9546-46ba-8323-61a9f9a72932';
+let _captureAssetName = '';
+
+function captureAssetTask(assetId, assetName) {
+  _captureAssetName = assetName;
+  const panel = document.getElementById('todo-capture-panel');
+  const label = document.getElementById('capture-asset-label');
+  const title = document.getElementById('capture-title');
+  label.textContent = 'Asset: ' + assetName;
+  title.value = '';
+  document.getElementById('capture-due').value = '';
+  document.getElementById('capture-feedback').style.display = 'none';
+  panel.style.display = 'block';
+  setTimeout(() => title.focus(), 50);
+}
+
+async function submitCaptureTask() {
+  const title = document.getElementById('capture-title').value.trim();
+  if (!title) return;
+  const payload = {
+    title,
+    priority: document.getElementById('capture-priority').value,
+    category_id: _ASSETS_CAT_ID,
+    company: _captureAssetName || null,
+    due_date: document.getElementById('capture-due').value || null,
+  };
+  const r = await fetch(`${_SUPA_URL}/rest/v1/todos`, {
+    method: 'POST',
+    headers: { apikey: _SUPA_KEY, Authorization: `Bearer ${_SUPA_KEY}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+    body: JSON.stringify(payload)
+  });
+  if (r.ok || r.status === 201) {
+    document.getElementById('capture-feedback').style.display = 'block';
+    document.getElementById('capture-title').value = '';
+    setTimeout(() => { document.getElementById('todo-capture-panel').style.display = 'none'; }, 1200);
+  }
+}
+</script>
+
 </body>
 </html>
 
