@@ -678,8 +678,8 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .prop-card .prop-status { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
 
 /* NURTURE — funnel visualization */
-.funnel-stages { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 32px; }
-@media (max-width: 1000px) { .funnel-stages { grid-template-columns: repeat(3, 1fr); } }
+.funnel-stages { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 32px; }
+@media (max-width: 1000px) { .funnel-stages { grid-template-columns: repeat(4, 1fr); } }
 @media (max-width: 560px) { .funnel-stages { grid-template-columns: repeat(2, 1fr); } }
 .funnel-stage { background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; }
 .funnel-stage.mql { border-color: var(--green); }
@@ -3620,7 +3620,7 @@ async function renderNurture() {
       <div class="funnel-stages">
         ${CP_STATE.funnel_stages.map(s => `
           <div class="funnel-stage ${s.is_mql ? 'mql' : ''} ${s.is_sql ? 'sql' : ''}" title="${cpEsc(s.description || '')}">
-            <div class="funnel-stage-num">0${s.stage_order}</div>
+            <div class="funnel-stage-num">${s.stage_order < 10 ? '0' + s.stage_order : s.stage_order}</div>
             <div class="funnel-stage-name">${cpEsc(s.name)}</div>
             <div class="funnel-stage-count">—</div>
           </div>
