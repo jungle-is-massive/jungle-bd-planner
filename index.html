@@ -678,9 +678,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .prop-card .prop-status { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
 
 /* NURTURE — funnel visualization */
-.funnel-stages { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 32px; }
-@media (max-width: 1000px) { .funnel-stages { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 560px) { .funnel-stages { grid-template-columns: repeat(2, 1fr); } }
+.funnel-stages { display: flex; flex-direction: column; gap: 6px; margin-bottom: 32px; }
+.funnel-row { display: grid; gap: 4px; }
+.funnel-row.row-1 { grid-template-columns: repeat(6, 1fr); }
+.funnel-row.row-2 { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 1000px) { .funnel-row.row-1, .funnel-row.row-2 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 560px) { .funnel-row.row-1, .funnel-row.row-2 { grid-template-columns: repeat(2, 1fr); } }
 .funnel-stage { background: var(--white); border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 10px; text-align: center; }
 .funnel-stage.mql { border-color: var(--green); }
 .funnel-stage.sql { border-color: #4a90d9; }
@@ -3618,13 +3621,19 @@ async function renderNurture() {
     <div class="cp-section">
       <div class="cp-section-label">Funnel stages</div>
       <div class="funnel-stages">
-        ${CP_STATE.funnel_stages.map(s => `
-          <div class="funnel-stage ${s.is_mql ? 'mql' : ''} ${s.is_sql ? 'sql' : ''}" title="${cpEsc(s.description || '')}">
-            <div class="funnel-stage-num">${s.stage_order < 10 ? '0' + s.stage_order : s.stage_order}</div>
-            <div class="funnel-stage-name">${cpEsc(s.name)}</div>
-            <div class="funnel-stage-count">—</div>
-          </div>
-        `).join('')}
+        ${(() => {
+          const row1 = CP_STATE.funnel_stages.filter(s => s.stage_order <= 6);
+          const row2 = CP_STATE.funnel_stages.filter(s => s.stage_order >= 7);
+          const stageBox = s => `
+            <div class="funnel-stage ${s.is_mql ? 'mql' : ''} ${s.is_sql ? 'sql' : ''}" title="${cpEsc(s.description || '')}">
+              <div class="funnel-stage-num">${s.stage_order < 10 ? '0' + s.stage_order : s.stage_order}</div>
+              <div class="funnel-stage-name">${cpEsc(s.name)}</div>
+              <div class="funnel-stage-count">—</div>
+            </div>`;
+          return `
+            <div class="funnel-row row-1">${row1.map(stageBox).join('')}</div>
+            <div class="funnel-row row-2">${row2.map(stageBox).join('')}</div>`;
+        })()}
       </div>
       <div class="cp-section-sub" style="font-size:12px">Contact counts will populate once contacts are linked to stages.</div>
     </div>
