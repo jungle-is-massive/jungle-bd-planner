@@ -4224,10 +4224,26 @@ async function loadContacts(sourceType='all', force=false) {
   const tableWrap = document.getElementById('contacts-table-wrap');
   loading.style.display = 'flex'; error.style.display = 'none'; tableWrap.style.display = 'none';
   try {
-    const filter = sourceType !== 'all' ? `&source_type=eq.${encodeURIComponent(sourceType)}` : '';
-    const r = await sbFetch(`contacts?select=*&order=created_at.desc${filter}`);
-    if(!r.ok) throw new Error(`HTTP ${r.status}`);
-    contactsData = await r.json();
+    let rows;
+    if (sourceType === 'Dripify') {
+      // Dripify connections live in the `prospects` table (routed there by Make since Apr 2026)
+      const r = await sbFetch('prospects?select=*&order=created_at.desc');
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const raw = await r.json();
+      // Normalise to the shape renderContactsTable expects
+      rows = raw.map(p => ({
+        ...p,
+        full_name:   [p.first_name, p.last_name].filter(Boolean).join(' ') || '—',
+        source_type: 'Dripify',
+        source_name: p.campaign || 'Dripify',
+      }));
+    } else {
+      const filter = sourceType !== 'all' ? `&source_type=eq.${encodeURIComponent(sourceType)}` : '';
+      const r = await sbFetch(`contacts?select=*&order=created_at.desc${filter}`);
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      rows = await r.json();
+    }
+    contactsData = rows;
     contactsData._loadedType = sourceType;
     contactsLoaded = true;
     renderContactsTable(contactsData);
