@@ -388,8 +388,17 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #edit-ws-modal-overlay.open #add-modal { transform: translateY(0); }
 .row[draggable="true"] { transition: opacity 0.15s; }
 .row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
-.drag-handle:hover { opacity: 1 !important; color: var(--black) !important; }
-.row-action-btn:hover { border-color: var(--black) !important; color: var(--black) !important; background: var(--grey-light) !important; }
+.row-actions { display: none; gap: 4px; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); z-index: 20; background: var(--cream); border: 1px solid var(--grey-light); border-radius: 6px; padding: 3px 5px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.row:hover .row-actions { display: flex; }
+.row-action-btn { background: none; border: none; border-radius: 4px; padding: 2px 7px; font-size: 10px; cursor: pointer; font-family: inherit; font-weight: 600; letter-spacing: 0.02em; transition: background 0.1s, color 0.1s; }
+.row-action-btn.edit-btn { color: var(--grey-mid); }
+.row-action-btn.edit-btn:hover { background: var(--grey-light); color: var(--black); }
+.row-action-btn.delete-btn { color: #ef4444; }
+.row-action-btn.delete-btn:hover { background: #fee2e2; }
+.drag-handle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: grab; color: var(--grey-mid); font-size: 14px; opacity: 0; transition: opacity 0.15s; user-select: none; z-index: 20; }
+.row:hover .drag-handle { opacity: 0.6; }
+.drag-handle:hover { opacity: 1 !important; }
+.row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 
@@ -2285,23 +2294,21 @@ function buildPlaceholder(rc) {
 function buildRow(rc, events, sectionId) {
   const row=document.createElement('div'); row.className='row'; row.dataset.rowKey=rc.key;
   row.style.gridTemplateColumns = gridCols();
-  // Build label with edit/delete controls for custom rows
   const isCustom = rc.key && rc.key.startsWith('custom-');
-  const labelHtml = isCustom
-    ? `<div class="row-label" style="display:flex;align-items:center;gap:4px;padding-right:4px">
-        <span class="row-label-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${rc.label}</span>
-        <span class="row-actions" style="display:none;gap:4px;flex-shrink:0">
-          <button class="row-action-btn" title="Edit" onclick="openEditWsModal('${rc.key}','${sectionId}',event)" style="background:none;border:1px solid var(--grey-light);border-radius:4px;padding:2px 5px;font-size:9px;cursor:pointer;color:var(--grey-mid);font-family:inherit">Edit</button>
-          <button class="row-action-btn" title="Delete" onclick="deleteWorkstream('${rc.key}','${sectionId}',event)" style="background:none;border:1px solid #fca5a5;border-radius:4px;padding:2px 5px;font-size:9px;cursor:pointer;color:#ef4444;font-family:inherit">✕</button>
-        </span>
-        <span class="drag-handle" title="Drag to reorder" style="cursor:grab;color:var(--grey-mid);font-size:12px;flex-shrink:0;opacity:0.5;user-select:none">⠿</span>
-      </div>`
-    : `<div class="row-label">${rc.label}</div>`;
-  row.innerHTML = labelHtml;
   if(isCustom){
-    const lbl = row.querySelector('.row-label');
-    lbl.addEventListener('mouseenter',()=>{ const ra=lbl.querySelector('.row-actions'); if(ra) ra.style.display='flex'; });
-    lbl.addEventListener('mouseleave',()=>{ const ra=lbl.querySelector('.row-actions'); if(ra) ra.style.display='none'; });
+    row.innerHTML = `<div class="row-label">${rc.label}</div>`;
+    // Absolutely-positioned controls — sit over the row, not inside the grid cell
+    const actions = document.createElement('span');
+    actions.className = 'row-actions';
+    actions.innerHTML = `<button class="row-action-btn edit-btn" onclick="openEditWsModal('${rc.key}','${sectionId}',event)">Edit</button><button class="row-action-btn delete-btn" onclick="deleteWorkstream('${rc.key}','${sectionId}',event)">✕</button>`;
+    row.appendChild(actions);
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.title = 'Drag to reorder';
+    handle.textContent = '⠿';
+    row.appendChild(handle);
+  } else {
+    row.innerHTML = `<div class="row-label">${rc.label}</div>`;
   }
   MONTHS.forEach(()=>{const c=document.createElement('div');c.className='row-cell';row.appendChild(c);});
   requestAnimationFrame(()=>plotEvents(row,events,sectionId));
