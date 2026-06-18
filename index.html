@@ -2897,21 +2897,44 @@ function initRowToolbar() {
   const toolbar = document.getElementById('row-toolbar');
   if(!toolbar) return;
 
-  // Keep toolbar visible when mouse is over it
-  toolbar.addEventListener('mouseenter', ()=>{ clearTimeout(_toolbarLeaveTimer); });
-  toolbar.addEventListener('mouseleave', ()=>{ hideToolbar(); });
+  // While mouse is over the toolbar, keep _toolbarRow intact and cancel any hide
+  toolbar.addEventListener('mouseenter', () => { clearTimeout(_toolbarLeaveTimer); });
+  toolbar.addEventListener('mouseleave', () => { scheduleHide(); });
 
-  // Wire up edit + delete buttons — they read from toolbar's current target row
-  document.getElementById('toolbar-edit-btn').onclick = () => {
-    if(!_toolbarRow) return;
-    hideToolbar();
-    openEditWsModal(_toolbarRow.dataset.rowKey, _toolbarRow.dataset.sectionId, null);
-  };
-  document.getElementById('toolbar-delete-btn').onclick = () => {
-    if(!_toolbarRow) return;
-    hideToolbar();
-    deleteWorkstream(_toolbarRow.dataset.rowKey, _toolbarRow.dataset.sectionId, null);
-  };
+  // Capture key+section at mousedown so click always has the right values,
+  // even if _toolbarRow was nulled by the hide timer between mouseenter and click
+  let _pendingKey = null, _pendingSection = null;
+
+  const editBtn = document.getElementById('toolbar-edit-btn');
+  const deleteBtn = document.getElementById('toolbar-delete-btn');
+
+  editBtn.addEventListener('mousedown', () => {
+    if(_toolbarRow){ _pendingKey = _toolbarRow.dataset.rowKey; _pendingSection = _toolbarRow.dataset.sectionId; }
+  });
+  editBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const key = _pendingKey || (_toolbarRow && _toolbarRow.dataset.rowKey);
+    const sec = _pendingSection || (_toolbarRow && _toolbarRow.dataset.sectionId);
+    _pendingKey = null; _pendingSection = null;
+    if(!key) return;
+    toolbar.classList.remove('visible');
+    _toolbarRow = null;
+    openEditWsModal(key, sec, null);
+  });
+
+  deleteBtn.addEventListener('mousedown', () => {
+    if(_toolbarRow){ _pendingKey = _toolbarRow.dataset.rowKey; _pendingSection = _toolbarRow.dataset.sectionId; }
+  });
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const key = _pendingKey || (_toolbarRow && _toolbarRow.dataset.rowKey);
+    const sec = _pendingSection || (_toolbarRow && _toolbarRow.dataset.sectionId);
+    _pendingKey = null; _pendingSection = null;
+    if(!key) return;
+    toolbar.classList.remove('visible');
+    _toolbarRow = null;
+    deleteWorkstream(key, sec, null);
+  });
 }
 
 function showToolbar(row) {
@@ -2924,21 +2947,27 @@ function showToolbar(row) {
   toolbar.classList.add('visible');
 }
 
-function hideToolbar() {
-  _toolbarLeaveTimer = setTimeout(()=>{
-    document.getElementById('row-toolbar').classList.remove('visible');
+function scheduleHide() {
+  clearTimeout(_toolbarLeaveTimer);
+  _toolbarLeaveTimer = setTimeout(() => {
+    const toolbar = document.getElementById('row-toolbar');
+    if(toolbar && toolbar.matches(':hover')) return; // mouse moved back over toolbar
+    toolbar && toolbar.classList.remove('visible');
     _toolbarRow = null;
-  }, 120);
+  }, 200);
+}
+
+function hideToolbar() {
+  clearTimeout(_toolbarLeaveTimer);
+  const toolbar = document.getElementById('row-toolbar');
+  toolbar && toolbar.classList.remove('visible');
+  _toolbarRow = null;
 }
 
 function attachToolbarToRows() {
   document.querySelectorAll('.row[data-row-key]').forEach(row => {
     row.addEventListener('mouseenter', () => showToolbar(row));
-    row.addEventListener('mouseleave', () => { _toolbarLeaveTimer = setTimeout(()=>{ 
-      // Only hide if mouse didn't go to toolbar
-      const tb = document.getElementById('row-toolbar');
-      if(!tb.matches(':hover')) hideToolbar();
-    }, 80); });
+    row.addEventListener('mouseleave', () => scheduleHide());
   });
 }
 
