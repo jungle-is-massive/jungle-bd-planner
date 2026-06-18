@@ -388,17 +388,19 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #edit-ws-modal-overlay.open #add-modal { transform: translateY(0); }
 .row[draggable="true"] { transition: opacity 0.15s; }
 .row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
-.row-actions { display: none; gap: 4px; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); z-index: 20; background: var(--cream); border: 1px solid var(--grey-light); border-radius: 6px; padding: 3px 5px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-.row:hover .row-actions { display: flex; }
-.row-action-btn { background: none; border: none; border-radius: 4px; padding: 2px 7px; font-size: 10px; cursor: pointer; font-family: inherit; font-weight: 600; letter-spacing: 0.02em; transition: background 0.1s, color 0.1s; }
-.row-action-btn.edit-btn { color: var(--grey-mid); }
+/* Floating row toolbar — fixed to viewport right edge */
+#row-toolbar { position: fixed; right: 16px; z-index: 200; display: none; align-items: center; gap: 6px; background: var(--cream); border: 1px solid var(--grey-light); border-radius: 8px; padding: 5px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); pointer-events: all; }
+#row-toolbar.visible { display: flex; }
+.row-action-btn { background: none; border: none; border-radius: 4px; padding: 3px 9px; font-size: 10px; cursor: pointer; font-family: inherit; font-weight: 600; letter-spacing: 0.02em; transition: background 0.1s, color 0.1s; }
+.row-action-btn.edit-btn { color: var(--grey-mid); border: 1px solid var(--grey-light); }
 .row-action-btn.edit-btn:hover { background: var(--grey-light); color: var(--black); }
-.row-action-btn.delete-btn { color: #ef4444; }
+.row-action-btn.delete-btn { color: #ef4444; border: 1px solid #fca5a5; }
 .row-action-btn.delete-btn:hover { background: #fee2e2; }
-.drag-handle { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); cursor: grab; color: var(--grey-mid); font-size: 14px; opacity: 0; transition: opacity 0.15s; user-select: none; z-index: 20; }
-.row:hover .drag-handle { opacity: 0.6; }
-.drag-handle:hover { opacity: 1 !important; }
+.toolbar-label { font-size: 10px; font-weight: 700; color: var(--grey-mid); letter-spacing: 0.05em; padding-right: 4px; border-right: 1px solid var(--grey-light); margin-right: 2px; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toolbar-drag { cursor: grab; color: var(--grey-mid); font-size: 14px; opacity: 0.5; padding: 0 4px; user-select: none; }
+.toolbar-drag:hover { opacity: 1; }
 .row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
+.row[data-row-key]:hover { background: rgba(0,0,0,0.02); }
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 
@@ -1427,6 +1429,14 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
     </div>
   </div>
 </div>
+<!-- Floating row toolbar — fixed to viewport, shown on row hover -->
+<div id="row-toolbar">
+  <span class="toolbar-label" id="toolbar-label"></span>
+  <button class="row-action-btn edit-btn" id="toolbar-edit-btn">Edit</button>
+  <button class="row-action-btn delete-btn" id="toolbar-delete-btn">✕ Delete</button>
+  <span class="toolbar-drag" id="toolbar-drag" title="Drag to reorder">⠿</span>
+</div>
+
 <div id="ws-modal-overlay" onclick="closeWsModal(event)">
   <div id="add-modal" style="max-width:400px">
     <div class="add-modal-header">
@@ -2282,6 +2292,7 @@ function renderRows() {
     initDragDrop(sg, s.id);
   });
   renderTodayLine();
+  attachToolbarToRows();
 }
 
 function buildPlaceholder(rc) {
@@ -2293,23 +2304,10 @@ function buildPlaceholder(rc) {
 
 function buildRow(rc, events, sectionId) {
   const row=document.createElement('div'); row.className='row'; row.dataset.rowKey=rc.key;
+  row.dataset.sectionId=sectionId;
+  row.dataset.label=rc.label;
   row.style.gridTemplateColumns = gridCols();
-  const isCustom = rc.key && rc.key.startsWith('custom-');
-  if(isCustom){
-    row.innerHTML = `<div class="row-label">${rc.label}</div>`;
-    // Absolutely-positioned controls — sit over the row, not inside the grid cell
-    const actions = document.createElement('span');
-    actions.className = 'row-actions';
-    actions.innerHTML = `<button class="row-action-btn edit-btn" onclick="openEditWsModal('${rc.key}','${sectionId}',event)">Edit</button><button class="row-action-btn delete-btn" onclick="deleteWorkstream('${rc.key}','${sectionId}',event)">✕</button>`;
-    row.appendChild(actions);
-    const handle = document.createElement('span');
-    handle.className = 'drag-handle';
-    handle.title = 'Drag to reorder';
-    handle.textContent = '⠿';
-    row.appendChild(handle);
-  } else {
-    row.innerHTML = `<div class="row-label">${rc.label}</div>`;
-  }
+  row.innerHTML = `<div class="row-label">${rc.label}</div>`;
   MONTHS.forEach(()=>{const c=document.createElement('div');c.className='row-cell';row.appendChild(c);});
   requestAnimationFrame(()=>plotEvents(row,events,sectionId));
   return row;
@@ -2858,7 +2856,6 @@ function closeAddModalDirect(){
 function openWsModal(){
   document.getElementById('ws-modal-overlay').classList.add('open');
   document.getElementById('ws-name').value='';
-  document.getElementById('ws-section').value = SECTIONS[0]?.id || '';
   populateWsSection('ws-section');
 }
 function closeWsModal(e){ if(e.target===document.getElementById('ws-modal-overlay'))closeWsModalDirect(); }
@@ -2893,9 +2890,60 @@ function persistWorkstreams(){
   localStorage.setItem('jc_workstreams',JSON.stringify(custom));
 }
 
+// ── Floating toolbar ──────────────────────────────────────────────────────────
+let _toolbarRow = null, _toolbarLeaveTimer = null;
+
+function initRowToolbar() {
+  const toolbar = document.getElementById('row-toolbar');
+  if(!toolbar) return;
+
+  // Keep toolbar visible when mouse is over it
+  toolbar.addEventListener('mouseenter', ()=>{ clearTimeout(_toolbarLeaveTimer); });
+  toolbar.addEventListener('mouseleave', ()=>{ hideToolbar(); });
+
+  // Wire up edit + delete buttons — they read from toolbar's current target row
+  document.getElementById('toolbar-edit-btn').onclick = () => {
+    if(!_toolbarRow) return;
+    hideToolbar();
+    openEditWsModal(_toolbarRow.dataset.rowKey, _toolbarRow.dataset.sectionId, null);
+  };
+  document.getElementById('toolbar-delete-btn').onclick = () => {
+    if(!_toolbarRow) return;
+    hideToolbar();
+    deleteWorkstream(_toolbarRow.dataset.rowKey, _toolbarRow.dataset.sectionId, null);
+  };
+}
+
+function showToolbar(row) {
+  clearTimeout(_toolbarLeaveTimer);
+  _toolbarRow = row;
+  const toolbar = document.getElementById('row-toolbar');
+  const rect = row.getBoundingClientRect();
+  document.getElementById('toolbar-label').textContent = row.dataset.label || '';
+  toolbar.style.top = (rect.top + rect.height/2 - 16) + 'px';
+  toolbar.classList.add('visible');
+}
+
+function hideToolbar() {
+  _toolbarLeaveTimer = setTimeout(()=>{
+    document.getElementById('row-toolbar').classList.remove('visible');
+    _toolbarRow = null;
+  }, 120);
+}
+
+function attachToolbarToRows() {
+  document.querySelectorAll('.row[data-row-key]').forEach(row => {
+    row.addEventListener('mouseenter', () => showToolbar(row));
+    row.addEventListener('mouseleave', () => { _toolbarLeaveTimer = setTimeout(()=>{ 
+      // Only hide if mouse didn't go to toolbar
+      const tb = document.getElementById('row-toolbar');
+      if(!tb.matches(':hover')) hideToolbar();
+    }, 80); });
+  });
+}
+
 function openEditWsModal(key, sectionId, e){
-  e && e.stopPropagation();
-  // Find the row
+  if(e) e.stopPropagation();
   const section = SECTIONS.find(s=>s.id===sectionId);
   const row = section?.rows.find(r=>r.key===key);
   if(!row) return;
@@ -2914,19 +2962,26 @@ function saveEditWorkstream(){
   const newSectionId = document.getElementById('edit-ws-section').value;
   const newName = document.getElementById('edit-ws-name').value.trim();
   if(!newName) return;
-  // Remove from original section
   const origSection = SECTIONS.find(s=>s.id===origSectionId);
   if(origSection){ origSection.rows = origSection.rows.filter(r=>r.key!==key); }
-  // Add to new section
   const newSection = SECTIONS.find(s=>s.id===newSectionId);
   if(newSection){ newSection.rows.push({key, label:newName}); }
+  // If it was a built-in row, we need to track it as custom now so it persists
+  if(!key.startsWith('custom-')) {
+    // Re-key as custom so it gets persisted
+    const newKey = 'custom-'+newName.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
+    if(newSection) {
+      const r = newSection.rows.find(r=>r.key===key);
+      if(r) r.key = newKey;
+    }
+  }
   persistWorkstreams();
   const state=getCollapseState(); state[newSectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
   renderRows(); closeEditWsModal();
 }
 
 function deleteWorkstream(key, sectionId, e){
-  e && e.stopPropagation();
+  if(e) e.stopPropagation();
   if(!confirm('Delete this workstream row?')) return;
   const section = SECTIONS.find(s=>s.id===sectionId);
   if(section){ section.rows = section.rows.filter(r=>r.key!==key); }
@@ -2934,39 +2989,30 @@ function deleteWorkstream(key, sectionId, e){
   renderRows();
 }
 
-// ── Drag-and-drop for rows ──────────────────────────────────────────────────
-let dragSrc = null, dragSrcSection = null, dragSrcKey = null;
+// ── Drag-and-drop reorder ─────────────────────────────────────────────────────
+let dragSrc = null, dragSrcSection = null;
 
 function initDragDrop(sg, sectionId) {
-  const rows = sg.querySelectorAll('.row[data-row-key]');
-  rows.forEach(row => {
-    const handle = row.querySelector('.drag-handle');
-    if(!handle) return;
+  const sr = sg.querySelector('.section-rows');
+  sr.querySelectorAll('.row[data-row-key]').forEach(row => {
     row.draggable = true;
     row.addEventListener('dragstart', e => {
-      dragSrc = row;
-      dragSrcSection = sectionId;
-      dragSrcKey = row.dataset.rowKey;
+      dragSrc = row; dragSrcSection = sectionId;
       e.dataTransfer.effectAllowed = 'move';
-      row.style.opacity = '0.4';
+      setTimeout(()=>row.style.opacity='0.4', 0);
     });
-    row.addEventListener('dragend', () => { row.style.opacity = ''; dragSrc = null; });
+    row.addEventListener('dragend', () => { row.style.opacity=''; dragSrc=null; });
     row.addEventListener('dragover', e => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      if(dragSrc && dragSrc !== row) {
-        const bounding = row.getBoundingClientRect();
-        const offset = e.clientY - bounding.top;
-        const sr = sg.querySelector('.section-rows');
-        if(offset < bounding.height/2) sr.insertBefore(dragSrc, row);
+      if(dragSrc && dragSrc!==row && dragSrcSection===sectionId){
+        const mid = row.getBoundingClientRect().top + row.getBoundingClientRect().height/2;
+        if(e.clientY < mid) sr.insertBefore(dragSrc, row);
         else sr.insertBefore(dragSrc, row.nextSibling);
       }
     });
     row.addEventListener('drop', e => {
       e.preventDefault();
-      if(dragSrcSection !== sectionId) return; // only same-section reorder for now
-      // Sync SECTIONS array to new DOM order
-      const sr = sg.querySelector('.section-rows');
+      if(dragSrcSection !== sectionId) return;
       const section = SECTIONS.find(s=>s.id===sectionId);
       if(!section) return;
       const newOrder = [];
@@ -2974,7 +3020,6 @@ function initDragDrop(sg, sectionId) {
         const found = section.rows.find(x=>x.key===r.dataset.rowKey);
         if(found) newOrder.push(found);
       });
-      // Re-add any non-custom rows not in DOM (shouldn't happen but safe)
       section.rows.forEach(r => { if(!newOrder.find(x=>x.key===r.key)) newOrder.push(r); });
       section.rows = newOrder;
       persistWorkstreams();
@@ -3329,6 +3374,7 @@ async function init(){
   // Sort by saved order if available
   custom.sort((a,b)=>(a.order||0)-(b.order||0));
   custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
+  initRowToolbar();
   renderMonthHeader();
   allEvents=await loadEvents();
   renderRows();
