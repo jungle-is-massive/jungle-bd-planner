@@ -385,7 +385,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #ws-modal-overlay #add-modal { transform: translateY(20px); transition: transform 0.25s; }
 #ws-modal-overlay.open #add-modal { transform: translateY(0); }
 #edit-ws-modal-overlay.open { opacity: 1; pointer-events: all; }
-#edit-ws-modal-overlay.open #add-modal { transform: translateY(0); }
+#edit-ws-modal-overlay.open #edit-modal-inner { transform: translateY(0); }
 .row[draggable="true"] { transition: opacity 0.15s; }
 .row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
 /* Floating row toolbar — fixed to viewport right edge */
@@ -1463,7 +1463,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 </div>
 
 <div id="edit-ws-modal-overlay" onclick="closeEditWsModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
-  <div id="add-modal" style="max-width:400px;transform:translateY(20px);transition:transform 0.25s;">
+  <div id="edit-modal-inner" style="max-width:400px;transform:translateY(20px);transition:transform 0.25s;">
     <div class="add-modal-header">
       <div class="add-modal-title">Edit Workstream Row</div>
       <button class="modal-close" onclick="closeEditWsModal()">✕</button>
@@ -2974,11 +2974,13 @@ function attachToolbarToRows() {
 function openEditWsModal(key, sectionId, e){
   if(e) e.stopPropagation();
   const section = SECTIONS.find(s=>s.id===sectionId);
-  const row = section?.rows.find(r=>r.key===key);
-  if(!row) return;
+  const rowData = section?.rows.find(r=>r.key===key);
+  // Fallback: read label from the DOM row element
+  const domRow = document.querySelector(`.row[data-row-key="${key}"]`);
+  const label = rowData?.label || domRow?.dataset.label || key;
   document.getElementById('edit-ws-key').value = key;
   document.getElementById('edit-ws-original-section').value = sectionId;
-  document.getElementById('edit-ws-name').value = row.label;
+  document.getElementById('edit-ws-name').value = label;
   populateWsSection('edit-ws-section');
   document.getElementById('edit-ws-section').value = sectionId;
   document.getElementById('edit-ws-modal-overlay').classList.add('open');
