@@ -73,7 +73,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
 /* CALENDAR */
 #planner-wrap { overflow-x: auto; overflow-y: visible; padding-bottom: 100px; }
-#planner { display: grid; min-width: calc(var(--sidebar-w) + var(--col-w) * 12 + 40px); position: relative; }
+#planner { display: grid; position: relative; }
 
 /* Month header — lives outside planner-wrap, sticks below nav */
 #month-header-sticky {
@@ -89,7 +89,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   overflow-x: hidden; /* JS controls scroll position to mirror planner-wrap */
   pointer-events: none;
 }
-#month-header { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); min-width: calc(var(--sidebar-w) + var(--col-w) * 12); }
+#month-header { display: grid; }
 .month-label { padding: 14px 0 10px; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-mid); border-left: 1px solid var(--grey-light); }
 .month-label.current { color: var(--black); }
 .month-label.current::after { content: ''; display: block; margin: 4px auto 0; width: 4px; height: 4px; border-radius: 50%; background: var(--green); }
@@ -103,12 +103,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .section-group.collapsed .section-chevron { transform: rotate(-90deg); }
 .section-group.collapsed .section-rows { display: none; }
 
-.row { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); position: relative; padding-right: 20px; }
+.row { display: grid; height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); position: relative; padding-right: 20px; }
 .row:hover { background: rgba(0,0,0,0.015); }
 .row-label { padding: 0 16px; font-size: 11px; font-weight: 600; color: var(--black); line-height: 1.3; letter-spacing: -0.01em; }
 .row-cell { height: 100%; border-left: 1px solid var(--grey-light); position: relative; }
 
-.placeholder-row { display: grid; grid-template-columns: var(--sidebar-w) repeat(12, var(--col-w)); height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); opacity: 0.4; padding-right: 20px; }
+.placeholder-row { display: grid; height: var(--row-h); align-items: center; border-top: 1px solid var(--grey-light); opacity: 0.4; padding-right: 20px; }
 .placeholder-label { padding: 0 16px; font-size: 11px; font-weight: 600; color: var(--grey-mid); font-style: italic; }
 .placeholder-cell { height: 100%; border-left: 1px solid var(--grey-light); display: flex; align-items: center; justify-content: center; }
 .placeholder-dash { width: 18px; height: 2px; background: var(--grey-light); border-radius: 1px; }
@@ -384,6 +384,12 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 #ws-modal-overlay.open { opacity: 1; pointer-events: all; }
 #ws-modal-overlay #add-modal { transform: translateY(20px); transition: transform 0.25s; }
 #ws-modal-overlay.open #add-modal { transform: translateY(0); }
+#edit-ws-modal-overlay.open { opacity: 1; pointer-events: all; }
+#edit-ws-modal-overlay.open #add-modal { transform: translateY(0); }
+.row[draggable="true"] { transition: opacity 0.15s; }
+.row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
+.drag-handle:hover { opacity: 1 !important; color: var(--black) !important; }
+.row-action-btn:hover { border-color: var(--black) !important; color: var(--black) !important; background: var(--grey-light) !important; }
 #planner-wrap::-webkit-scrollbar-track { background: var(--cream); }
 #planner-wrap::-webkit-scrollbar-thumb { background: var(--grey); border-radius: 2px; }
 
@@ -1415,18 +1421,18 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 <div id="ws-modal-overlay" onclick="closeWsModal(event)">
   <div id="add-modal" style="max-width:400px">
     <div class="add-modal-header">
-      <div class="add-modal-title">Add Workstream</div>
+      <div class="add-modal-title">Add Workstream Row</div>
       <button class="modal-close" onclick="closeWsModalDirect()">✕</button>
     </div>
     <div class="add-modal-body">
-      <div class="field"><label>Workstream Name</label><input type="text" id="ws-name" placeholder="e.g. Creativebrief"></div>
+      <div class="field"><label>Row Name</label><input type="text" id="ws-name" placeholder="e.g. Creativebrief" onkeydown="if(event.key==='Enter')saveWorkstream()"></div>
       <div class="field"><label>Section</label>
         <select id="ws-section">
           <option value="intermediaries">Intermediary Activity</option>
           <option value="owned">Owned Events</option>
+          <option value="content">Content &amp; Comms</option>
           <option value="speaking">Speaking</option>
           <option value="attendance">Event Attendance</option>
-          <option value="content">Content & Comms</option>
         </select>
       </div>
     </div>
@@ -1437,19 +1443,54 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   </div>
 </div>
 
+<div id="edit-ws-modal-overlay" onclick="closeEditWsModal(event)" style="position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;">
+  <div id="add-modal" style="max-width:400px;transform:translateY(20px);transition:transform 0.25s;">
+    <div class="add-modal-header">
+      <div class="add-modal-title">Edit Workstream Row</div>
+      <button class="modal-close" onclick="closeEditWsModal()">✕</button>
+    </div>
+    <div class="add-modal-body">
+      <input type="hidden" id="edit-ws-key">
+      <input type="hidden" id="edit-ws-original-section">
+      <div class="field"><label>Row Name</label><input type="text" id="edit-ws-name" placeholder="Row name" onkeydown="if(event.key==='Enter')saveEditWorkstream()"></div>
+      <div class="field"><label>Section</label><select id="edit-ws-section"></select></div>
+    </div>
+    <div class="add-modal-footer">
+      <button class="btn-cancel" onclick="closeEditWsModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEditWorkstream()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImllaGt2bHlqdW1remNjb3FxZ3hsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4MTMwNzYsImV4cCI6MjA5MTM4OTA3Nn0.pF9K9aBwWN10JRT_ODTLPzsdPKH3X0CW30WrPMn9lGs';
 const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
 const QA_PIN = '2627';
 
-const MONTHS = [
-  {label:'Apr 26',year:2026,month:3},{label:'May 26',year:2026,month:4},{label:'Jun 26',year:2026,month:5},
-  {label:'Jul 26',year:2026,month:6},{label:'Aug 26',year:2026,month:7},{label:'Sep 26',year:2026,month:8},
-  {label:'Oct 26',year:2026,month:9},{label:'Nov 26',year:2026,month:10},{label:'Dec 26',year:2026,month:11},
-  {label:'Jan 27',year:2027,month:0},{label:'Feb 27',year:2027,month:1},{label:'Mar 27',year:2027,month:2},
-];
-const PLAN_START = new Date(2026,3,1), PLAN_END = new Date(2027,3,1);
+// Generate dynamic months: from today back to the start of the current month, stretching 24 months ahead
+function buildMonths() {
+  const months = [];
+  const now = new Date();
+  // Start from April 2026 or current month, whichever is earlier
+  const hardStart = new Date(2026, 3, 1);
+  const start = hardStart < now ? hardStart : new Date(now.getFullYear(), now.getMonth(), 1);
+  // End 24 months from today
+  const end = new Date(now.getFullYear(), now.getMonth() + 25, 1);
+  const cursor = new Date(start);
+  while (cursor < end) {
+    const y = cursor.getFullYear();
+    const m = cursor.getMonth();
+    const shortYear = String(y).slice(2);
+    const monthAbbr = cursor.toLocaleString('en-GB', { month: 'short' });
+    months.push({ label: `${monthAbbr} ${shortYear}`, year: y, month: m });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return months;
+}
+const MONTHS = buildMonths();
+const PLAN_START = new Date(MONTHS[0].year, MONTHS[0].month, 1);
+const PLAN_END = new Date(MONTHS[MONTHS.length-1].year, MONTHS[MONTHS.length-1].month + 1, 1);
 
 let SECTIONS = [
   {id:'intermediaries',label:'Intermediary Activity',tier:'rumble',rows:[
@@ -2179,14 +2220,21 @@ function filterProspects() {
 function cw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--col-w'))||80;}
 function sw(){return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sidebar-w'))||190;}
 function df(d){return Math.max(0,Math.min(1,(new Date(d)-PLAN_START)/(PLAN_END-PLAN_START)));}
+function gridCols(){return `var(--sidebar-w) repeat(${MONTHS.length}, var(--col-w))`;}
+function totalW(){return sw()+cw()*MONTHS.length;}
 
 function renderMonthHeader() {
   const today=new Date(), hdr=document.getElementById('month-header');
+  const cols = gridCols();
+  const totalWidth = totalW() + 40;
+  hdr.style.gridTemplateColumns = cols;
+  hdr.style.minWidth = totalWidth + 'px';
+  const planner = document.getElementById('planner');
+  if(planner){ planner.style.minWidth = totalWidth + 'px'; }
   let h=`<div style="width:var(--sidebar-w)"></div>`;
   MONTHS.forEach(m=>{const cur=today.getFullYear()===m.year&&today.getMonth()===m.month; h+=`<div class="month-label${cur?' current':''}">${m.label}</div>`;});
   hdr.innerHTML=h;
 }
-
 function getCollapseState() { return JSON.parse(localStorage.getItem('jc_collapse')||'{}'); }
 function saveCollapseState(id, collapsed) { const s=getCollapseState(); s[id]=collapsed; localStorage.setItem('jc_collapse',JSON.stringify(s)); }
 
@@ -2222,26 +2270,46 @@ function renderRows() {
       sr.appendChild(rowEl);
     });
     sg.appendChild(sr); c.appendChild(sg);
+    initDragDrop(sg, s.id);
   });
   renderTodayLine();
 }
 
 function buildPlaceholder(rc) {
   const row=document.createElement('div'); row.className='placeholder-row';
+  row.style.gridTemplateColumns = gridCols();
   row.innerHTML=`<div class="placeholder-label">${rc.label}</div>`+MONTHS.map(()=>`<div class="placeholder-cell"><div class="placeholder-dash"></div></div>`).join('');
   return row;
 }
 
 function buildRow(rc, events, sectionId) {
   const row=document.createElement('div'); row.className='row'; row.dataset.rowKey=rc.key;
-  row.innerHTML=`<div class="row-label">${rc.label}</div>`;
+  row.style.gridTemplateColumns = gridCols();
+  // Build label with edit/delete controls for custom rows
+  const isCustom = rc.key && rc.key.startsWith('custom-');
+  const labelHtml = isCustom
+    ? `<div class="row-label" style="display:flex;align-items:center;gap:4px;padding-right:4px">
+        <span class="row-label-text" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${rc.label}</span>
+        <span class="row-actions" style="display:none;gap:4px;flex-shrink:0">
+          <button class="row-action-btn" title="Edit" onclick="openEditWsModal('${rc.key}','${sectionId}',event)" style="background:none;border:1px solid var(--grey-light);border-radius:4px;padding:2px 5px;font-size:9px;cursor:pointer;color:var(--grey-mid);font-family:inherit">Edit</button>
+          <button class="row-action-btn" title="Delete" onclick="deleteWorkstream('${rc.key}','${sectionId}',event)" style="background:none;border:1px solid #fca5a5;border-radius:4px;padding:2px 5px;font-size:9px;cursor:pointer;color:#ef4444;font-family:inherit">✕</button>
+        </span>
+        <span class="drag-handle" title="Drag to reorder" style="cursor:grab;color:var(--grey-mid);font-size:12px;flex-shrink:0;opacity:0.5;user-select:none">⠿</span>
+      </div>`
+    : `<div class="row-label">${rc.label}</div>`;
+  row.innerHTML = labelHtml;
+  if(isCustom){
+    const lbl = row.querySelector('.row-label');
+    lbl.addEventListener('mouseenter',()=>{ const ra=lbl.querySelector('.row-actions'); if(ra) ra.style.display='flex'; });
+    lbl.addEventListener('mouseleave',()=>{ const ra=lbl.querySelector('.row-actions'); if(ra) ra.style.display='none'; });
+  }
   MONTHS.forEach(()=>{const c=document.createElement('div');c.className='row-cell';row.appendChild(c);});
   requestAnimationFrame(()=>plotEvents(row,events,sectionId));
   return row;
 }
 
 function plotEvents(row, events, sectionId) {
-  const s=sw(), total=cw()*12;
+  const s=sw(), total=cw()*MONTHS.length;
   if(sectionId==='owned'){events.forEach(evt=>{const ed=new Date(evt.start_date),ps=new Date(ed);ps.setMonth(ps.getMonth()-3);addPrepBar(row,ps,ed,'#7B6FE0',s,total);});}
 
   // Group single-day events by date to handle overlaps
@@ -2343,7 +2411,7 @@ function renderTodayLine(){
   document.querySelectorAll('.today-line').forEach(e=>e.remove());
   const f=df(new Date().toISOString().split('T')[0]);
   if(f<0||f>1)return;
-  const x=sw()+f*cw()*12;
+  const x=sw()+f*cw()*MONTHS.length;
   document.querySelectorAll('.row').forEach(row=>{const l=document.createElement('div');l.className='today-line';l.style.left=x+'px';row.appendChild(l);});
 }
 
@@ -2780,9 +2848,22 @@ function closeAddModalDirect(){
   if(saveEl) saveEl.textContent = 'Save Event';
 }
 
-function openWsModal(){ document.getElementById('ws-modal-overlay').classList.add('open'); document.getElementById('ws-name').value=''; }
+function openWsModal(){
+  document.getElementById('ws-modal-overlay').classList.add('open');
+  document.getElementById('ws-name').value='';
+  document.getElementById('ws-section').value = SECTIONS[0]?.id || '';
+  populateWsSection('ws-section');
+}
 function closeWsModal(e){ if(e.target===document.getElementById('ws-modal-overlay'))closeWsModalDirect(); }
 function closeWsModalDirect(){ document.getElementById('ws-modal-overlay').classList.remove('open'); }
+
+function populateWsSection(selectId) {
+  const sel = document.getElementById(selectId);
+  const prev = sel.value;
+  sel.innerHTML = SECTIONS.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
+  if(prev && sel.querySelector(`option[value="${prev}"]`)) sel.value = prev;
+}
+
 function saveWorkstream(){
   const name=document.getElementById('ws-name').value.trim();
   const sectionId=document.getElementById('ws-section').value;
@@ -2790,13 +2871,108 @@ function saveWorkstream(){
   const key='custom-'+name.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
   const section=SECTIONS.find(s=>s.id===sectionId);
   if(section){ section.rows.push({key, label:name}); }
-  // Persist custom workstreams
-  const custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]');
-  custom.push({key, label:name, sectionId});
-  localStorage.setItem('jc_workstreams',JSON.stringify(custom));
-  // Expand the section
+  persistWorkstreams();
   const state=getCollapseState(); state[sectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
   renderRows(); closeWsModalDirect();
+}
+
+function persistWorkstreams(){
+  const custom=[];
+  SECTIONS.forEach(s=>{
+    s.rows.forEach((r,idx)=>{
+      if(r.key&&r.key.startsWith('custom-')) custom.push({key:r.key,label:r.label,sectionId:s.id,order:idx});
+    });
+  });
+  localStorage.setItem('jc_workstreams',JSON.stringify(custom));
+}
+
+function openEditWsModal(key, sectionId, e){
+  e && e.stopPropagation();
+  // Find the row
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  const row = section?.rows.find(r=>r.key===key);
+  if(!row) return;
+  document.getElementById('edit-ws-key').value = key;
+  document.getElementById('edit-ws-original-section').value = sectionId;
+  document.getElementById('edit-ws-name').value = row.label;
+  populateWsSection('edit-ws-section');
+  document.getElementById('edit-ws-section').value = sectionId;
+  document.getElementById('edit-ws-modal-overlay').classList.add('open');
+}
+function closeEditWsModal(e){ if(!e||e.target===document.getElementById('edit-ws-modal-overlay')) document.getElementById('edit-ws-modal-overlay').classList.remove('open'); }
+
+function saveEditWorkstream(){
+  const key = document.getElementById('edit-ws-key').value;
+  const origSectionId = document.getElementById('edit-ws-original-section').value;
+  const newSectionId = document.getElementById('edit-ws-section').value;
+  const newName = document.getElementById('edit-ws-name').value.trim();
+  if(!newName) return;
+  // Remove from original section
+  const origSection = SECTIONS.find(s=>s.id===origSectionId);
+  if(origSection){ origSection.rows = origSection.rows.filter(r=>r.key!==key); }
+  // Add to new section
+  const newSection = SECTIONS.find(s=>s.id===newSectionId);
+  if(newSection){ newSection.rows.push({key, label:newName}); }
+  persistWorkstreams();
+  const state=getCollapseState(); state[newSectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
+  renderRows(); closeEditWsModal();
+}
+
+function deleteWorkstream(key, sectionId, e){
+  e && e.stopPropagation();
+  if(!confirm('Delete this workstream row?')) return;
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(section){ section.rows = section.rows.filter(r=>r.key!==key); }
+  persistWorkstreams();
+  renderRows();
+}
+
+// ── Drag-and-drop for rows ──────────────────────────────────────────────────
+let dragSrc = null, dragSrcSection = null, dragSrcKey = null;
+
+function initDragDrop(sg, sectionId) {
+  const rows = sg.querySelectorAll('.row[data-row-key]');
+  rows.forEach(row => {
+    const handle = row.querySelector('.drag-handle');
+    if(!handle) return;
+    row.draggable = true;
+    row.addEventListener('dragstart', e => {
+      dragSrc = row;
+      dragSrcSection = sectionId;
+      dragSrcKey = row.dataset.rowKey;
+      e.dataTransfer.effectAllowed = 'move';
+      row.style.opacity = '0.4';
+    });
+    row.addEventListener('dragend', () => { row.style.opacity = ''; dragSrc = null; });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if(dragSrc && dragSrc !== row) {
+        const bounding = row.getBoundingClientRect();
+        const offset = e.clientY - bounding.top;
+        const sr = sg.querySelector('.section-rows');
+        if(offset < bounding.height/2) sr.insertBefore(dragSrc, row);
+        else sr.insertBefore(dragSrc, row.nextSibling);
+      }
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if(dragSrcSection !== sectionId) return; // only same-section reorder for now
+      // Sync SECTIONS array to new DOM order
+      const sr = sg.querySelector('.section-rows');
+      const section = SECTIONS.find(s=>s.id===sectionId);
+      if(!section) return;
+      const newOrder = [];
+      sr.querySelectorAll('.row[data-row-key]').forEach(r => {
+        const found = section.rows.find(x=>x.key===r.dataset.rowKey);
+        if(found) newOrder.push(found);
+      });
+      // Re-add any non-custom rows not in DOM (shouldn't happen but safe)
+      section.rows.forEach(r => { if(!newOrder.find(x=>x.key===r.key)) newOrder.push(r); });
+      section.rows = newOrder;
+      persistWorkstreams();
+    });
+  });
 }
 
 function fmtR(s,e){
@@ -3143,6 +3319,8 @@ async function init(){
   wrap.addEventListener('scroll', () => { hdrInner.scrollLeft = wrap.scrollLeft; }, {passive: true});
   // Load any custom workstreams saved previously
   const custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]');
+  // Sort by saved order if available
+  custom.sort((a,b)=>(a.order||0)-(b.order||0));
   custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
   renderMonthHeader();
   allEvents=await loadEvents();
@@ -3151,7 +3329,7 @@ async function init(){
   renderPlanGrid();
   renderAssets();
   const f=df(new Date().toISOString().split('T')[0]);
-  document.getElementById('planner-wrap').scrollLeft=Math.max(0,sw()+f*cw()*12-window.innerWidth*0.4);
+  document.getElementById('planner-wrap').scrollLeft=Math.max(0,sw()+f*cw()*MONTHS.length-window.innerWidth*0.4);
 }
 
 // Only auto-init if already authenticated this session
