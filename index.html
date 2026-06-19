@@ -389,6 +389,10 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 .row[draggable="true"] { transition: opacity 0.15s; }
 .row.drag-over { background: rgba(135,251,102,0.08) !important; outline: 2px dashed var(--green); outline-offset: -2px; }
 /* Floating row toolbar — fixed to viewport right edge */
+.row-icon-btn { background: none; border: none; cursor: pointer; font-size: 11px; line-height: 1; padding: 3px 4px; border-radius: 4px; color: var(--grey-mid); font-family: inherit; opacity: 0.55; transition: opacity 0.12s, background 0.12s, color 0.12s; }
+.row-icon-btn:hover { opacity: 1; background: var(--grey-light); }
+.row-delete-icon:hover { color: #ef4444; background: #fee2e2; }
+.row-edit-icon:hover { color: var(--black); }
 #row-toolbar { position: fixed; right: 16px; z-index: 200; display: none; align-items: center; gap: 6px; background: var(--cream); border: 1px solid var(--grey-light); border-radius: 8px; padding: 5px 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); pointer-events: all; }
 #row-toolbar.visible { display: flex; }
 .row-action-btn { background: none; border: none; border-radius: 4px; padding: 3px 9px; font-size: 10px; cursor: pointer; font-family: inherit; font-weight: 600; letter-spacing: 0.02em; transition: background 0.1s, color 0.1s; }
@@ -2292,7 +2296,7 @@ function renderRows() {
     initDragDrop(sg, s.id);
   });
   renderTodayLine();
-  attachToolbarToRows();
+  // attachToolbarToRows(); // replaced by always-visible inline icons
 }
 
 function buildPlaceholder(rc) {
@@ -2307,7 +2311,23 @@ function buildRow(rc, events, sectionId) {
   row.dataset.sectionId=sectionId;
   row.dataset.label=rc.label;
   row.style.gridTemplateColumns = gridCols();
-  row.innerHTML = `<div class="row-label">${rc.label}</div>`;
+  row.innerHTML = `<div class="row-label" style="display:flex;align-items:center;gap:0;justify-content:space-between;padding-right:6px">
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${rc.label}</span>
+    <span style="display:flex;gap:2px;flex-shrink:0">
+      <button type="button" class="row-icon-btn row-edit-icon" title="Edit row name" aria-label="Edit row">✎</button>
+      <button type="button" class="row-icon-btn row-delete-icon" title="Delete row" aria-label="Delete row">✕</button>
+    </span>
+  </div>`;
+  const editIcon = row.querySelector('.row-edit-icon');
+  const deleteIcon = row.querySelector('.row-delete-icon');
+  editIcon.addEventListener('click', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    openEditWsModal(rc.key, sectionId, ev);
+  });
+  deleteIcon.addEventListener('click', function(ev){
+    ev.preventDefault(); ev.stopPropagation();
+    deleteWorkstream(rc.key, sectionId, ev);
+  });
   MONTHS.forEach(()=>{const c=document.createElement('div');c.className='row-cell';row.appendChild(c);});
   requestAnimationFrame(()=>plotEvents(row,events,sectionId));
   return row;
@@ -3405,7 +3425,7 @@ async function init(){
   // Sort by saved order if available
   custom.sort((a,b)=>(a.order||0)-(b.order||0));
   custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
-  initRowToolbar();
+  // initRowToolbar(); // replaced by always-visible inline icons
   renderMonthHeader();
   allEvents=await loadEvents();
   renderRows();
