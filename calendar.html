@@ -90,6 +90,26 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
 
 .today-line { position: absolute; top: 0; bottom: 0; width: 1.5px; background: var(--green); z-index: 5; pointer-events: none; }
 .event-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; cursor: pointer; z-index: 10; top: 50%; transform: translateY(-50%); transition: transform 0.15s, box-shadow 0.15s; }
+.event-dot.category-intermediary { background: var(--c-intermediary); }
+.event-dot.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-dot.category-speaking { background: var(--c-speaking); }
+.event-dot.category-attendance { background: var(--c-attendance); }
+.event-dot.category-content { background: var(--c-content); }
+.event-dot.category-nurture { background: var(--c-nurture); }
+.event-dot:hover { transform: translateY(-50%) scale(1.3); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+.event-bar { position: absolute; height: 20px; border-radius: 100px; cursor: pointer; z-index: 10; top: 50%; transform: translateY(-50%); transition: opacity 0.15s; display: flex; align-items: center; padding: 0 8px; overflow: hidden; }
+.event-bar.category-intermediary { background: var(--c-intermediary); }
+.event-bar.category-intermediary span { color: white; }
+.event-bar.category-owned { background: var(--c-owned); border: 1.5px solid var(--black); }
+.event-bar.category-owned span { color: var(--black); }
+.event-bar.category-speaking { background: var(--c-speaking); }
+.event-bar.category-speaking span { color: white; }
+.event-bar.category-attendance { background: var(--c-attendance); }
+.event-bar.category-attendance span { color: white; }
+.event-bar.category-content { background: var(--c-content); }
+.event-bar.category-content span { color: var(--black); }
+.event-bar.category-nurture { background: var(--c-nurture); }
+.event-bar.category-nurture span { color: var(--black); }
 .event-dot:hover { transform: translateY(-50%) scale(1.3); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
 .event-bar { position: absolute; height: 20px; border-radius: 100px; cursor: pointer; z-index: 10; top: 50%; transform: translateY(-50%); transition: opacity 0.15s; display: flex; align-items: center; padding: 0 8px; overflow: hidden; }
 .event-bar:hover { opacity: 0.85; }
