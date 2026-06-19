@@ -414,21 +414,14 @@ const PLAN_START = new Date(MONTHS[0].year, MONTHS[0].month, 1);
 const PLAN_END = new Date(MONTHS[MONTHS.length-1].year, MONTHS[MONTHS.length-1].month + 1, 1);
 
 
+// Section shells are structural and fixed. Row contents (id/label/tier/placeholder/order)
+// are the single source of truth in Supabase's calendar_rows table — loaded at init via loadCalendarRows().
 let SECTIONS = [
-  {id:'intermediaries',label:'Intermediary Activity',tier:'rumble',rows:[
-    {key:'intermediary-ingenuity',label:'Ingenuity+'},
-    {key:'intermediary-oystercatchers',label:'Oystercatchers'},
-    {key:'intermediary-aar',label:'AAR'},
-    {key:'intermediary-masterclassing',label:'Masterclassing'},
-  ]},
-  {id:'owned',label:'Owned Events',tier:'roar',rows:[{key:'owned-events',label:'Jungle Event'}]},
-  {id:'content',label:'Content & Comms',tier:'mixed',rows:[
-    {key:'content-thought-leadership',label:'Thought Leadership',tier:'rumble'},
-    {key:'content-nurture',label:'Nurture Cadence',tier:'buzz'},
-    {key:'content-social',label:'Owned Social',tier:'buzz',placeholder:true},
-  ]},
-  {id:'speaking',label:'Speaking',tier:'rumble',rows:[{key:'event-speaking',label:'Speaking Slots'}]},
-  {id:'attendance',label:'Event Attendance',tier:'rumble',rows:[{key:'event-attendance',label:'Conferences'}]},
+  {id:'intermediaries',label:'Intermediary Activity',tier:'rumble',rows:[]},
+  {id:'owned',label:'Owned Events',tier:'roar',rows:[]},
+  {id:'content',label:'Content & Comms',tier:'mixed',rows:[]},
+  {id:'speaking',label:'Speaking',tier:'rumble',rows:[]},
+  {id:'attendance',label:'Event Attendance',tier:'rumble',rows:[]},
 ];
 
 let allEvents = [], currentModalEvent = null;
@@ -914,6 +907,28 @@ function toggleDetailUrlField(){
   document.getElementById('add-detail-url-field').style.display = (category === 'owned') ? '' : 'none';
 }
 
+// ── Calendar rows — Supabase-backed, single source of truth ──────────────────
+// Stable ids (calendar_rows.id) never change once created, even when the label is
+// edited. This is what events.row_key references, so renaming a row can never
+// orphan or duplicate events the way the old localStorage approach did.
+
+async function loadCalendarRows() {
+  let rows = [];
+  try {
+    const r = await sbFetch('calendar_rows?select=*&order=section_id,sort_order');
+    if (r.ok) rows = await r.json();
+  } catch(e){}
+  SECTIONS.forEach(s => { s.rows = []; });
+  rows.forEach(row => {
+    const section = SECTIONS.find(s => s.id === row.section_id);
+    if (!section) return;
+    const entry = { key: row.id, label: row.label };
+    if (row.tier) entry.tier = row.tier;
+    if (row.placeholder) entry.placeholder = true;
+    section.rows.push(entry);
+  });
+}
+
 function openWsModal(){
   document.getElementById('ws-modal-overlay').classList.add('open');
   document.getElementById('ws-name').value='';
@@ -931,56 +946,28 @@ function populateWsSection(selectId) {
   if(prev && sel.querySelector(`option[value="${prev}"]`)) sel.value = prev;
 }
 
-function saveWorkstream(){
+async function saveWorkstream(){
   const name=document.getElementById('ws-name').value.trim();
   const sectionId=document.getElementById('ws-section').value;
   if(!name)return;
-  const key='custom-'+name.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
+  const id='custom-'+name.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
   const section=SECTIONS.find(s=>s.id===sectionId);
-  if(section){ section.rows.push({key, label:name}); }
-  persistWorkstreams();
+  const sortOrder = section ? section.rows.length : 0;
+  try {
+    await sbFetch('calendar_rows', {
+      method:'POST', headers:{'Prefer':'return=minimal'},
+      body: JSON.stringify({ id, section_id: sectionId, label: name, sort_order: sortOrder })
+    });
+  } catch(e){}
+  if(section){ section.rows.push({key:id, label:name}); }
   const state=getCollapseState(); state[sectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
   renderRows(); closeWsModalDirect();
-}
-
-function persistWorkstreams(){
-  const custom=[];
-  SECTIONS.forEach(s=>{
-    s.rows.forEach((r,idx)=>{
-      if(r.key&&r.key.startsWith('custom-')) custom.push({key:r.key,label:r.label,sectionId:s.id,order:idx});
-    });
-  });
-  localStorage.setItem('jc_workstreams',JSON.stringify(custom));
-  persistRowOrder();
-}
-
-function persistRowOrder(){
-  const order={};
-  SECTIONS.forEach(s=>{ order[s.id]=s.rows.map(r=>r.key); });
-  localStorage.setItem('jc_row_order',JSON.stringify(order));
-}
-
-function applyRowOrder(){
-  let saved;
-  try { saved = JSON.parse(localStorage.getItem('jc_row_order')||'{}'); } catch(e){ saved = {}; }
-  SECTIONS.forEach(s=>{
-    const savedKeys = saved[s.id];
-    if(!savedKeys || !savedKeys.length) return;
-    const byKey = {};
-    s.rows.forEach(r=>{ byKey[r.key]=r; });
-    const reordered = [];
-    savedKeys.forEach(k=>{ if(byKey[k]){ reordered.push(byKey[k]); delete byKey[k]; } });
-    // Append any rows not present in the saved order (newly added rows) at the end, in their current order
-    s.rows.forEach(r=>{ if(byKey[r.key]) reordered.push(r); });
-    s.rows = reordered;
-  });
 }
 
 function openEditWsModal(key, sectionId, e){
   if(e) e.stopPropagation();
   const section = SECTIONS.find(s=>s.id===sectionId);
   const rowData = section?.rows.find(r=>r.key===key);
-  // Fallback: read label from the DOM row element
   const domRow = document.querySelector(`.row[data-row-key="${key}"]`);
   const label = rowData?.label || domRow?.dataset.label || key;
   document.getElementById('edit-ws-key').value = key;
@@ -993,37 +980,58 @@ function openEditWsModal(key, sectionId, e){
 
 function closeEditWsModal(e){ if(!e||e.target===document.getElementById('edit-ws-modal-overlay')) document.getElementById('edit-ws-modal-overlay').classList.remove('open'); }
 
-function saveEditWorkstream(){
+async function saveEditWorkstream(){
   const key = document.getElementById('edit-ws-key').value;
   const origSectionId = document.getElementById('edit-ws-original-section').value;
   const newSectionId = document.getElementById('edit-ws-section').value;
   const newName = document.getElementById('edit-ws-name').value.trim();
   if(!newName) return;
+  // The row's id (key) never changes — only its label and/or section. This is what
+  // keeps existing events linked correctly through a rename or a move between sections.
+  try {
+    await sbFetch(`calendar_rows?id=eq.${encodeURIComponent(key)}`, {
+      method:'PATCH', headers:{'Prefer':'return=minimal'},
+      body: JSON.stringify({ label: newName, section_id: newSectionId, updated_at: new Date().toISOString() })
+    });
+  } catch(e){}
   const origSection = SECTIONS.find(s=>s.id===origSectionId);
+  const rowEntry = origSection?.rows.find(r=>r.key===key) || { key };
+  rowEntry.label = newName;
   if(origSection){ origSection.rows = origSection.rows.filter(r=>r.key!==key); }
   const newSection = SECTIONS.find(s=>s.id===newSectionId);
-  if(newSection){ newSection.rows.push({key, label:newName}); }
-  // If it was a built-in row, we need to track it as custom now so it persists
-  if(!key.startsWith('custom-')) {
-    // Re-key as custom so it gets persisted
-    const newKey = 'custom-'+newName.toLowerCase().replace(/[^a-z0-9]/g,'-')+'-'+Date.now();
-    if(newSection) {
-      const r = newSection.rows.find(r=>r.key===key);
-      if(r) r.key = newKey;
-    }
-  }
-  persistWorkstreams();
+  if(newSection){ newSection.rows.push(rowEntry); }
   const state=getCollapseState(); state[newSectionId]=false; localStorage.setItem('jc_collapse',JSON.stringify(state));
   renderRows(); closeEditWsModal();
 }
 
-function deleteWorkstream(key, sectionId, e){
+async function deleteWorkstream(key, sectionId, e){
   if(e) e.stopPropagation();
   if(!confirm('Delete this workstream row?')) return;
+  try {
+    await sbFetch(`calendar_rows?id=eq.${encodeURIComponent(key)}`, { method:'DELETE', headers:{'Prefer':'return=minimal'} });
+  } catch(e){}
   const section = SECTIONS.find(s=>s.id===sectionId);
   if(section){ section.rows = section.rows.filter(r=>r.key!==key); }
-  persistWorkstreams();
   renderRows();
+}
+
+let _reorderSaveTimer = null;
+function persistRowOrderDebounced(sectionId) {
+  clearTimeout(_reorderSaveTimer);
+  _reorderSaveTimer = setTimeout(() => persistRowOrder(sectionId), 400);
+}
+
+async function persistRowOrder(sectionId) {
+  const section = SECTIONS.find(s=>s.id===sectionId);
+  if(!section) return;
+  // Write each row's new sort_order back to Supabase. Small section sizes make
+  // one PATCH per row acceptable; this only fires after a drag, debounced.
+  await Promise.all(section.rows.map((r, idx) =>
+    sbFetch(`calendar_rows?id=eq.${encodeURIComponent(r.key)}`, {
+      method:'PATCH', headers:{'Prefer':'return=minimal'},
+      body: JSON.stringify({ sort_order: idx })
+    }).catch(()=>{})
+  ));
 }
 
 function initDragDrop(sg, sectionId) {
@@ -1056,11 +1064,10 @@ function initDragDrop(sg, sectionId) {
       });
       section.rows.forEach(r => { if(!newOrder.find(x=>x.key===r.key)) newOrder.push(r); });
       section.rows = newOrder;
-      persistWorkstreams();
+      persistRowOrderDebounced(sectionId);
     });
   });
 }
-
 function fmtR(s,e){
   if(!e||e===s)return fmtDate(new Date(s));
   const sd=new Date(s),ed=new Date(e);
@@ -1125,12 +1132,8 @@ async function init(){
   const wrap = document.getElementById('planner-wrap');
   const hdrInner = document.getElementById('month-header-inner');
   wrap.addEventListener('scroll', () => { hdrInner.scrollLeft = wrap.scrollLeft; }, {passive: true});
-  // Load any custom workstreams saved previously
-  let custom; try { custom=JSON.parse(localStorage.getItem('jc_workstreams')||'[]'); } catch(e){ custom=[]; }
-  custom.sort((a,b)=>(a.order||0)-(b.order||0));
-  custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
-  // Apply any saved drag-and-drop row order (covers both built-in and custom rows)
-  applyRowOrder();
+  // Workstream rows (id, label, section, tier, order) live in Supabase — load before first render.
+  await loadCalendarRows();
   renderMonthHeader();
   allEvents = await loadEvents();
   renderRows();
