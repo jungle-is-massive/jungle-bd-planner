@@ -2289,10 +2289,22 @@ function renderRows() {
     const sr=document.createElement('div'); sr.className='section-rows';
     s.rows.forEach(rc=>{
       const rowEl = rc.placeholder?buildPlaceholder(rc):buildRow(rc,allEvents.filter(e=>e.row_key===rc.key),s.id);
-      // Inject row-level tier badge into the row-label
+      // Inject row-level tier badge into the row-label WITHOUT destroying existing child elements (icons, etc.)
       if (rc.tier && s.tier === 'mixed') {
         const lbl = rowEl.querySelector('.row-label, .placeholder-label');
-        if (lbl) lbl.innerHTML = lbl.textContent + rowTierPill(rc.tier);
+        if (lbl) {
+          const badge = document.createElement('span');
+          badge.innerHTML = rowTierPill(rc.tier);
+          // Placeholder rows are plain text labels — append badge directly
+          if (lbl.classList.contains('placeholder-label')) {
+            lbl.appendChild(badge.firstChild);
+          } else {
+            // row-label has a nested <span> for the text and a <span> for icon buttons — insert badge between them
+            const textSpan = lbl.querySelector('span');
+            if (textSpan) textSpan.after(badge.firstChild);
+            else lbl.appendChild(badge.firstChild);
+          }
+        }
       }
       sr.appendChild(rowEl);
     });
@@ -2928,6 +2940,31 @@ function persistWorkstreams(){
     });
   });
   localStorage.setItem('jc_workstreams',JSON.stringify(custom));
+  persistRowOrder();
+}
+
+// Persist the full row order (built-in AND custom rows) per section, so drag-and-drop reordering survives reload
+function persistRowOrder(){
+  const order={};
+  SECTIONS.forEach(s=>{ order[s.id]=s.rows.map(r=>r.key); });
+  localStorage.setItem('jc_row_order',JSON.stringify(order));
+}
+
+// Apply any saved row order to SECTIONS — called once at init, after custom rows have been merged in
+function applyRowOrder(){
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem('jc_row_order')||'{}'); } catch(e){ saved = {}; }
+  SECTIONS.forEach(s=>{
+    const savedKeys = saved[s.id];
+    if(!savedKeys || !savedKeys.length) return;
+    const byKey = {};
+    s.rows.forEach(r=>{ byKey[r.key]=r; });
+    const reordered = [];
+    savedKeys.forEach(k=>{ if(byKey[k]){ reordered.push(byKey[k]); delete byKey[k]; } });
+    // Append any rows not present in the saved order (newly added rows) at the end, in their current order
+    s.rows.forEach(r=>{ if(byKey[r.key]) reordered.push(r); });
+    s.rows = reordered;
+  });
 }
 
 // ── Floating toolbar ──────────────────────────────────────────────────────────
@@ -3445,13 +3482,15 @@ async function init(){
   // Sort by saved order if available
   custom.sort((a,b)=>(a.order||0)-(b.order||0));
   custom.forEach(ws=>{ const s=SECTIONS.find(sec=>sec.id===ws.sectionId); if(s&&!s.rows.find(r=>r.key===ws.key))s.rows.push({key:ws.key,label:ws.label}); });
+  // Apply any saved drag-and-drop row order (covers both built-in and custom rows)
+  applyRowOrder();
   // initRowToolbar(); // replaced by always-visible inline icons
   renderMonthHeader();
   allEvents=await loadEvents();
   renderRows();
   renderPillars();
   renderPlanGrid();
-  renderAssets();
+  // renderAssets(); // removed: dead code, #asset-list no longer exists, superseded by renderAssetsView()
   const f=df(new Date().toISOString().split('T')[0]);
   document.getElementById('planner-wrap').scrollLeft=Math.max(0,sw()+f*cw()*MONTHS.length-window.innerWidth*0.4);
 }
