@@ -773,7 +773,7 @@ html, body { background: var(--cream); color: var(--black); font-family: 'DM San
   <div class="wordmark">JUNGLE<span>.</span></div>
   <div class="nav-tabs">
     <a class="nav-tab" href="#plan">Plan</a>
-    <a class="nav-tab" href="#calendar">Calendar</a>
+    <a class="nav-tab" href="calendar.html">Calendar ↗</a>
     <a class="nav-tab" href="#brand-house">Brand House</a>
     <a class="nav-tab" href="#comms">Comms</a>
     <a class="nav-tab" href="#nurture">Nurture</a>
@@ -3669,7 +3669,7 @@ async function renderPlan() {
       <h1>${cpEsc(prop)} <span>→</span></h1>
       <p>This is Jungle's twelve-month comms and growth plan. Four narrative pillars, three-tier content engine (Buzz → Rumble → Roar), one flagship moment (the Social Maturity Index event in October), and a post-event nurture system designed to convert attention into pipeline.</p>
       <div class="hero-cta-row">
-        <button class="hero-cta" onclick="switchView('calendar')">See the 12-month calendar →</button>
+        <button class="hero-cta" onclick="window.location.href='calendar.html'">See the 12-month calendar →</button>
         <button class="hero-cta ghost" onclick="switchView('decisions')">${openDec} open decisions</button>
       </div>
     </div>
@@ -3776,7 +3776,7 @@ async function renderPlan() {
           <div class="cp-card-title">Nurture & funnel →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Funnel stages, MQL rules, post-event nurture sequence.</div>
         </div>
-        <div class="cp-card editable" style="cursor:pointer" onclick="switchView('calendar')">
+        <div class="cp-card editable" style="cursor:pointer" onclick="window.location.href='calendar.html'">
           <div class="cp-card-title">12-month calendar →</div>
           <div class="cp-card-body" style="font-size:12px;color:var(--grey-mid);margin-top:6px">Every workstream, month by month. The spine.</div>
         </div>
@@ -3950,7 +3950,7 @@ async function renderComms() {
     <div class="cp-section">
       <div class="cp-section-label">What goes on the calendar</div>
       <div class="cp-section-sub">The comms engine feeds into the 12-month calendar. Every planned piece of content, every event, every nurture touchpoint lives there as the operational spine.</div>
-      <button class="cp-btn primary" onclick="switchView('calendar')">Open the calendar →</button>
+      <button class="cp-btn primary" onclick="window.location.href='calendar.html'">Open the calendar →</button>
     </div>
 
   </div>
