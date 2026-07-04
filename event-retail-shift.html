@@ -84,23 +84,30 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
 .tldr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 @media(max-width:840px){.tldr-grid{grid-template-columns:1fr 1fr;}}
 @media(max-width:560px){.tldr-grid{grid-template-columns:1fr;}}
-.tldr-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;}
+.tldr-item{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:13px 14px;display:flex;flex-direction:column;gap:6px;position:relative;}
 .tldr-item-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.tldr-item-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);}
+.tldr-item-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);display:flex;align-items:center;gap:6px;}
 .tldr-item-value{font-size:12.5px;font-weight:500;color:var(--cream);line-height:1.5;}
+.tldr-link{color:var(--green);text-decoration:none;font-size:12px;font-weight:700;}
+.tldr-link:hover{opacity:0.7;}
+.tldr .del-btn{color:rgba(255,255,255,0.35);}
+.tldr .mini-edit{color:rgba(255,255,255,0.35);}
+.tldr-add-wrap{margin-top:12px;}
 
 /* EDITABLE FIELD */
 .field-block{margin-bottom:16px;}
 .field-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);margin-bottom:5px;}
 [contenteditable]{outline:none;border-radius:6px;transition:background 0.15s,box-shadow 0.15s;padding:2px 4px;margin:-2px -4px;}
-[contenteditable]:hover{background:rgba(0,0,0,0.04);}
+[contenteditable="true"]:hover{background:rgba(0,0,0,0.04);}
+[contenteditable="true"]{box-shadow:0 0 0 1px dashed;}
 [contenteditable]:focus{background:var(--white);box-shadow:0 0 0 2px var(--black);}
-.hero [contenteditable]:hover{background:rgba(255,255,255,0.07);}
+.hero [contenteditable="true"]:hover{background:rgba(255,255,255,0.07);}
 .hero [contenteditable]:focus{background:rgba(255,255,255,0.1);box-shadow:0 0 0 2px var(--green);}
-.tldr [contenteditable]:hover{background:rgba(255,255,255,0.07);}
+.tldr [contenteditable="true"]:hover{background:rgba(255,255,255,0.07);}
 .tldr [contenteditable]:focus{background:rgba(255,255,255,0.1);box-shadow:0 0 0 2px var(--green);color:var(--cream);}
 .editable-body{font-size:13px;line-height:1.7;color:#3a3a3a;}
 .editable-title{font-size:16px;font-weight:600;color:var(--black);}
+body.editing [contenteditable]{background:rgba(135,251,102,0.08);box-shadow:0 0 0 1px rgba(101,194,71,0.4);}
 
 /* STATUS PILL */
 .status-pill{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:100px;cursor:pointer;border:none;transition:opacity 0.15s;display:inline-block;white-space:nowrap;}
@@ -129,8 +136,11 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
 .chip{background:var(--white);border:1.5px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;}
 .chip.priority{border-color:var(--black);}
 .chip .del-btn{opacity:1;padding:0 0 0 2px;}
+.attach-chip{background:var(--grey-light);border:1px solid var(--border);border-radius:100px;padding:3px 11px;font-size:11px;font-weight:600;color:var(--black);text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all 0.15s;}
+.attach-chip:hover{border-color:var(--black);}
+.attach-chip .rm{color:#c0392b;font-weight:700;cursor:pointer;margin-left:2px;}
 
-/* TABLES (timeline + comms + budget + agenda) */
+/* TABLES */
 .hub-table{width:100%;border-collapse:collapse;}
 .hub-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--grey-mid);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border-strong);background:var(--grey-light);font-weight:500;}
 .hub-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.5;}
@@ -139,6 +149,7 @@ nav{position:sticky;top:0;z-index:100;background:var(--black);display:flex;align
 .hub-table td:first-child{font-weight:600;font-size:12px;white-space:nowrap;color:var(--black);}
 .hub-table .week-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--grey-mid);display:block;margin-top:1px;font-weight:400;}
 tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600;}
+.row-actions{white-space:nowrap;}
 
 /* TIMELINE VIEW SWITCHER */
 .view-toggle{display:flex;gap:4px;background:var(--grey-light);border-radius:100px;padding:3px;width:fit-content;}
@@ -192,31 +203,48 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
 .person-task::before{content:'—';color:var(--grey);flex-shrink:0;}
 
 /* ASSETS */
-.asset-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.asset-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
 .asset-row:last-child{border-bottom:none;}
 .asset-icon{font-size:18px;width:36px;text-align:center;flex-shrink:0;}
 .asset-info{flex:1;}
 .asset-name{font-size:13px;font-weight:600;margin-bottom:1px;}
 .asset-desc{font-size:11px;color:var(--grey-mid);}
+.asset-attach{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;}
 
 /* METRICS */
 .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
-.metric-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;}
+.metric-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;padding:18px;text-align:center;position:relative;}
 .metric-num{font-size:30px;font-weight:700;letter-spacing:-0.03em;margin-bottom:4px;}
 .metric-label{font-size:11px;color:var(--grey-mid);line-height:1.5;}
+.metric-actions{position:absolute;top:6px;right:6px;display:flex;gap:2px;}
 
 /* BUDGET */
 .budget-total-row td{background:var(--black) !important;color:var(--cream);font-weight:700;}
 .budget-total-row td:first-child{color:var(--green);}
 
-/* VENUES (dark block, ported from Vanity Is Dead) */
+/* MINI ACTION BUTTONS */
+.mini-edit{background:none;border:none;cursor:pointer;color:var(--grey);font-size:11px;opacity:0;transition:opacity 0.1s,color 0.1s;padding:2px 5px;border-radius:4px;}
+.mini-edit:hover{color:var(--black);}
+.del-btn{background:none;border:none;cursor:pointer;color:var(--grey);font-size:12px;opacity:0;transition:opacity 0.1s,color 0.1s;padding:2px 6px;border-radius:4px;}
+.del-btn:hover{color:#c0392b;}
+.card:hover .del-btn,.asset-row:hover .del-btn,.hub-table tr:hover .del-btn,.chip:hover .del-btn,
+.card:hover .mini-edit,.asset-row:hover .mini-edit,.hub-table tr:hover .mini-edit,
+.tldr-item:hover .del-btn,.tldr-item:hover .mini-edit,.metric-card:hover .del-btn,.metric-card:hover .mini-edit,
+.hz-card:hover .mini-edit{opacity:1;}
+body.editing .del-btn,body.editing .mini-edit{opacity:0.55;}
+.upload-btn{font-size:11px;font-weight:600;color:var(--grey-mid);background:none;border:1px dashed var(--grey);border-radius:100px;padding:3px 11px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.upload-btn:hover{border-color:var(--black);color:var(--black);border-style:solid;}
+.upload-btn.busy{opacity:0.5;pointer-events:none;}
+
+/* VENUES */
 .venues-block{background:var(--black);border-radius:16px;padding:32px 28px;}
 .venues-intro{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:22px;max-width:640px;line-height:1.6;}
 .venues-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 @media(max-width:700px){.venues-grid{grid-template-columns:1fr;}}
 .venue-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;transition:all 0.15s;}
 .venue-card:hover{border-color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.07);}
-.venue-card.featured{border-color:var(--green);cursor:pointer;position:relative;}
+.venue-card.featured{border-color:var(--green);position:relative;}
+.venue-card.has-photos{cursor:pointer;}
 .venue-featured-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;background:var(--green);color:var(--black);border-radius:100px;padding:3px 10px;margin-bottom:12px;font-weight:600;}
 .venue-name{font-size:16px;font-weight:700;color:var(--cream);margin-bottom:2px;letter-spacing:-0.01em;}
 .venue-location{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px;}
@@ -224,8 +252,9 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
 .venue-why{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.6;}
 .venue-photos-hint{margin-top:12px;font-size:11px;color:var(--green);font-weight:600;}
 .venue-photos-hint::after{content:' — click to view photos';color:rgba(255,255,255,0.35);font-weight:400;}
+.venue-no-photos{margin-top:12px;font-size:10px;color:rgba(255,255,255,0.25);font-family:'DM Mono',monospace;letter-spacing:0.04em;}
 
-/* PHOTO MODAL (ported from Vanity Is Dead) */
+/* PHOTO MODAL */
 #photo-modal{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
 #photo-modal.open{opacity:1;pointer-events:all;}
 .photo-modal-inner{max-width:900px;width:90%;text-align:center;}
@@ -251,7 +280,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(14,14,14,0.6);backdrop-filter:blur(4px);z-index:300;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal-box{background:var(--cream);border-radius:16px;width:min(480px,92vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);}
+.modal-box{background:var(--cream);border-radius:16px;width:min(480px,92vw);transform:translateY(16px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.25);max-height:88vh;overflow-y:auto;}
 .modal-overlay.open .modal-box{transform:translateY(0);}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;border-bottom:1px solid var(--grey-light);}
 .modal-hdr-title{font-size:16px;font-weight:700;letter-spacing:-0.02em;}
@@ -271,9 +300,6 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
 .person-action-btn.edit-btn:hover{border-color:var(--black);color:var(--black);}
 .person-action-btn.delete-btn{background:none;border-color:rgba(192,57,43,0.3);color:#c0392b;}
 .person-action-btn.delete-btn:hover{background:#FFE4E1;border-color:#c0392b;}
-.del-btn{background:none;border:none;cursor:pointer;color:var(--grey);font-size:12px;opacity:0;transition:opacity 0.1s,color 0.1s;padding:2px 6px;border-radius:4px;}
-.card:hover .del-btn,.asset-row:hover .del-btn,.hub-table tr:hover .del-btn,.chip:hover .del-btn{opacity:1;}
-.del-btn:hover{color:#c0392b;}
 
 /* QA BAR */
 .qa-bar{background:var(--black);border-radius:12px;padding:20px 24px;margin-top:48px;}
@@ -340,6 +366,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
     </div>
     <p class="tldr-sub" id="tldr-summary" contenteditable="false">Plans are in place. The Retail Shift to Social-First Advertising replaces Vanity Is Dead as our October flagship: a half-day conference + happy hour on 1 Oct 2026 (date TBC with venue), 60+ senior retail marketers in the room, DFS as the hero story, ~£13–15k budget. Everything below is the working plan — here's where each big piece stands:</p>
     <div class="tldr-grid" id="tldr-grid"></div>
+    <div class="tldr-add-wrap"><button class="section-add-btn" style="border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.5)" onclick="openModal('tldr')">+ Add block</button></div>
   </div>
 
   <!-- 01 EVENT DEFINITION -->
@@ -373,7 +400,11 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
   <div class="hub-section" id="sec-targets">
     <div class="section-hdr">
       <div style="display:flex;align-items:center"><span class="section-num">02</span><h2 class="section-title">ICP & Target Brands</h2></div>
-      <button class="section-add-btn" onclick="openModal('target')">+ Add brand</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="section-add-btn" onclick="openModal('target')">+ Add brand</button>
+        <button class="section-add-btn" onclick="openModal('targetres')">+ Add link</button>
+        <button class="section-add-btn upload-trigger" id="prospects-upload-btn" onclick="uploadFor('targetres')">⬆ Upload prospect list</button>
+      </div>
     </div>
     <div class="two-col" style="margin-bottom:4px">
       <div class="card">
@@ -384,6 +415,10 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
         <div class="field-label">Why these brands</div>
         <div class="editable-body" id="icp-why" contenteditable="false">They spend big. They still rely heavily on TV and above-the-line. They have social, but it's campaign-led, siloed, or inconsistent. And they're under pressure from creator-led discovery, price sensitivity, and retail footfall decline. What they buy: commercial confidence, a connected social system, impact that scales, cultural relevance.</div>
       </div>
+    </div>
+    <div id="targetres-wrap-outer" style="display:none">
+      <div class="chip-group-label">Links & prospect lists</div>
+      <div class="chip-wrap" id="targetres-wrap"></div>
     </div>
     <div class="chip-group-label">Priority targets</div>
     <div class="chip-wrap" id="targets-wrap"></div>
@@ -398,7 +433,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
       <button class="section-add-btn" onclick="openModal('agenda')">+ Add slot</button>
     </div>
     <table class="hub-table">
-      <thead><tr><th style="width:90px">Time</th><th style="width:170px">Session</th><th>Detail</th><th></th></tr></thead>
+      <thead><tr><th style="width:90px">Time</th><th style="width:170px">Session</th><th>Detail</th><th style="width:70px"></th></tr></thead>
       <tbody id="agenda-body"></tbody>
     </table>
   </div>
@@ -416,7 +451,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
       </div>
     </div>
     <table class="hub-table" id="timeline-tbl">
-      <thead><tr><th>When</th><th>Milestone</th><th>Owner</th><th>Status</th><th></th></tr></thead>
+      <thead><tr><th>When</th><th>Milestone</th><th>Owner</th><th>Status</th><th style="width:70px"></th></tr></thead>
       <tbody id="timeline-body"></tbody>
     </table>
     <div id="timeline-hz"><div class="hz-track" id="hz-track"></div></div>
@@ -439,6 +474,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
   <div class="hub-section" id="sec-logistics">
     <div class="section-hdr">
       <div style="display:flex;align-items:center"><span class="section-num">06</span><h2 class="section-title">Logistics</h2></div>
+      <button class="section-add-btn" onclick="openModal('logistic')">+ Add block</button>
     </div>
     <div class="three-col" id="logistics-grid"></div>
   </div>
@@ -450,7 +486,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
       <button class="section-add-btn" onclick="openModal('budget')">+ Add line</button>
     </div>
     <table class="hub-table">
-      <thead><tr><th style="width:220px">Line item</th><th style="width:110px">Cost</th><th>Note</th><th></th></tr></thead>
+      <thead><tr><th style="width:220px">Line item</th><th style="width:110px">Cost</th><th>Note</th><th style="width:70px"></th></tr></thead>
       <tbody id="budget-body"></tbody>
     </table>
     <p style="font-size:11px;color:var(--grey-mid);margin-top:12px;line-height:1.6" id="budget-note" contenteditable="false">The sport event ran to £11k with open bar and food all night — this is a tighter, smarter spend. From year two onward we go after a sponsor: the Social Minds series secured £50k from Reddit. That's the ambition. For now we run lean and do it properly.</p>
@@ -464,7 +500,7 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
     <div class="venues-block">
       <p class="venues-intro">Same four venues shortlisted for Vanity Is Dead — all still relevant. Everyman Kings Cross is the featured option. Costs to be confirmed; venue meeting with Livvy to follow.</p>
       <div class="venues-grid">
-        <div class="venue-card featured" onclick="openPhotoModal()">
+        <div class="venue-card featured has-photos" onclick="openPhotoModal('everyman')">
           <div class="venue-featured-badge">Featured</div>
           <div class="venue-name">Everyman Kings Cross</div>
           <div class="venue-location">Kings Cross, London</div>
@@ -472,23 +508,26 @@ tr.event-day-row td{background:rgba(135,251,102,0.14) !important;font-weight:600
           <div class="venue-why">Cinema screens, superb bar, luxurious seating, dedicated tech team. Memorable and different. Screen 1: 108 seats | Screen 2: 107 seats.</div>
           <div class="venue-photos-hint">📸 Everyman Kings Cross</div>
         </div>
-        <div class="venue-card">
+        <div class="venue-card" id="venue-treehouse" onclick="openPhotoModal('treehouse')">
           <div class="venue-name">Shoreditch Treehouse</div>
           <div class="venue-location">Shoreditch, London</div>
           <div class="venue-capacity">Up to 60</div>
           <div class="venue-why">Beautiful light-filled space with breakout areas and a Steinway grand piano. Intimate and characterful.</div>
+          <div class="venue-photo-slot"></div>
         </div>
-        <div class="venue-card">
+        <div class="venue-card" id="venue-protein" onclick="openPhotoModal('protein')">
           <div class="venue-name">Protein Studios</div>
           <div class="venue-location">Shoreditch, London</div>
           <div class="venue-capacity">Up to 1,000</div>
           <div class="venue-why">Five interconnected white box studios. 8.5m ceilings, warehouse aesthetic, outdoor courtyard.</div>
+          <div class="venue-photo-slot"></div>
         </div>
-        <div class="venue-card">
+        <div class="venue-card" id="venue-plexal" onclick="openPhotoModal('plexal')">
           <div class="venue-name">Plexal</div>
           <div class="venue-location">Here East, London</div>
           <div class="venue-capacity">Up to 200</div>
           <div class="venue-why">200-seat theatre with a 21sqm LED screen, indoor park for networking, bleachers for breakout.</div>
+          <div class="venue-photo-slot"></div>
         </div>
       </div>
     </div>
@@ -591,7 +630,7 @@ Looking forward to seeing you there.
       <button class="section-add-btn" onclick="openModal('comms')">+ Add row</button>
     </div>
     <table class="hub-table" id="comms-tbl">
-      <thead><tr><th>Month</th><th>Comms activity</th><th>Content needed</th><th>Status</th><th></th></tr></thead>
+      <thead><tr><th>Month</th><th>Comms activity</th><th>Content needed</th><th>Status</th><th style="width:70px"></th></tr></thead>
       <tbody id="comms-body"></tbody>
     </table>
   </div>
@@ -609,14 +648,9 @@ Looking forward to seeing you there.
   <div class="hub-section" id="sec-metrics">
     <div class="section-hdr">
       <div style="display:flex;align-items:center"><span class="section-num">12</span><h2 class="section-title">What Success Looks Like</h2></div>
+      <button class="section-add-btn" onclick="openModal('metric')">+ Add metric</button>
     </div>
-    <div class="metrics-grid">
-      <div class="metric-card"><div class="metric-num">60+</div><div class="metric-label">Senior marketers attending</div></div>
-      <div class="metric-card"><div class="metric-num">10+</div><div class="metric-label">Priority retail brands in the room</div></div>
-      <div class="metric-card"><div class="metric-num">15+</div><div class="metric-label">Follow-up meetings booked within 48 hours</div></div>
-      <div class="metric-card"><div class="metric-num">48h</div><div class="metric-label">Max time to first follow-up — no exceptions</div></div>
-      <div class="metric-card"><div class="metric-num">8–12</div><div class="metric-label">Weeks of content generated post-event</div></div>
-    </div>
+    <div class="metrics-grid" id="metrics-grid"></div>
     <div class="two-col" style="margin-top:16px">
       <div class="card">
         <div class="field-label">Before the event — sales alignment</div>
@@ -654,19 +688,19 @@ Looking forward to seeing you there.
 <div id="photo-modal" onclick="closePhotoModal(event)">
   <button class="photo-modal-close" onclick="closePhotoModal()">✕</button>
   <div class="photo-modal-inner">
-    <div class="photo-modal-title">Everyman Kings Cross</div>
+    <div class="photo-modal-title" id="photo-modal-title">Everyman Kings Cross</div>
     <div class="photo-carousel">
-      <img id="carousel-image" src="" alt="Everyman Kings Cross" class="carousel-image" />
+      <img id="carousel-image" src="" alt="Venue photo" class="carousel-image" />
       <button class="carousel-prev" onclick="prevPhoto(event)">←</button>
       <button class="carousel-next" onclick="nextPhoto(event)">→</button>
       <div class="carousel-dots" id="carousel-dots"></div>
     </div>
-    <div class="photo-caption">Screen 1: 108 seats · Screen 2: 107 seats · Superb bar · Kings Cross, London</div>
+    <div class="photo-caption" id="photo-caption"></div>
     <div class="photo-modal-note">Costs to be confirmed. Meeting with Livvy to discuss venues.</div>
   </div>
 </div>
 
-<!-- ADD ITEM MODAL -->
+<!-- ADD/EDIT ITEM MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
   <div class="modal-box">
     <div class="modal-hdr">
@@ -681,6 +715,7 @@ Looking forward to seeing you there.
   </div>
 </div>
 
+<input type="file" id="file-inp" hidden>
 <div id="save-indicator">Saved</div>
 
 <script>
@@ -688,19 +723,20 @@ const SUPABASE_URL = 'https://iehkvlyjumkzccoqqgxl.supabase.co';
 const SUPABASE_ANON = 'sb_publishable_RH2wR6pxdvVuevm-T0jeGA_UtryJFnw';
 const MAKE_WEBHOOK = 'https://hook.eu1.make.com/51utov3l9v9h5rj5x74dtts0cq61awk8';
 const GATE_PASSWORD = 'massive';
+const STORAGE_BUCKET = 'event-hub-files';
 
 // ── DEFAULT DATA ──────────────────────────────────────────────────
 const DEFAULTS = {
   tldr: [
-    {id:'td1', label:'Concept & name', value:'The Retail Shift to Social-First Advertising — replaces Vanity Is Dead', status:'done'},
-    {id:'td2', label:'Date', value:'1 Oct 2026 — to be locked with venue', status:'inprogress'},
-    {id:'td3', label:'Format', value:'Half-day conference + happy hour + targeted dinners. Invite-only.', status:'done'},
-    {id:'td4', label:'Budget', value:'~£13–15k envelope — lean, smart, done properly', status:'inprogress'},
-    {id:'td5', label:'Venue', value:'4 shortlisted — Everyman Kings Cross front-runner', status:'inprogress'},
-    {id:'td6', label:'Presentation deck', value:'Campaign deck half-finished — being built out', status:'inprogress'},
-    {id:'td7', label:'Brand panellists', value:'DFS anchors panel one; keynote guest + platform partner to source', status:'todo'},
-    {id:'td8', label:'Guest list & invites', value:'Target list agreed (below). First invite wave Aug 2026', status:'todo'},
-    {id:'td9', label:'Nurture comms', value:'Plan drafted through to Mar 2027 — copy blocks ready below', status:'inprogress'},
+    {id:'td1', label:'Concept & name', value:'The Retail Shift to Social-First Advertising — replaces Vanity Is Dead', link:'', status:'done'},
+    {id:'td2', label:'Date', value:'1 Oct 2026 — to be locked with venue', link:'', status:'inprogress'},
+    {id:'td3', label:'Format', value:'Half-day conference + happy hour + targeted dinners. Invite-only.', link:'', status:'done'},
+    {id:'td4', label:'Budget', value:'~£13–15k envelope — lean, smart, done properly', link:'', status:'inprogress'},
+    {id:'td5', label:'Venue', value:'4 shortlisted — Everyman Kings Cross front-runner', link:'', status:'inprogress'},
+    {id:'td6', label:'Presentation deck', value:'Campaign deck half-finished — being built out', link:'', status:'inprogress'},
+    {id:'td7', label:'Brand panellists', value:'DFS anchors panel one; keynote guest + platform partner to source', link:'', status:'todo'},
+    {id:'td8', label:'Guest list & invites', value:'Target list agreed (below). First invite wave Aug 2026', link:'', status:'todo'},
+    {id:'td9', label:'Nurture comms', value:'Plan drafted through to Mar 2027 — copy blocks ready below', link:'', status:'inprogress'},
   ],
   targets: [
     {id:'tg1', name:'Bensons for Beds'},{id:'tg2', name:'Oak Furnitureland'},{id:'tg3', name:'Furniture Village'},
@@ -714,6 +750,7 @@ const DEFAULTS = {
     {id:'lk10', name:'Go Outdoors'},{id:'lk11', name:'Mountain Warehouse'},{id:'lk12', name:'Dunelm'},
     {id:'lk13', name:'Home Bargains'},{id:'lk14', name:'B&M'},{id:'lk15', name:'The Range'},
   ],
+  targetres: [],
   agenda: [
     {id:'ag1', time:'1:30pm', title:'Doors Open', desc:'Registration and networking. Light refreshments. Room set for conference.'},
     {id:'ag2', time:'2:00pm', title:'Opening Keynote', desc:'Jade sets the provocation: TV-first thinking is over. What matters now is commercial impact and cultural connection. 15 minutes.'},
@@ -760,12 +797,12 @@ const DEFAULTS = {
     {id:'l7', icon:'🍷', name:'Targeted Dinners', value:'Pre-planned dinners/drinks with priority brands after happy hour. Seating plan agreed with sales in advance.', status:'todo'},
   ],
   budget: [
-    {id:'b1', item:'Venue hire', cost:'~£3,000', note:'TBC based on venue selection'},
-    {id:'b2', item:'Happy hour bar', cost:'~£2,000', note:'Hard cap. One hour, great drinks.'},
-    {id:'b3', item:'Merch', cost:'~£2,000', note:'Branded, useful, not cheap.'},
-    {id:'b4', item:'Production & AV', cost:'~£2,500', note:'Microphones, screens, filming.'},
-    {id:'b5', item:'Catering (break)', cost:'~£1,000', note:'Teas, coffees, croissants.'},
-    {id:'b6', item:'Contingency', cost:'~£2,500', note:'Because something always moves.'},
+    {id:'b1', item:'Venue hire', cost:'£3,000', note:'TBC based on venue selection'},
+    {id:'b2', item:'Happy hour bar', cost:'£2,000', note:'Hard cap. One hour, great drinks.'},
+    {id:'b3', item:'Merch', cost:'£2,000', note:'Branded, useful, not cheap.'},
+    {id:'b4', item:'Production & AV', cost:'£2,500', note:'Microphones, screens, filming.'},
+    {id:'b5', item:'Catering (break)', cost:'£1,000', note:'Teas, coffees, croissants.'},
+    {id:'b6', item:'Contingency', cost:'£2,500', note:'Because something always moves.'},
   ],
   comms: [
     {id:'c1', month:'Jul 2026', activity:'Speaker + panellist outreach emails', content:'Speaker brief document', status:'todo'},
@@ -778,14 +815,21 @@ const DEFAULTS = {
     {id:'c8', month:'Jan–Mar 2027', activity:'Monthly nurture continues', content:'New thought leadership tied to retail shift themes', status:'todo'},
   ],
   assets: [
-    {id:'a1', icon:'📊', name:'Presentation Deck', desc:'Main event deck — the DFS growth story and the shift narrative. Designed to be left-behind / shareable. Currently half-finished.', status:'inprogress'},
-    {id:'a2', icon:'📄', name:'White Paper', desc:'The commercial impact of social-first for retail. Skimmable, built for decision makers. Gated download feeding HubSpot.', status:'todo'},
-    {id:'a3', icon:'🧾', name:'DFS Case Study One-Pagers (x3)', desc:'Content & creator-led storytelling · paid media & amplification · distribution, optimisation & measurement.', status:'todo'},
-    {id:'a4', icon:'✉️', name:'Post-Event Nurture Sequence', desc:'6-touch email sequence for attendees over 3 months. Drafted and ready to deploy within 48 hours of event close.', status:'todo'},
-    {id:'a5', icon:'🎬', name:'Highlights Video (2–3 min)', desc:'Event atmosphere + key panel quotes. For LinkedIn and email nurture use.', status:'todo'},
-    {id:'a6', icon:'📰', name:'Highlights Article', desc:'Written summary of key themes and takeaways. 600–800 words. LinkedIn article + email version.', status:'todo'},
-    {id:'a7', icon:'📱', name:'Social Cuts (x3)', desc:'30-second clips from panels — one per key theme. LinkedIn + Instagram format.', status:'todo'},
-    {id:'a8', icon:'🗣️', name:'Talk Tracks', desc:'Developed for all speakers and panellists. Nothing left to chance on the day.', status:'todo'},
+    {id:'a1', icon:'📊', name:'Presentation Deck', desc:'Main event deck — the DFS growth story and the shift narrative. Designed to be left-behind / shareable. Currently half-finished.', status:'inprogress', link:'', fileUrl:'', fileName:''},
+    {id:'a2', icon:'📄', name:'White Paper', desc:'The commercial impact of social-first for retail. Skimmable, built for decision makers. Gated download feeding HubSpot.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a3', icon:'🧾', name:'DFS Case Study One-Pagers (x3)', desc:'Content & creator-led storytelling · paid media & amplification · distribution, optimisation & measurement.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a4', icon:'✉️', name:'Post-Event Nurture Sequence', desc:'6-touch email sequence for attendees over 3 months. Drafted and ready to deploy within 48 hours of event close.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a5', icon:'🎬', name:'Highlights Video (2–3 min)', desc:'Event atmosphere + key panel quotes. For LinkedIn and email nurture use.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a6', icon:'📰', name:'Highlights Article', desc:'Written summary of key themes and takeaways. 600–800 words. LinkedIn article + email version.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a7', icon:'📱', name:'Social Cuts (x3)', desc:'30-second clips from panels — one per key theme. LinkedIn + Instagram format.', status:'todo', link:'', fileUrl:'', fileName:''},
+    {id:'a8', icon:'🗣️', name:'Talk Tracks', desc:'Developed for all speakers and panellists. Nothing left to chance on the day.', status:'todo', link:'', fileUrl:'', fileName:''},
+  ],
+  metrics: [
+    {id:'m1', num:'60+', label:'Senior marketers attending'},
+    {id:'m2', num:'10+', label:'Priority retail brands in the room'},
+    {id:'m3', num:'15+', label:'Follow-up meetings booked within 48 hours'},
+    {id:'m4', num:'48h', label:'Max time to first follow-up — no exceptions'},
+    {id:'m5', num:'8–12', label:'Weeks of content generated post-event'},
   ],
   people: [
     {id:'p1', initials:'C', name:'Coris', role:'Growth Director', tasks:['Event strategy and planning lead','Intermediary + prospect invitations','Speaker sourcing and management','Comms plan and nurture sequence','Targeted dinners + 48h follow-up']},
@@ -817,7 +861,6 @@ async function loadState() {
       const d = await r.json();
       if(d.length > 0 && d[0].value) {
         const v = d[0].value;
-        // Backfill any sections added after first save
         Object.keys(DEFAULTS).forEach(k => { if(!v[k]) v[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); });
         return v;
       }
@@ -843,6 +886,61 @@ function showSaved() {
   setTimeout(()=>ind.classList.remove('show'), 1800);
 }
 
+// ── FILE UPLOADS (Supabase Storage) ───────────────────────────────
+let uploadCtx = null; // {type, id}
+
+function uploadFor(type, id) {
+  if(!editMode) { alert('Turn on Edit Mode first (top right).'); return; }
+  uploadCtx = {type, id};
+  const inp = document.getElementById('file-inp');
+  inp.value = '';
+  inp.click();
+}
+
+document.getElementById('file-inp').addEventListener('change', async function() {
+  const file = this.files[0];
+  if(!file || !uploadCtx) return;
+  if(file.size > 50 * 1024 * 1024) { alert('File too large — 50MB max.'); return; }
+  const ind = document.getElementById('save-indicator');
+  ind.textContent = 'Uploading…'; ind.classList.add('show');
+  try {
+    const url = await uploadFile(file);
+    if(uploadCtx.type === 'assets') {
+      const item = state.assets.find(a=>a.id===uploadCtx.id);
+      if(item) { item.fileUrl = url; item.fileName = file.name; }
+    } else if(uploadCtx.type === 'targetres') {
+      state.targetres.push({id:'tr-'+Date.now(), label:file.name, url:url, kind:'file'});
+    }
+    await saveState(); render();
+  } catch(e) {
+    alert('Upload failed — please try again. ' + (e.message||''));
+  }
+  ind.textContent = 'Saved';
+  uploadCtx = null;
+});
+
+async function uploadFile(file) {
+  const safe = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const path = `retail-shift/${Date.now()}-${safe}`;
+  const r = await fetch(`${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`, {
+    method:'POST',
+    headers:{'Authorization':`Bearer ${SUPABASE_ANON}`,'apikey':SUPABASE_ANON,'Content-Type':file.type||'application/octet-stream'},
+    body:file
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+}
+
+function removeAttachment(type, id, what) {
+  if(!editMode) return;
+  if(!confirm('Remove this attachment? (The file stays in storage — only the link is removed.)')) return;
+  if(type === 'assets') {
+    const item = state.assets.find(a=>a.id===id);
+    if(item) { if(what==='file'){item.fileUrl='';item.fileName='';} else {item.link='';} }
+  }
+  saveState(); render();
+}
+
 // ── GATE ──────────────────────────────────────────────────────────
 function checkGate() {
   const val = document.getElementById('gate-inp').value;
@@ -863,6 +961,7 @@ function checkGate() {
 // ── EDIT MODE ─────────────────────────────────────────────────────
 function toggleEdit() {
   editMode = !editMode;
+  document.body.classList.toggle('editing', editMode);
   const btn = document.getElementById('edit-toggle');
   btn.classList.toggle('active', editMode);
   btn.textContent = editMode ? 'Done Editing' : 'Edit Mode';
@@ -903,7 +1002,8 @@ function statusPill(status, onclick, labels) {
   const L = labels || STATUS_LABEL;
   return `<button class="status-pill ${STATUS_CLASS[status]||'s-todo'}" onclick="${onclick}">${L[status]||status}</button>`;
 }
-function cycleStatus(arr, id, field) {
+function cycleStatus(arrName, id, field) {
+  const arr = state[arrName]; if(!arr) return;
   const item = arr.find(x=>x.id===id); if(!item) return;
   const cur = item[field||'status']||'todo';
   item[field||'status'] = STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur)+1)%STATUS_CYCLE.length];
@@ -920,6 +1020,14 @@ function switchTimelineView(v) {
   document.getElementById('timeline-hz').classList.toggle('active', v==='hz');
 }
 
+// ── GENERIC ROW ACTIONS ───────────────────────────────────────────
+function rowActions(type, id) {
+  return `<span class="row-actions">
+    <button class="mini-edit" title="Edit" onclick="editItem('${type}','${id}')">✎</button>
+    <button class="del-btn" title="Delete" onclick="delItem('${MODAL_ARR[type]}','${id}')">✕</button>
+  </span>`;
+}
+
 // ── RENDER ────────────────────────────────────────────────────────
 function render() {
   renderTldr();
@@ -931,6 +1039,7 @@ function render() {
   renderBudget();
   renderComms();
   renderAssets();
+  renderMetrics();
   renderPeople();
   restoreEditables();
   document.querySelectorAll('.section-add-btn').forEach(el => el.style.display = editMode ? '' : 'none');
@@ -940,8 +1049,12 @@ function renderTldr() {
   document.getElementById('tldr-grid').innerHTML = (state.tldr||[]).map(t => `
     <div class="tldr-item">
       <div class="tldr-item-top">
-        <div class="tldr-item-label">${esc(t.label)}</div>
-        ${statusPill(t.status, `cycleStatus(state.tldr,'${t.id}','status');`, TLDR_LABEL)}
+        <div class="tldr-item-label">${esc(t.label)}${t.link?` <a class="tldr-link" href="${escAttr(t.link)}" target="_blank" title="${escAttr(t.link)}">↗</a>`:''}</div>
+        <div style="display:flex;align-items:center;gap:2px">
+          ${statusPill(t.status, `cycleStatus('tldr','${t.id}','status');`, TLDR_LABEL)}
+          <button class="mini-edit" title="Edit" onclick="editItem('tldr','${t.id}')">✎</button>
+          <button class="del-btn" title="Delete" onclick="delItem('tldr','${t.id}')">✕</button>
+        </div>
       </div>
       <div class="tldr-item-value">${esc(t.value)}</div>
     </div>`).join('');
@@ -952,6 +1065,10 @@ function renderTargets() {
     <span class="chip priority">${esc(t.name)}${editMode?`<button class="del-btn" onclick="delItem('targets','${t.id}')">✕</button>`:''}</span>`).join('');
   document.getElementById('lookalikes-wrap').innerHTML = (state.lookalikes||[]).map(t => `
     <span class="chip">${esc(t.name)}${editMode?`<button class="del-btn" onclick="delItem('lookalikes','${t.id}')">✕</button>`:''}</span>`).join('');
+  const res = state.targetres||[];
+  document.getElementById('targetres-wrap-outer').style.display = res.length ? '' : 'none';
+  document.getElementById('targetres-wrap').innerHTML = res.map(r => `
+    <a class="attach-chip" href="${escAttr(r.url)}" target="_blank">${r.kind==='file'?'📄':'🔗'} ${esc(r.label)}${editMode?`<span class="rm" onclick="event.preventDefault();event.stopPropagation();delItem('targetres','${r.id}')">✕</span>`:''}</a>`).join('');
 }
 
 function renderAgenda() {
@@ -960,7 +1077,7 @@ function renderAgenda() {
       <td>${esc(a.time)}</td>
       <td style="font-weight:600">${esc(a.title)}</td>
       <td>${esc(a.desc)}</td>
-      <td><button class="del-btn" onclick="delItem('agenda','${a.id}')">✕</button></td>
+      <td>${rowActions('agenda', a.id)}</td>
     </tr>`).join('');
 }
 
@@ -971,8 +1088,8 @@ function renderTimeline() {
       <td>${esc(t.when)}<span class="week-num">${esc(t.week||'')}</span></td>
       <td>${esc(t.milestone)}</td>
       <td>${esc(t.owner||'—')}</td>
-      <td>${statusPill(t.status, `cycleStatus(state.timeline,'${t.id}','status');`)}</td>
-      <td><button class="del-btn" onclick="delItem('timeline','${t.id}')">✕</button></td>
+      <td>${statusPill(t.status, `cycleStatus('timeline','${t.id}','status');`)}</td>
+      <td>${rowActions('timeline', t.id)}</td>
     </tr>`).join('');
   document.getElementById('hz-track').innerHTML = rows.map(t => `
     <div class="hz-item${/event day/i.test(t.week)?' event-day':''}">
@@ -981,7 +1098,10 @@ function renderTimeline() {
         <div class="hz-when">${esc(t.when)} · ${esc(t.week||'')}</div>
         <div class="hz-milestone">${esc(t.milestone)}</div>
         <div class="hz-owner">${esc(t.owner||'—')}</div>
-        ${statusPill(t.status, `cycleStatus(state.timeline,'${t.id}','status');`)}
+        <div style="display:flex;align-items:center;gap:4px">
+          ${statusPill(t.status, `cycleStatus('timeline','${t.id}','status');`)}
+          <button class="mini-edit" title="Edit" onclick="editItem('timeline','${t.id}')">✎</button>
+        </div>
       </div>
     </div>`).join('');
 }
@@ -991,9 +1111,10 @@ function renderSpeakers() {
     <div class="card">
       <div class="card-title">
         <span>${esc(s.name)}</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${statusPill(s.status, `cycleStatus(state.speakers,'${s.id}','status');`)}
-          <button class="del-btn" style="opacity:0" onclick="delItem('speakers','${s.id}')">✕</button>
+        <div style="display:flex;gap:2px;align-items:center">
+          ${statusPill(s.status, `cycleStatus('speakers','${s.id}','status');`)}
+          <button class="mini-edit" title="Edit" onclick="editItem('speaker','${s.id}')">✎</button>
+          <button class="del-btn" title="Delete" onclick="delItem('speakers','${s.id}')">✕</button>
         </div>
       </div>
       <div style="font-size:11px;color:var(--grey-mid);margin-bottom:8px">${esc(s.company)} · ${esc(s.role)}</div>
@@ -1005,14 +1126,24 @@ function renderLogistics() {
   document.getElementById('logistics-grid').innerHTML = (state.logistics||[]).map(l => `
     <div class="card" style="position:relative">
       <div class="card-title">
-        <span>${l.icon} ${esc(l.name)}</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          ${statusPill(l.status, `cycleStatus(state.logistics,'${l.id}','status');`)}
-          <button class="del-btn" style="opacity:0" onclick="delItem('logistics','${l.id}')">✕</button>
+        <span>${l.icon||'📌'} ${esc(l.name)}</span>
+        <div style="display:flex;gap:2px;align-items:center">
+          ${statusPill(l.status, `cycleStatus('logistics','${l.id}','status');`)}
+          <button class="mini-edit" title="Edit" onclick="editItem('logistic','${l.id}')">✎</button>
+          <button class="del-btn" title="Delete" onclick="delItem('logistics','${l.id}')">✕</button>
         </div>
       </div>
       <div class="card-body">${esc(l.value)}</div>
     </div>`).join('');
+}
+
+function budgetTotal() {
+  let sum = 0, allParsed = true;
+  (state.budget||[]).forEach(b => {
+    const m = (b.cost||'').replace(/,/g,'').match(/(\d+(\.\d+)?)/);
+    if(m) sum += parseFloat(m[1]); else allParsed = false;
+  });
+  return {sum, allParsed};
 }
 
 function renderBudget() {
@@ -1021,13 +1152,15 @@ function renderBudget() {
       <td>${esc(b.item)}</td>
       <td>${esc(b.cost)}</td>
       <td>${esc(b.note||'')}</td>
-      <td><button class="del-btn" onclick="delItem('budget','${b.id}')">✕</button></td>
+      <td>${rowActions('budget', b.id)}</td>
     </tr>`).join('');
+  const {sum} = budgetTotal();
+  const fmt = '~£' + sum.toLocaleString('en-GB', {maximumFractionDigits:0});
   document.getElementById('budget-body').innerHTML = rows + `
     <tr class="budget-total-row">
-      <td>Total</td>
-      <td>~£13–15k</td>
-      <td>Sponsorship from year two onward</td>
+      <td>Total (auto-calculated)</td>
+      <td>${fmt}</td>
+      <td>Envelope: ~£13–15k · Sponsorship from year two onward</td>
       <td></td>
     </tr>`;
 }
@@ -1038,23 +1171,43 @@ function renderComms() {
       <td>${esc(c.month)}</td>
       <td>${esc(c.activity)}</td>
       <td>${esc(c.content)}</td>
-      <td>${statusPill(c.status, `cycleStatus(state.comms,'${c.id}','status');`)}</td>
-      <td><button class="del-btn" onclick="delItem('comms','${c.id}')">✕</button></td>
+      <td>${statusPill(c.status, `cycleStatus('comms','${c.id}','status');`)}</td>
+      <td>${rowActions('comms', c.id)}</td>
     </tr>`).join('');
 }
 
 function renderAssets() {
-  document.getElementById('assets-list').innerHTML = (state.assets||[]).map(a => `
+  document.getElementById('assets-list').innerHTML = (state.assets||[]).map(a => {
+    const attach = [];
+    if(a.link) attach.push(`<a class="attach-chip" href="${escAttr(a.link)}" target="_blank">🔗 Link${editMode?`<span class="rm" onclick="event.preventDefault();event.stopPropagation();removeAttachment('assets','${a.id}','link')">✕</span>`:''}</a>`);
+    if(a.fileUrl) attach.push(`<a class="attach-chip" href="${escAttr(a.fileUrl)}" target="_blank">📄 ${esc(a.fileName||'File')}${editMode?`<span class="rm" onclick="event.preventDefault();event.stopPropagation();removeAttachment('assets','${a.id}','file')">✕</span>`:''}</a>`);
+    if(editMode) attach.push(`<button class="upload-btn" onclick="uploadFor('assets','${a.id}')">📎 Upload file</button>`);
+    return `
     <div class="asset-row">
-      <div class="asset-icon">${a.icon}</div>
+      <div class="asset-icon">${a.icon||'📄'}</div>
       <div class="asset-info">
         <div class="asset-name">${esc(a.name)}</div>
         <div class="asset-desc">${esc(a.desc)}</div>
+        ${attach.length?`<div class="asset-attach">${attach.join('')}</div>`:''}
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
-        ${statusPill(a.status, `cycleStatus(state.assets,'${a.id}','status');`)}
-        <button class="del-btn" onclick="delItem('assets','${a.id}')">✕</button>
+      <div style="display:flex;gap:2px;align-items:center;flex-shrink:0">
+        ${statusPill(a.status, `cycleStatus('assets','${a.id}','status');`)}
+        <button class="mini-edit" title="Edit" onclick="editItem('asset','${a.id}')">✎</button>
+        <button class="del-btn" title="Delete" onclick="delItem('assets','${a.id}')">✕</button>
       </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMetrics() {
+  document.getElementById('metrics-grid').innerHTML = (state.metrics||[]).map(m => `
+    <div class="metric-card">
+      <div class="metric-actions">
+        <button class="mini-edit" title="Edit" onclick="editItem('metric','${m.id}')">✎</button>
+        <button class="del-btn" title="Delete" onclick="delItem('metrics','${m.id}')">✕</button>
+      </div>
+      <div class="metric-num">${esc(m.num)}</div>
+      <div class="metric-label">${esc(m.label)}</div>
     </div>`).join('');
 }
 
@@ -1064,7 +1217,7 @@ function renderPeople() {
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
         <div class="person-initial">${esc(p.initials)}</div>
         ${editMode ? `<div style="display:flex;gap:6px">
-          <button class="person-action-btn edit-btn" onclick="editPerson('${p.id}')">Edit</button>
+          <button class="person-action-btn edit-btn" onclick="editItem('person','${p.id}')">Edit</button>
           <button class="person-action-btn delete-btn" onclick="confirmDelPerson('${p.id}','${esc(p.name)}')">Delete</button>
         </div>` : ''}
       </div>
@@ -1074,9 +1227,10 @@ function renderPeople() {
     </div>`).join('');
 }
 
-function delItem(arr, id) {
-  if(!editMode) return;
-  state[arr] = state[arr].filter(x=>x.id!==id);
+function delItem(arrName, id) {
+  if(!editMode) { alert('Turn on Edit Mode first (top right).'); return; }
+  if(!confirm('Delete this item? This can\'t be undone.')) return;
+  state[arrName] = state[arrName].filter(x=>x.id!==id);
   saveState(); render();
 }
 
@@ -1087,48 +1241,60 @@ function confirmDelPerson(id, name) {
   }
 }
 
-function editPerson(id) {
-  if(!editMode) return;
-  const person = state.people.find(p=>p.id===id);
-  if(!person) return;
-  editingId = id;
-  modalType = 'person';
-  document.getElementById('modal-title').textContent = 'Edit Person';
-  const cfg = MODAL_CONFIGS['person'];
-  document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => {
-    const val = f.id === 'tasks' ? (person.tasks||[]).join('\n') : (person[f.id]||'');
-    return `<div class="m-field">
-      <label>${f.label}</label>
-      ${f.type==='textarea'
-        ? `<textarea id="mf-${f.id}" rows="3">${esc(val)}</textarea>`
-        : `<input type="text" id="mf-${f.id}" value="${esc(val)}">`}
-    </div>`;
-  }).join('');
-  document.getElementById('modal-overlay').classList.add('open');
-}
-
-// ── MODAL ─────────────────────────────────────────────────────────
+// ── MODAL (add + edit for every collection) ───────────────────────
 const MODAL_CONFIGS = {
+  tldr: {
+    title: 'TL;DR Block',
+    fields: [
+      {id:'label',label:'Label (e.g. Venue)',type:'text'},
+      {id:'value',label:'Status line — what your boss reads',type:'textarea'},
+      {id:'link',label:'Link (optional — e.g. deck URL, venue site)',type:'text'},
+    ]
+  },
   timeline: {
-    title: 'Add Timeline Milestone',
+    title: 'Timeline Milestone',
     fields: [
       {id:'when',label:'When (e.g. Jul 2026)',type:'text'},
-      {id:'week',label:'Week / detail',type:'text'},
+      {id:'week',label:'Week / detail (e.g. W/C 14 Jul)',type:'text'},
       {id:'milestone',label:'Milestone',type:'textarea'},
       {id:'owner',label:'Owner',type:'text'},
     ]
   },
+  agenda: {
+    title: 'Run of Show Slot',
+    fields: [
+      {id:'time',label:'Time (e.g. 3:00pm)',type:'text'},
+      {id:'title',label:'Session title',type:'text'},
+      {id:'desc',label:'Detail / copy',type:'textarea'},
+    ]
+  },
   speaker: {
-    title: 'Add Speaker / Guest',
+    title: 'Speaker / Guest',
     fields: [
       {id:'name',label:'Name',type:'text'},
       {id:'company',label:'Company / sector',type:'text'},
-      {id:'role',label:'Role (e.g. Panellist)',type:'text'},
+      {id:'role',label:'Role (e.g. Panellist, Keynote)',type:'text'},
       {id:'notes',label:'Notes',type:'textarea'},
     ]
   },
+  logistic: {
+    title: 'Logistics Block',
+    fields: [
+      {id:'icon',label:'Icon (emoji)',type:'text'},
+      {id:'name',label:'Name (e.g. Security)',type:'text'},
+      {id:'value',label:'Detail',type:'textarea'},
+    ]
+  },
+  budget: {
+    title: 'Budget Line',
+    fields: [
+      {id:'item',label:'Line item',type:'text'},
+      {id:'cost',label:'Cost (e.g. £1,000 — total auto-calculates)',type:'text'},
+      {id:'note',label:'Note',type:'text'},
+    ]
+  },
   comms: {
-    title: 'Add Comms Row',
+    title: 'Comms Row',
     fields: [
       {id:'month',label:'Month',type:'text'},
       {id:'activity',label:'Comms activity',type:'textarea'},
@@ -1136,15 +1302,23 @@ const MODAL_CONFIGS = {
     ]
   },
   asset: {
-    title: 'Add Event Asset',
+    title: 'Event Asset',
     fields: [
       {id:'icon',label:'Icon (emoji)',type:'text'},
       {id:'name',label:'Asset name',type:'text'},
       {id:'desc',label:'Description',type:'textarea'},
+      {id:'link',label:'Link (optional — Google Doc, Figma, etc.)',type:'text'},
+    ]
+  },
+  metric: {
+    title: 'Success Metric',
+    fields: [
+      {id:'num',label:'Headline number (e.g. 60+)',type:'text'},
+      {id:'label',label:'What it measures',type:'text'},
     ]
   },
   person: {
-    title: 'Add Person',
+    title: 'Person',
     fields: [
       {id:'name',label:'Name',type:'text'},
       {id:'initials',label:'Initials (1-2 chars)',type:'text'},
@@ -1152,37 +1326,30 @@ const MODAL_CONFIGS = {
       {id:'tasks',label:'Responsibilities (one per line)',type:'textarea'},
     ]
   },
-  agenda: {
-    title: 'Add Agenda Slot',
-    fields: [
-      {id:'time',label:'Time (e.g. 3:00pm)',type:'text'},
-      {id:'title',label:'Session title',type:'text'},
-      {id:'desc',label:'Detail',type:'textarea'},
-    ]
-  },
-  budget: {
-    title: 'Add Budget Line',
-    fields: [
-      {id:'item',label:'Line item',type:'text'},
-      {id:'cost',label:'Cost (e.g. ~£1,000)',type:'text'},
-      {id:'note',label:'Note',type:'text'},
-    ]
-  },
   target: {
-    title: 'Add Target Brand',
+    title: 'Target Brand',
     fields: [
       {id:'name',label:'Brand name',type:'text'},
       {id:'list',label:'List — type "target" or "lookalike"',type:'text'},
     ]
   },
+  targetres: {
+    title: 'Link / Resource',
+    fields: [
+      {id:'label',label:'Label (e.g. Prospect list — HubSpot)',type:'text'},
+      {id:'url',label:'URL',type:'text'},
+    ]
+  },
 };
 
+const MODAL_ARR = {tldr:'tldr',timeline:'timeline',agenda:'agenda',speaker:'speakers',logistic:'logistics',budget:'budget',comms:'comms',asset:'assets',metric:'metrics',person:'people',target:'targets',targetres:'targetres'};
+
 function openModal(type) {
-  if(!editMode) return;
+  if(!editMode) { alert('Turn on Edit Mode first (top right).'); return; }
   editingId = null;
   modalType = type;
   const cfg = MODAL_CONFIGS[type];
-  document.getElementById('modal-title').textContent = cfg.title;
+  document.getElementById('modal-title').textContent = 'Add — ' + cfg.title;
   document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => `
     <div class="m-field">
       <label>${f.label}</label>
@@ -1193,13 +1360,33 @@ function openModal(type) {
   document.getElementById('modal-overlay').classList.add('open');
 }
 
+function editItem(type, id) {
+  if(!editMode) { alert('Turn on Edit Mode first (top right).'); return; }
+  const arr = state[MODAL_ARR[type]];
+  const item = arr && arr.find(x=>x.id===id);
+  if(!item) return;
+  editingId = id;
+  modalType = type;
+  const cfg = MODAL_CONFIGS[type];
+  document.getElementById('modal-title').textContent = 'Edit — ' + cfg.title;
+  document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => {
+    const val = f.id === 'tasks' ? (item.tasks||[]).join('\n') : (item[f.id]||'');
+    return `<div class="m-field">
+      <label>${f.label}</label>
+      ${f.type==='textarea'
+        ? `<textarea id="mf-${f.id}" rows="3">${esc(val)}</textarea>`
+        : `<input type="text" id="mf-${f.id}" value="${escAttr(val)}">`}
+    </div>`;
+  }).join('');
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
 function closeModal(e) { if(e.target===document.getElementById('modal-overlay'))closeModalDirect(); }
 function closeModalDirect() { document.getElementById('modal-overlay').classList.remove('open'); editingId = null; }
 
 function saveModalItem() {
   const cfg = MODAL_CONFIGS[modalType];
-  const arrMap = {timeline:'timeline',speaker:'speakers',comms:'comms',asset:'assets',person:'people',agenda:'agenda',budget:'budget',target:'targets'};
-  let arr = arrMap[modalType];
+  let arr = MODAL_ARR[modalType];
 
   if(editingId) {
     const item = state[arr].find(x=>x.id===editingId);
@@ -1211,7 +1398,7 @@ function saveModalItem() {
       if(modalType === 'person') item.tasks = (item.tasks||'').split('\n').map(t=>t.trim()).filter(Boolean);
     }
   } else {
-    const item = {id: modalType[0]+'-'+Date.now(), status:'todo'};
+    const item = {id: modalType.slice(0,2)+'-'+Date.now(), status:'todo'};
     cfg.fields.forEach(f => {
       const el = document.getElementById('mf-'+f.id);
       if(el) item[f.id] = el.value.trim();
@@ -1220,6 +1407,10 @@ function saveModalItem() {
     if(modalType === 'target') {
       if((item.list||'').toLowerCase().startsWith('look')) arr = 'lookalikes';
       delete item.list; delete item.status;
+    }
+    if(modalType === 'targetres') { item.kind = 'link'; delete item.status; }
+    if(modalType === 'metric' || modalType === 'agenda' || modalType === 'budget' || modalType === 'tldr') {
+      if(modalType !== 'tldr') delete item.status;
     }
     state[arr].push(item);
   }
@@ -1243,19 +1434,36 @@ function copyText(id, btn) {
   });
 }
 
-// ── PHOTO CAROUSEL (Everyman Kings Cross) ─────────────────────────
-const PHOTOS = ['everyman-1.jpg','everyman-2.jpg','everyman-3.jpg','everyman-4.jpg','everyman-5.jpg'];
+// ── VENUE PHOTO CAROUSEL ──────────────────────────────────────────
+// To add photos for a venue: drop image files into the repo root
+// (e.g. treehouse-1.jpg, treehouse-2.jpg) and list the filenames below.
+const VENUE_PHOTOS = {
+  everyman: {
+    title: 'Everyman Kings Cross',
+    caption: 'Screen 1: 108 seats · Screen 2: 107 seats · Superb bar · Kings Cross, London',
+    photos: ['everyman-1.jpg','everyman-2.jpg','everyman-3.jpg','everyman-4.jpg','everyman-5.jpg']
+  },
+  treehouse: { title: 'Shoreditch Treehouse', caption: 'Shoreditch, London · Up to 60', photos: [] },
+  protein:   { title: 'Protein Studios', caption: 'Shoreditch, London · Up to 1,000', photos: [] },
+  plexal:    { title: 'Plexal', caption: 'Here East, London · Up to 200', photos: [] },
+};
+
+let currentVenue = 'everyman';
 let currentPhotoIndex = 0;
 const photoBaseUrl = 'https://raw.githubusercontent.com/jungle-is-massive/jungle-bd-planner/main/';
 
+function venuePhotos() { return (VENUE_PHOTOS[currentVenue]||{}).photos || []; }
+
 function loadPhoto(index) {
-  document.getElementById('carousel-image').src = photoBaseUrl + PHOTOS[index];
+  const ph = venuePhotos();
+  if(!ph.length) return;
+  document.getElementById('carousel-image').src = photoBaseUrl + ph[index];
   updateDots();
 }
 function updateDots() {
   const dotsContainer = document.getElementById('carousel-dots');
   dotsContainer.innerHTML = '';
-  PHOTOS.forEach((_, i) => {
+  venuePhotos().forEach((_, i) => {
     const dot = document.createElement('div');
     dot.className = 'dot' + (i === currentPhotoIndex ? ' active' : '');
     dot.onclick = (e) => { e.stopPropagation(); currentPhotoIndex = i; loadPhoto(i); };
@@ -1264,16 +1472,23 @@ function updateDots() {
 }
 function nextPhoto(e) {
   e.stopPropagation();
-  currentPhotoIndex = (currentPhotoIndex + 1) % PHOTOS.length;
+  const n = venuePhotos().length; if(!n) return;
+  currentPhotoIndex = (currentPhotoIndex + 1) % n;
   loadPhoto(currentPhotoIndex);
 }
 function prevPhoto(e) {
   e.stopPropagation();
-  currentPhotoIndex = (currentPhotoIndex - 1 + PHOTOS.length) % PHOTOS.length;
+  const n = venuePhotos().length; if(!n) return;
+  currentPhotoIndex = (currentPhotoIndex - 1 + n) % n;
   loadPhoto(currentPhotoIndex);
 }
-function openPhotoModal() {
+function openPhotoModal(venue) {
+  const v = VENUE_PHOTOS[venue];
+  if(!v || !v.photos.length) return; // no photos yet — card does nothing
+  currentVenue = venue;
   currentPhotoIndex = 0;
+  document.getElementById('photo-modal-title').textContent = v.title;
+  document.getElementById('photo-caption').textContent = v.caption;
   loadPhoto(0);
   document.getElementById('photo-modal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -1284,6 +1499,18 @@ function closePhotoModal(e) {
     document.body.style.overflow = '';
   }
 }
+// Mark venue cards that have photos
+Object.entries({treehouse:'venue-treehouse', protein:'venue-protein', plexal:'venue-plexal'}).forEach(([k, elId]) => {
+  const el = document.getElementById(elId);
+  const slot = el.querySelector('.venue-photo-slot');
+  if(VENUE_PHOTOS[k].photos.length) {
+    el.classList.add('has-photos');
+    slot.outerHTML = `<div class="venue-photos-hint">📸 ${VENUE_PHOTOS[k].title}</div>`;
+  } else {
+    slot.outerHTML = `<div class="venue-no-photos">No photos on file yet</div>`;
+  }
+});
+
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape') closePhotoModal({target: document.getElementById('photo-modal')});
   if(document.getElementById('photo-modal').classList.contains('open')) {
@@ -1308,7 +1535,8 @@ async function submitQA() {
   btn.textContent='Sent ✓';
 }
 
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function esc(s){ return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escAttr(s){ return esc(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 // ── INIT ──────────────────────────────────────────────────────────
 async function init() {
